@@ -1,13 +1,20 @@
 {
     "common": {
         "loading": "Loading...",
+<<<<<<< HEAD
         "empty": "Empty",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "load_more": "Load More",
         "add": "Add",
         "copy": "Copy",
         "action": "Action",
         "save": "Save",
         "saved": "Saved successfully",
+<<<<<<< HEAD
+=======
+        "save_failed": "Failed to save configuration (Permission error?): ",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "cancel": "Cancel",
         "confirm": "Confirm",
         "close": "Close",
@@ -23,9 +30,13 @@
         "warning": "Warning",
         "info": "Info",
         "details": "Details",
+<<<<<<< HEAD
         "example": "Example",
         "clear": "Clear",
         "clearing": "Clearing...",
+=======
+        "clear": "Clear",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "prev_page": "Previous",
         "next_page": "Next",
         "pagination_info": "Showing {{start}} to {{end}} of {{total}} entries",
@@ -35,18 +46,27 @@
         "enabled": "Enabled",
         "disabled": "Disabled",
         "tauri_api_not_loaded": "Tauri API not loaded, please restart the app",
+<<<<<<< HEAD
         "environment_error": "Environment error: {{error}}",
         "submit": "Submit",
         "retry": "Retry",
         "back": "Back"
+=======
+        "environment_error": "Environment error: {{error}}"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "nav": {
         "dashboard": "Dashboard",
         "accounts": "Accounts",
         "proxy": "API Proxy",
+<<<<<<< HEAD
         "call_records": "Traffic Logs",
         "token_stats": "Token Stats",
         "security": "IP Management",
+=======
+        "traffic_logs": "Traffic Logs",
+        "token_stats": "Token Stats",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "settings": "Settings",
         "theme_to_dark": "Switch to Dark Mode",
         "theme_to_light": "Switch to Light Mode",
@@ -65,6 +85,7 @@
         "switch_to_russian": "Switch to Russian",
         "switch_to_russian_short": "RU",
         "switch_to_portuguese": "Switch to Portuguese",
+<<<<<<< HEAD
         "switch_to_portuguese_short": "PT",
         "switch_to_korean": "Switch to Korean",
         "switch_to_korean_short": "KO",
@@ -75,10 +96,26 @@
     },
     "dashboard": {
         "hello": "Hello, User 👋",
+=======
+        "switch_to_portuguese_short": "PT"
+    },
+    "dashboard": {
+        "hello": "Hello, User",
+        "title_desc": "Your AI Account Hub: Real-time quota monitoring and automated warmup status board",
+        "updated_at": "Updated at {{time}}",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "refresh_quota": "Refresh Quota",
         "refreshing": "Refreshing...",
         "total_accounts": "Total Accounts",
         "avg_gemini": "Avg. Gemini Quota",
+<<<<<<< HEAD
+=======
+        "avg_score": "Avg Score",
+        "usage_overview": "Usage Overview",
+        "usage_desc": "Tokens and activity trends across providers",
+        "recent_activity": "Activity Log",
+        "no_activity": "No recent activity recorded",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "avg_gemini_image": "Avg. Gemini Image Quota",
         "avg_claude": "Avg. Claude Quota",
         "low_quota_accounts": "Low Quota Accounts",
@@ -104,16 +141,58 @@
             "export_no_accounts": "No accounts to export",
             "export_success": "Export successful! File saved to: {{path}}",
             "export_error": "Export failed"
+<<<<<<< HEAD
         }
     },
     "accounts": {
+=======
+        },
+        "smart_network": "Smart Network",
+        "active_account_card": "Active Account",
+        "switch": "Switch",
+        "refresh": "Refresh",
+        "proxy": "Proxy",
+        "candidates": "Candidates",
+        "no_candidates": "No candidates",
+        "system_nodes": "System Nodes",
+        "local_gateway": "Local Gateway",
+        "online": "Online",
+        "no_remote_nodes": "No remote nodes",
+        "gateway_communication": "Gateway Communication",
+        "live": "Live",
+        "tabs": {
+            "turn": "Turn",
+            "session": "Session",
+            "events": "Events",
+            "docs": "Docs"
+        },
+        "no_recent_communication": "No recent communication",
+        "coming_soon": "Coming soon",
+        "insights": {
+            "fleet_size": "Fleet size",
+            "efficiency": "Efficiency",
+            "status": "Status",
+            "attention": "Attention",
+            "status_good": "✓ Healthy"
+        }
+    },
+    "accounts": {
+        "title": "Account Management",
+        "title_desc": "Manage your Google channels and session credentials",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "search_placeholder": "Search email...",
         "all": "All",
         "available": "Available",
         "low_quota": "Low Quota",
+<<<<<<< HEAD
         "ultra": "ULTRA",
         "pro": "PRO",
         "free": "FREE",
+=======
+        "ultra": "Ultra",
+        "pro": "Pro",
+        "free": "Free",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "add_account": "Add Account",
         "refresh_all": "Refresh All",
         "refresh_selected": "Refresh ({{count}})",
@@ -212,6 +291,7 @@
                 "copy_link": "Copy Auth Link",
                 "copied": "Copied",
                 "link_label": "Authorization URL",
+<<<<<<< HEAD
                 "link_click_to_copy": "Click to copy",
                 "manual_hint": "Browser didn't redirect? Paste the full callback URL or raw Code here:",
                 "manual_placeholder": "Paste callback URL or code...",
@@ -220,6 +300,9 @@
                 "popup_blocked": "Popup blocked",
                 "manual_submitting": "Submitting authorization code...",
                 "manual_submitted": "Authorization code submitted. Backend is processing..."
+=======
+                "link_click_to_copy": "Click to copy"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "token": {
                 "label": "Refresh Token",
@@ -275,6 +358,7 @@
             "batch_refresh_msg": "Are you sure you want to refresh quotas for the selected {{count}} accounts? This may take some time.",
             "disable_proxy_title": "Disable Proxy",
             "disable_proxy_msg": "Are you sure you want to disable proxy for this account? The account will remain usable in the app.",
+<<<<<<< HEAD
             "enable_proxy_title": "Enable Proxy",
             "enable_proxy_msg": "Are you sure you want to re-enable proxy for this account?",
             "warmup_all_title": "Full Manual Warmup",
@@ -284,6 +368,26 @@
         }
     },
     "settings": {
+=======
+            "warmup_all_title": "Full Manual Warmup",
+            "warmup_all_msg": "Are you sure you want to trigger warmup tasks for all eligible accounts immediately? This will send minimal traffic to Google services to reset quota cycles.",
+            "batch_warmup_title": "Batch Manual Warmup",
+            "batch_warmup_msg": "Are you sure you want to trigger warmup for the selected {{count}} accounts immediately?",
+            "confirm_batch_delete": "Are you sure you want to delete the selected {{count}} accounts?"
+        },
+        "import_db": "Import DB",
+        "total_summary": "Total <1>{{count}}</1> accounts",
+        "selected_summary": "Selected {{count}}",
+        "selection_ready": "{{count}} accounts ready",
+        "batch_warmup": "Batch Warmup",
+        "batch_delete": "Delete Selected",
+        "cancel_selection": "Cancel Selection",
+        "not_found": "No accounts found. Click \"Add Account\" to start."
+    },
+    "settings": {
+        "title": "Settings",
+        "title_desc": "Manage your application preferences and account",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "save": "Save Settings",
         "tabs": {
             "general": "General",
@@ -302,7 +406,11 @@
             "auto_launch": "Launch at Startup",
             "auto_launch_enabled": "Enabled",
             "auto_launch_disabled": "Disabled",
+<<<<<<< HEAD
             "auto_launch_desc": "Automatically launch Topoo Gateway when system starts",
+=======
+            "auto_launch_desc": "Automatically launch Antigravity Tools when system starts",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auto_check_update": "Auto Check for Updates",
             "auto_check_update_desc": "Automatically check for new versions on startup",
             "auto_check_update_enabled": "Auto check enabled",
@@ -373,6 +481,7 @@
             "clear_logs_title": "Clear Logs Confirmation",
             "clear_logs_msg": "Are you sure you want to clear all log cache files?",
             "logs_cleared": "Logs cache cleared",
+<<<<<<< HEAD
             "antigravity_cache_title": "Antigravity Cache Cleanup",
             "antigravity_cache_desc": "Clear Antigravity cache to resolve login failures, version validation errors, and OAuth authorization issues.",
             "antigravity_cache_warning": "Please ensure Antigravity is completely closed before clearing cache.",
@@ -381,6 +490,8 @@
             "clear_cache_confirm_msg": "The following cache directories will be cleared:",
             "cache_cleared_success": "Cache cleared successfully, freed {{size}} MB",
             "cache_not_found": "No Antigravity cache directories found",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "http_api_title": "HTTP API Service",
             "http_api_desc": "Provides local HTTP interface for external programs (e.g. VS Code plugins).",
             "http_api_enabled": "Enable HTTP API",
@@ -390,7 +501,11 @@
             "http_api_port_placeholder": "Default port 19527",
             "http_api_port_invalid": "Invalid port number (range: 1024-65535)",
             "http_api_settings_saved": "HTTP API settings saved, restart required to apply",
+<<<<<<< HEAD
             "http_api_restart_required": "⚠️ Restart required to apply"
+=======
+            "http_api_restart_required": "Restart required to apply"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "about": {
             "title": "About",
@@ -413,10 +528,13 @@
             "support_alipay": "Alipay",
             "support_wechat": "WeChat Pay",
             "support_buymeacoffee": "Buy Me a Coffee"
+<<<<<<< HEAD
         },
         "branding": {
             "title": "Topoo Gateway",
             "subtitle": "Professional Account Management"
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     },
     "tray": {
@@ -431,15 +549,35 @@
         "forbidden": "Account Forbidden"
     },
     "proxy": {
+<<<<<<< HEAD
         "title": "API Proxy Service",
         "error": {
             "load_failed": "Failed to load configuration"
         },
+=======
+        "title": "API Proxy",
+        "page_desc": "Configure your intelligent API gateway and model routing.",
+        "port_conflict": "Gateway Port Conflict (8045)",
+        "port_conflict_desc": "Another application is using port 8045. This will block your AI assistant's network access.",
+        "force_fix": "Force Fix Conflict",
+        "cleanup_failed": "Cleanup failed: ",
+        "port_conflict_title": "Port Conflict Detected",
+        "cleanup_now": "Fix Connection Now",
+        "status_running": "Running",
+        "status_good": "Healthy",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "status": {
             "running": "Service Running",
             "stopped": "Service Stopped",
             "accounts_available": "{{count}} Accounts Available",
+<<<<<<< HEAD
             "processing": "Processing..."
+=======
+            "processing": "Processing...",
+            "interactive_docs_title": "Interactive API Docs",
+            "interactive_docs_desc": "Local API is active. You can explore and test endpoints via Swagger UI.",
+            "view_docs_btn": "Open Docs"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "action": {
             "start": "Start Service",
@@ -447,12 +585,17 @@
         },
         "config": {
             "title": "Service Configuration",
+<<<<<<< HEAD
             "request": {
                 "user_agent": "User-Agent Override",
                 "user_agent_tooltip": "Override the User-Agent header sent to upstream APIs. Leave empty to use default.",
                 "user_agent_hint": "Current Default: antigravity/<version> <os>/<arch>",
                 "user_agent_placeholder": "Enter custom User-Agent string..."
             },
+=======
+            "desc": "Basic configuration for the local API proxy",
+            "auth_title": "Authentication",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "port": "Listen Port",
             "port_tooltip": "TCP port the local API Proxy listens on. Stop the service to change it, then restart to apply.",
             "port_hint": "Default 8045, restart required to apply changes",
@@ -460,10 +603,17 @@
             "auto_start_tooltip": "Automatically starts the local API Proxy service when the app launches.",
             "allow_lan_access": "Allow LAN Access",
             "allow_lan_access_tooltip": "When enabled, the service binds to 0.0.0.0 so other devices on your LAN can access it. Keep authorization enabled and protect your API key; restart required to apply.",
+<<<<<<< HEAD
             "allow_lan_access_hint_enabled": "🌐 Listening on 0.0.0.0, LAN devices can access",
             "allow_lan_access_hint_disabled": "🔒 Listening on 127.0.0.1 only, localhost access (Privacy First)",
             "allow_lan_access_warning": "⚠️ LAN devices can access when enabled. Keep your API key secure",
             "allow_lan_access_restart_hint": "ℹ️ Service restart required to apply changes",
+=======
+            "allow_lan_access_hint_enabled": "Listening on 0.0.0.0, LAN devices can access",
+            "allow_lan_access_hint_disabled": "Listening on 127.0.0.1 only, localhost access (Privacy First)",
+            "allow_lan_access_warning": "LAN devices can access when enabled. Keep your API key secure",
+            "allow_lan_access_restart_hint": "Service restart required to apply changes",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "api_key": "API Key",
             "api_key_tooltip": "Shared secret used by clients when proxy authorization is enabled. Regenerating the key immediately invalidates the old one.",
             "btn_regenerate": "Regenerate Key",
@@ -474,6 +624,7 @@
             "warning_key": "Note: Keep your API key secure. Do not share it.",
             "api_key_invalid": "Invalid API key format, must start with sk- and be at least 10 characters long",
             "api_key_updated": "API key updated",
+<<<<<<< HEAD
             "admin_password": "Web UI Management Password",
             "admin_password_tooltip": "Password used to log in to the Web management console. If empty, the API Key is used by default.",
             "admin_password_default": "(Same as API Key)",
@@ -481,6 +632,8 @@
             "admin_password_hint": "Tip: In Docker/Web deployment scenarios, you can set a separate login password to improve the security of your API Key.",
             "admin_password_short": "Password too short (at least 4 characters)",
             "admin_password_updated": "Web UI login password updated",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auth": {
                 "title": "Authorization",
                 "title_tooltip": "Controls whether incoming requests must be authenticated, and which routes are protected.",
@@ -500,6 +653,10 @@
                 "title": "z.ai (GLM) Provider",
                 "title_tooltip": "Optional Anthropic-compatible upstream for Claude protocol. Only affects Anthropic endpoints; Google account routing remains unchanged.",
                 "subtitle": "Optional Anthropic-compatible upstream for Claude protocol only.",
+<<<<<<< HEAD
+=======
+                "external_providers": "External Providers",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "enabled": "Enabled",
                 "enabled_tooltip": "Enables z.ai routing for Anthropic requests according to the selected dispatch mode.",
                 "base_url": "Base URL",
@@ -531,8 +688,20 @@
                     "add_rule": "Add",
                     "empty": "No override rules configured.",
                     "from_placeholder": "From (e.g. claude-3-opus)",
+<<<<<<< HEAD
                     "to_placeholder": "To (e.g. glm-4)"
                 },
+=======
+                    "to_placeholder": "Map to (e.g. glm-4)"
+                },
+                "model_router_title": "Model Router",
+                "model_router_desc": "Optimized Prompt Caching and rate limiting for all protocol clients",
+                "model_mapping_title": "Model Mapping",
+                "model_mapping_desc": "Map upstream model names to custom aliases",
+                "model_mapping_original_placeholder": "Original Model (e.g. gemini-pro)",
+                "model_mapping_alias_placeholder": "Alias (e.g. gpt-4)",
+                "model_mapping_empty": "No active mappings configured",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "modes": {
                     "off": "Off",
                     "exclusive": "All Anthropic requests",
@@ -551,8 +720,15 @@
                     "vision": "Vision",
                     "vision_tooltip": "Exposes /mcp/zai-mcp-server/mcp (local MCP server) that provides vision tools backed by z.ai.",
                     "local_endpoints": "Local endpoints (configure your MCP client to use these URLs):",
+<<<<<<< HEAD
                     "local_endpoints_tooltip": "Use these URLs in your MCP client. They share the same host/port as the API Proxy and follow the proxy authorization policy."
                 }
+=======
+                    "local_endpoints_tooltip": "Fill these URLs into your MCP client. They use the same proxy port and follow the current auth policy."
+                },
+                "interactive_docs_title": "Interactive API Docs",
+                "interactive_docs_desc": "You can test the proxy endpoints directly using the embedded Swagger UI when the proxy is running."
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "request_timeout": "Request Timeout",
             "request_timeout_tooltip": "Maximum time (seconds) the proxy waits for an upstream response, including streaming. Increase for long generations; restart required to apply.",
@@ -565,9 +741,13 @@
                 "enable": "Enable Upstream Proxy",
                 "url": "Proxy URL",
                 "url_placeholder": "e.g. http://127.0.0.1:7890 or socks5://127.0.0.1:7890",
+<<<<<<< HEAD
                 "tip": "Supports HTTP, HTTPS and SOCKS5.",
                 "validation_error": "Proxy URL is required when upstream proxy is enabled",
                 "restart_hint": "Proxy settings saved. Restart the app to apply changes."
+=======
+                "tip": "Supports HTTP, HTTPS and SOCKS5."
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "scheduling": {
                 "title": "Account Rotation & Scheduling",
@@ -588,6 +768,7 @@
                 "max_wait": "Max Wait (sec)",
                 "max_wait_tooltip": "Only used in 'Cache First' mode: wait instead of switching if the rate limit reset time is below this value.",
                 "clear_bindings": "Clear Session Bindings",
+<<<<<<< HEAD
                 "clear_bindings_tooltip": "Hard reset all session-account bindings, forcing accounts to be re-assigned on next request.",
                 "clear_rate_limits": "Clear Rate Limit Records",
                 "clear_rate_limits_tooltip": "Immediately clear local rate limit records for all accounts, forcing next requests to try upstream directly."
@@ -600,6 +781,9 @@
                 "level": "Lv {{level}}",
                 "invalid_format": "Invalid format. Use comma separated numbers (e.g. 60, 300)",
                 "clear_records": "Clear All Rate Limit Records"
+=======
+                "clear_bindings_tooltip": "Hard reset all session-account bindings, forcing accounts to be re-assigned on next request."
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "experimental": {
                 "title": "Experimental Settings",
@@ -678,9 +862,13 @@
             "regenerate_key_title": "Regenerate API Key",
             "regenerate_key_msg": "Are you sure you want to regenerate the API Key? The old key will be invalidated immediately.",
             "clear_bindings_title": "Clear Session Bindings",
+<<<<<<< HEAD
             "clear_bindings_msg": "Are you sure you want to clear all session-account bindings?",
             "clear_rate_limits_title": "Clear Rate Limit Records",
             "clear_rate_limits_confirm": "Are you sure you want to clear all local rate limit records?"
+=======
+            "clear_bindings_msg": "Are you sure you want to clear all session-account bindings?"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "model": {
             "flash": "Fast Response",
@@ -725,10 +913,13 @@
             "title": "Model Router",
             "subtitle": "Route models by series or add custom exact mappings.\nNote: Native Claude pass-through models (e.g. claude-opus-4-5-thinking) bypass series groups by default. Use \"Expert Custom Routing\" to override.",
             "subtitle_simple": "Customize model routing with wildcards or exact mappings",
+<<<<<<< HEAD
             "background_task_title": "Background Task Model",
             "background_task_desc": "Model used for Claude CLI background tasks like title generation, summary, etc. (Default: gemini-2.5-flash)",
             "use_default": "Use System Default",
             "current_model": "Current Model",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "apply_presets": "Apply Presets",
             "presets_applied": "Presets applied successfully",
             "custom_mappings": "Custom Mappings",
@@ -761,10 +952,17 @@
             },
             "expert_title": "Expert Custom Routing",
             "expert_subtitle": "Precise matching for any original model ID.",
+<<<<<<< HEAD
             "money_saving_tip": "💰 Cost-saving tip:",
             "haiku_optimization_tip": "Claude CLI uses {{model}} for background tasks by default. Map it to a cheaper Flash model to save ~95% costs",
             "haiku_optimization_btn": "Quick Optimize",
             "haiku_tip_title": "💰 Cost-saving tip:",
+=======
+            "money_saving_tip": "Cost-saving tip:",
+            "haiku_optimization_tip": "Claude CLI uses {{model}} for background tasks by default. Map it to a cheaper Flash model to save ~95% costs",
+            "haiku_optimization_btn": "Quick Optimize",
+            "haiku_tip_title": "Cost-saving tip:",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "haiku_tip_body_before": "Claude CLI defaults to",
             "haiku_tip_body_after": "for background tasks; mapping it to a cheaper Flash model can save about 95% of the cost.",
             "haiku_tip_action": "Optimize",
@@ -773,7 +971,11 @@
             "add_mapping": "Add Mapping",
             "current_list": "Custom List",
             "no_custom_mapping": "No custom mappings yet",
+<<<<<<< HEAD
             "gemini3_only_warning": "⚠️ Gemini 3 series only",
+=======
+            "gemini3_only_warning": "Gemini 3 series only",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "default_suffix": " (Default)",
             "original_id": "Original ID",
             "route_to": "Route To",
@@ -828,7 +1030,11 @@
                 "sync_error": "Sync failed: {{error}}"
             },
             "sync_confirm_title": "Sync Confirmation",
+<<<<<<< HEAD
             "sync_confirm_message": "Ready to sync {{name}} configuration. ⚠️ Warning: This will overwrite your existing local configuration files (e.g. login tokens, API Keys). Are you sure you want to continue?"
+=======
+            "sync_confirm_message": "Ready to sync {{name}} configuration. Warning: This will overwrite your existing local configuration files (e.g. login tokens, API Keys). Are you sure you want to continue?"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     },
     "monitor": {
@@ -886,6 +1092,7 @@
         "dialog": {
             "clear_title": "Clear Proxy Logs",
             "clear_msg": "Are you sure you want to clear all proxy logs? This action cannot be undone."
+<<<<<<< HEAD
         },
         "network": {
             "title": "Network Monitor",
@@ -914,6 +1121,8 @@
                 "start_time": "Start Time",
                 "duration": "Duration"
             }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     },
     "update_notification": {
@@ -921,6 +1130,7 @@
         "message": "A new version is ready with optimizations and improvements. Current: v{{current}}",
         "action": "Update Now"
     },
+<<<<<<< HEAD
     "login": {
         "title": "Secure Access Control",
         "desc": "Running in Web mode. Please enter management password or API Key to access.",
@@ -930,6 +1140,8 @@
         "lookup_hint": "If forgotten, run docker logs antigravity-manager to find Current API Key or Web UI Password",
         "config_hint": "Or run grep -E '\"api_key\"|\"admin_password\"' ~/.antigravity_tools/gui_config.json to view."
     },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     "token_stats": {
         "title": "Token Consumption Stats",
         "hourly": "Hour",
@@ -955,6 +1167,13 @@
         "output": "Output",
         "total": "Total",
         "percentage": "Share",
+<<<<<<< HEAD
+=======
+        "total_requests": "Total Requests",
+        "provider_dist": "Provider Distribution",
+        "top_accounts": "Top Accounts",
+        "top_models": "Top Models",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "no_data": "No data available"
     },
     "errors": {
@@ -965,6 +1184,7 @@
             "stream_error": "Stream transmission error, please retry later",
             "unknown_error": "Unknown error occurred, please retry later"
         }
+<<<<<<< HEAD
     },
     "security": {
         "title": "Security Monitor",
@@ -1059,5 +1279,7 @@
             "save_success": "Configuration saved",
             "save_error": "Failed to save configuration"
         }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

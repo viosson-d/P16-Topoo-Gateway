@@ -13,7 +13,11 @@ pub enum ProxyAuthMode {
 
 impl Default for ProxyAuthMode {
     fn default() -> Self {
+<<<<<<< HEAD
         Self::Auto
+=======
+        Self::Off
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
@@ -132,9 +136,14 @@ pub struct ExperimentalConfig {
     pub enable_cross_model_checks: bool,
 
     /// 启用上下文用量缩放 (Context Usage Scaling)
+<<<<<<< HEAD
     /// 激进模式: 缩放用量并激活自动压缩以突破 200k 限制
     /// 默认关闭以保持透明度,让客户端能触发原生压缩指令
     #[serde(default = "default_false")]
+=======
+    /// 用于解决客户端因 Gemini 上下文过大而错误触发压缩的问题
+    #[serde(default = "default_true")]
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     pub enable_usage_scaling: bool,
 
     /// 上下文压缩阈值 L1 (Tool Trimming)
@@ -156,7 +165,11 @@ impl Default for ExperimentalConfig {
             enable_signature_cache: true,
             enable_tool_loop_recovery: true,
             enable_cross_model_checks: true,
+<<<<<<< HEAD
             enable_usage_scaling: false,  // 默认关闭,回归透明模式
+=======
+            enable_usage_scaling: true,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             context_compression_threshold_l1: 0.4,
             context_compression_threshold_l2: 0.55,
             context_compression_threshold_l3: 0.7,
@@ -172,6 +185,7 @@ fn default_true() -> bool {
     true
 }
 
+<<<<<<< HEAD
 fn default_false() -> bool {
     false
 }
@@ -260,6 +274,8 @@ impl Default for SecurityMonitorConfig {
     }
 }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// 反代服务配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProxyConfig {
@@ -285,9 +301,12 @@ pub struct ProxyConfig {
 
     /// API 密钥
     pub api_key: String,
+<<<<<<< HEAD
     
     /// Web UI 管理后台密码 (可选，如未设置则使用 api_key)
     pub admin_password: Option<String>,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     /// 是否自动启动
     pub auto_start: bool,
@@ -304,10 +323,13 @@ pub struct ProxyConfig {
     #[serde(default)]
     pub enable_logging: bool,
 
+<<<<<<< HEAD
     /// 调试日志配置 (保存完整链路)
     #[serde(default)]
     pub debug_logging: DebugLoggingConfig,
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     /// 上游代理配置
     #[serde(default)]
     pub upstream_proxy: UpstreamProxyConfig,
@@ -316,10 +338,13 @@ pub struct ProxyConfig {
     #[serde(default)]
     pub zai: ZaiConfig,
 
+<<<<<<< HEAD
     /// 自定义 User-Agent 请求头 (可选覆盖)
     #[serde(default)]
     pub user_agent_override: Option<String>,
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     /// 账号调度配置 (粘性会话/限流重试)
     #[serde(default)]
     pub scheduling: crate::proxy::sticky_config::StickySessionConfig,
@@ -327,6 +352,7 @@ pub struct ProxyConfig {
     /// 实验性功能配置
     #[serde(default)]
     pub experimental: ExperimentalConfig,
+<<<<<<< HEAD
 
     /// 安全监控配置 (IP 黑白名单)
     #[serde(default)]
@@ -341,6 +367,8 @@ pub struct ProxyConfig {
     /// Saved User-Agent string (persisted even when override is disabled)
     #[serde(default)]
     pub saved_user_agent: Option<String>,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 上游代理配置
@@ -358,22 +386,33 @@ impl Default for ProxyConfig {
             enabled: false,
             allow_lan_access: false, // 默认仅本机访问，隐私优先
             auth_mode: ProxyAuthMode::default(),
+<<<<<<< HEAD
             port: 8045,
             api_key: format!("sk-{}", uuid::Uuid::new_v4().simple()),
             admin_password: None,
+=======
+            port: 8046,
+            api_key: format!("sk-{}", uuid::Uuid::new_v4().simple()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             auto_start: false,
             custom_mapping: std::collections::HashMap::new(),
             request_timeout: default_request_timeout(),
             enable_logging: true, // 默认开启，支持 token 统计功能
+<<<<<<< HEAD
             debug_logging: DebugLoggingConfig::default(),
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             upstream_proxy: UpstreamProxyConfig::default(),
             zai: ZaiConfig::default(),
             scheduling: crate::proxy::sticky_config::StickySessionConfig::default(),
             experimental: ExperimentalConfig::default(),
+<<<<<<< HEAD
             security_monitor: SecurityMonitorConfig::default(),
             preferred_account_id: None, // 默认使用轮询模式
             user_agent_override: None,
             saved_user_agent: None,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 }

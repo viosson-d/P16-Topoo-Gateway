@@ -23,9 +23,13 @@
         "warning": "警告",
         "info": "提示",
         "details": "詳情",
+<<<<<<< HEAD
         "example": "範例",
         "clear": "清除",
         "clearing": "清理中...",
+=======
+        "clear": "清除",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "prev_page": "上一頁",
         "next_page": "下一頁",
         "pagination_info": "顯示第 {{start}} 到 {{end}} 條，共 {{total}} 條",
@@ -35,8 +39,12 @@
         "enabled": "已啟用",
         "disabled": "已停用",
         "tauri_api_not_loaded": "Tauri API 未正確載入,請重啟應用",
+<<<<<<< HEAD
         "environment_error": "環境錯誤: {{error}}",
         "submit": "提交"
+=======
+        "environment_error": "環境錯誤: {{error}}"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "nav": {
         "dashboard": "儀表板",
@@ -44,7 +52,10 @@
         "proxy": "API 反向代理",
         "token_stats": "統計",
         "call_records": "流量日誌",
+<<<<<<< HEAD
         "security": "IP 管理",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "settings": "設定",
         "theme_to_dark": "切換到深色模式",
         "theme_to_light": "切換到淺色模式",
@@ -63,6 +74,7 @@
         "switch_to_russian": "切換到俄文",
         "switch_to_russian_short": "RU",
         "switch_to_portuguese": "切換到葡萄牙文",
+<<<<<<< HEAD
         "switch_to_portuguese_short": "PT",
         "switch_to_korean": "切換到韓語",
         "switch_to_korean_short": "KO",
@@ -70,6 +82,9 @@
         "switch_to_spanish_short": "ES",
         "switch_to_malay": "切換到馬來語",
         "switch_to_malay_short": "MY"
+=======
+        "switch_to_portuguese_short": "PT"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "dashboard": {
         "hello": "你好, 使用者 👋",
@@ -206,10 +221,14 @@
                 "copy_link": "複製授權連結",
                 "copied": "已複製",
                 "link_label": "授權連結",
+<<<<<<< HEAD
                 "link_click_to_copy": "點選複製",
                 "manual_hint": "瀏覽器沒有自動跳轉？請在此處貼上回調連結或 Authorization Code：",
                 "manual_placeholder": "在此處貼上連結或代碼...",
                 "error_no_flow": "未找到活躍的授權流程，請重新開始 OAuth 授權。"
+=======
+                "link_click_to_copy": "點選複製"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "token": {
                 "label": "Refresh Token",
@@ -292,7 +311,11 @@
             "auto_launch": "開機自動啟動",
             "auto_launch_enabled": "啟用",
             "auto_launch_disabled": "停用",
+<<<<<<< HEAD
             "auto_launch_desc": "系統啟動時自動執行 Topoo Gateway",
+=======
+            "auto_launch_desc": "系統啟動時自動執行 Antigravity Tools",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auto_check_update": "自動檢查更新",
             "auto_check_update_desc": "啟動時自動檢查新版本",
             "auto_check_update_enabled": "已啟用自動檢查更新",
@@ -363,6 +386,7 @@
             "clear_logs_title": "清理紀錄確認",
             "clear_logs_msg": "確定要清理所有紀錄快取檔案嗎？",
             "logs_cleared": "紀錄快取已清理",
+<<<<<<< HEAD
             "antigravity_cache_title": "Antigravity 快取清理",
             "antigravity_cache_desc": "清理 Antigravity 應用程式的快取可以解決登入失敗、版本驗證錯誤、OAuth 授權失敗等問題。",
             "antigravity_cache_warning": "請確保 Antigravity 應用程式已完全關閉後再執行清理操作。",
@@ -371,6 +395,8 @@
             "clear_cache_confirm_msg": "將清理以下快取目錄：",
             "cache_cleared_success": "快取清理完成，釋放 {{size}} MB 空間",
             "cache_not_found": "未找到 Antigravity 快取目錄",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "http_api_title": "HTTP API 服務",
             "http_api_desc": "為外部程式(如 VS Code 外掛)提供本地 HTTP 介面。",
             "http_api_enabled": "啟用 HTTP API",
@@ -430,12 +456,15 @@
         },
         "config": {
             "title": "服務配置",
+<<<<<<< HEAD
             "request": {
                 "user_agent": "User-Agent 覆蓋",
                 "user_agent_tooltip": "自定義發送給上游 API 的 User-Agent 請求頭。留空則使用默認值。",
                 "user_agent_hint": "當前默認值: antigravity/<version> <os>/<arch>",
                 "user_agent_placeholder": "輸入自定義 User-Agent 字串..."
             },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "port": "監聽通訊埠",
             "port_tooltip": "本地 API 代理監聽的通訊埠。需要先停止服務再修改，修改後需重啟生效。",
             "port_hint": "預設 8045，修改通訊埠需重啟服務",
@@ -457,6 +486,7 @@
             "warning_key": "注意：請妥善保管您的 API 金鑰，不要洩露給他人。",
             "api_key_invalid": "API 密鑰格式無效,必須以 sk- 開頭且長度至少 10 個字符",
             "api_key_updated": "API 密鑰已更新",
+<<<<<<< HEAD
             "admin_password": "Web UI 管理後台密碼",
             "admin_password_tooltip": "用於登錄 Web 管理後台的密碼。如果為空，則默認使用 API 密鑰（API Key）。",
             "admin_password_default": "（同 API 密鑰）",
@@ -464,6 +494,8 @@
             "admin_password_hint": "提示：在 Docker/Web 部署場景中，您可以設置一個獨立的登錄密碼，提高 API 密鑰的安全性。",
             "admin_password_short": "密碼太短（最少 4 個字符）",
             "admin_password_updated": "Web UI 登錄密碼已更新",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auth": {
                 "title": "存取授權",
                 "title_tooltip": "控制代理是否需要鑑權，以及哪些路由需要提供 API 金鑰。",
@@ -548,9 +580,13 @@
                 "enable": "啟用上游代理",
                 "url": "代理地址",
                 "url_placeholder": "例如: http://127.0.0.1:7890 或 socks5://127.0.0.1:7890",
+<<<<<<< HEAD
                 "tip": "支援 HTTP、HTTPS 和 SOCKS5 協定。",
                 "validation_error": "啟用上游代理時必須填寫代理地址",
                 "restart_hint": "代理設定已儲存，重新啟動應用程式後生效"
+=======
+                "tip": "支援 HTTP、HTTPS 和 SOCKS5 協定。"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "scheduling": {
                 "title": "帳號輪換與會話排程",
@@ -572,12 +608,16 @@
                 "max_wait_tooltip": "僅在“快取優先”模式下生效：如果帳號限流重置時間小於此值，則原地等待而非切換帳號。",
                 "clear_bindings": "清除會話繫結",
                 "clear_bindings_tooltip": "立即斷開所有會話與帳號的繫結關係，強制下一次請求重新分配帳號。",
+<<<<<<< HEAD
                 "clear_rate_limits": "清除限流記錄",
                 "clear_rate_limits_tooltip": "立即清除所有帳號的本地限流記錄，強制下一次請求嘗試直接呼叫上游。",
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "fixed_account": "固定帳戶模式",
                 "fixed_account_tooltip": "啟用後，所有 API 請求將只使用所選帳戶，而不會在帳戶之間輪換。",
                 "round_robin_set": "輪詢模式已啟用"
             },
+<<<<<<< HEAD
             "circuit_breaker": {
                 "title": "自適應熔斷器",
                 "tooltip": "當帳號因配額耗盡反覆失敗時，自動增加鎖定時間。這可以防止在死帳號上浪費 API 呼叫，同時允許瞬態錯誤快速恢復。",
@@ -587,6 +627,8 @@
                 "invalid_format": "格式無效。請使用逗號分隔的數字 (例如 60, 300)",
                 "clear_records": "清除所有限流記錄"
             },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "experimental": {
                 "title": "實驗性設定 (Experimental)",
                 "title_tooltip": "探索性功能，可能在未來版本中調整或移除。",
@@ -656,9 +698,13 @@
             "regenerate_key_title": "重新生成 API Key",
             "regenerate_key_msg": "確定要重新生成 API Key 嗎？舊的 Key 將立即失效。",
             "clear_bindings_title": "清除會話繫結",
+<<<<<<< HEAD
             "clear_bindings_msg": "確定要清除所有會話與帳號的繫結對映嗎？",
             "clear_rate_limits_title": "清除限流記錄",
             "clear_rate_limits_confirm": "確定要清除所有本地限流記錄嗎？"
+=======
+            "clear_bindings_msg": "確定要清除所有會話與帳號的繫結對映嗎？"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "model": {
             "flash": "極速回應",
@@ -700,6 +746,7 @@
             "opus_thinking": "最強思維"
         },
         "router": {
+<<<<<<< HEAD
             "title": "模型路由中心 (Model Router)",
             "subtitle": "按“規格家族”統一路由 OpenAI/Claude 模型，或新增最高優先順序的“精確對映”。\n注意：Claude 原生直通模型（claude-opus-4-5-thinking 等 3 個）預設直通，需在“專家精確對映”中新增規則才能修改。",
             "subtitle_simple": "透過萬用字元或精確對映自定義模型路由規則",
@@ -710,6 +757,14 @@
             "apply_presets": "應用預設對映",
             "presets_applied": "預設對映已應用",
             "custom_mappings": "自定義對映 (Custom Mappings)",
+=======
+            "title": "模型路由中心",
+            "subtitle": "按“規格家族”統一路由 OpenAI/Claude 模型，或新增最高優先順序的“精確對映”。\n注意：Claude 原生直通模型（claude-opus-4-5-thinking 等 3 個）預設直通，需在“專家精確對映”中新增規則才能修改。",
+            "subtitle_simple": "透過萬用字元或精確對映自定義模型路由規則",
+            "apply_presets": "應用預設對映",
+            "presets_applied": "預設對映已應用",
+            "custom_mappings": "自定義對映",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "original_id": "原始模型 ID",
             "route_to": "路由目標",
             "group_title": "模型家族分組 (Series Groups)",
@@ -750,8 +805,13 @@
             "haiku_tip_action": "一鍵最佳化",
             "reset_confirm": "確定要重置所有模型對映為系統預設嗎？",
             "reset_mapping": "重置對映",
+<<<<<<< HEAD
             "add_mapping": "新增對映 (Add Mapping)",
             "current_list": "當前對映列表 (Custom List)",
+=======
+            "add_mapping": "新增對映",
+            "current_list": "當前對映列表",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "no_custom_mapping": "暫無自定義精確對映",
             "gemini3_only_warning": "⚠️ 僅支援 Gemini 3 系列",
             "default_suffix": "（預設）",
@@ -762,7 +822,11 @@
             "title": "使用示例"
         },
         "multi_protocol": {
+<<<<<<< HEAD
             "title": "多協定支援 (Multi-Protocol Support)",
+=======
+            "title": "多協定支援",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "subtitle": "快速同步 API 地址與金鑰到本地 AI 工具",
             "description": "反代服務支援 OpenAI、Anthropic 和 Gemini 協定，滿足不同工具的整合需求",
             "openai_label": "OpenAI 協定",
@@ -771,7 +835,11 @@
             "anthropic_tools": "Claude Code CLI",
             "gemini_label": "Gemini 協定",
             "gemini_tools": "Google AI SDK, LangChain",
+<<<<<<< HEAD
             "quick_integration": "快速整合 (Quick Integration)",
+=======
+            "quick_integration": "快速整合",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "click_tip": "👆 點擊模型以更新程式碼範例",
             "copy_base": "複製 Base"
         },
@@ -785,7 +853,11 @@
                 "synced": "已指向本項目",
                 "not_synced": "未同步",
                 "detecting": "檢測中...",
+<<<<<<< HEAD
                 "current_base_url": "當前介面地址 (Base URL)"
+=======
+                "current_base_url": "當前介面地址"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "btn_sync": "立即同步配置",
             "btn_view": "檢視當前配置",
@@ -806,7 +878,11 @@
             }
         },
         "supported_models": {
+<<<<<<< HEAD
             "title": "支援模型與整合 (Supported Models & Integration)",
+=======
+            "title": "支援模型與整合",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "model_name": "模型名稱",
             "model_id": "模型 ID",
             "description": "描述",
@@ -875,6 +951,7 @@
         "message": "新版本已準備就緒，包含多項最佳化與改進。當前版本: v{{current}}",
         "action": "立即更新"
     },
+<<<<<<< HEAD
     "login": {
         "title": "安全存取控制",
         "desc": "當前運行在 Web 模式下，請輸入管理密碼或 API Key 以進入後台。",
@@ -884,6 +961,8 @@
         "lookup_hint": "如果您忘記了，請運行 docker logs antigravity-manager 尋找 Current API Key 或 Web UI Password",
         "config_hint": "或執行 grep -E '\"api_key\"|\"admin_password\"' ~/.antigravity_tools/gui_config.json 查看。"
     },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     "token_stats": {
         "title": "Token 消費統計",
         "hourly": "每小時",
@@ -910,6 +989,7 @@
         "total": "合計",
         "percentage": "佔比",
         "no_data": "暫無資料"
+<<<<<<< HEAD
     },
     "security": {
         "title": "安全監控",
@@ -1004,5 +1084,7 @@
             "save_success": "設定已儲存",
             "save_error": "儲存設定失敗"
         }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

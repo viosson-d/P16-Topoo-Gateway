@@ -42,6 +42,7 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
         }
     }
 
+<<<<<<< HEAD
     // [FIX Issue #1355] Gemini Flash thinking budget capping
     // Force cap thinking_budget to 24576 for Flash models to prevent 400 Bad Request
     if final_model_name.to_lowercase().contains("flash") {
@@ -66,6 +67,8 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
         }
     }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // [FIX] Removed forced maxOutputTokens (64000) as it exceeds limits for Gemini 1.5 Flash/Pro standard models (8192).
     // This caused upstream to return empty/invalid responses, leading to 'NoneType' object has no attribute 'strip' in Python clients.
     // relying on upstream defaults or user provided values is safer.
@@ -77,7 +80,11 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
 
     // Use shared grounding/config logic
     let config = crate::proxy::mappers::common_utils::resolve_request_config(original_model, final_model_name, &tools_val, None, None);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // Clean tool declarations (remove forbidden Schema fields like multipleOf, and remove redundant search decls)
     if let Some(tools) = inner_request.get_mut("tools") {
         if let Some(tools_arr) = tools.as_array_mut() {
@@ -95,6 +102,7 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
                         });
 
                         // 2. 清洗剩余 Schema
+<<<<<<< HEAD
                         // [FIX] Gemini CLI 使用 parametersJsonSchema，而标准 Gemini API 使用 parameters
                         // 需要将 parametersJsonSchema 重命名为 parameters
                         for decl in decls_arr {
@@ -109,6 +117,11 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
                                     // 标准 parameters 字段
                                     crate::proxy::common::json_schema::clean_json_schema(params);
                                 }
+=======
+                        for decl in decls_arr {
+                            if let Some(params) = decl.get_mut("parameters") {
+                                crate::proxy::common::json_schema::clean_json_schema(params);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             }
                         }
                     }
@@ -128,9 +141,15 @@ pub fn wrap_request(body: &Value, project_id: &str, mapped_model: &str, session_
     // Inject imageConfig if present (for image generation models)
     if let Some(image_config) = config.image_config {
          if let Some(obj) = inner_request.as_object_mut() {
+<<<<<<< HEAD
              // 1. Filter tools: remove tools for image gen
              obj.remove("tools");
 
+=======
+             // 1. Remove tools (image generation does not support tools)
+             obj.remove("tools");
+             
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
              // 2. Remove systemInstruction (image generation does not support system prompts)
              obj.remove("systemInstruction");
 
@@ -204,7 +223,11 @@ mod test_fixes {
     fn test_wrap_request_with_signature() {
         let session_id = "test-session-sig";
         let signature = "test-signature-must-be-longer-than-fifty-characters-to-be-cached-by-signature-cache-12345"; // > 50 chars
+<<<<<<< HEAD
         crate::proxy::SignatureCache::global().cache_session_signature(session_id, signature.to_string(), 1);
+=======
+        crate::proxy::SignatureCache::global().cache_session_signature(session_id, signature.to_string());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         let body = json!({
             "model": "gemini-pro",
@@ -272,6 +295,7 @@ mod tests {
         
         // 验证 systemInstruction
         let sys = result.get("request").unwrap().get("systemInstruction").unwrap();
+<<<<<<< HEAD
     }
 
     #[test]
@@ -308,6 +332,17 @@ mod tests {
         let result_pro = wrap_request(&body_pro, "test-proj", "gemini-2.0-pro-exp", None);
         let budget_pro = result_pro["request"]["generationConfig"]["thinkingConfig"]["thinkingBudget"].as_u64().unwrap();
         assert_eq!(budget_pro, 32000);
+=======
+        
+        // 1. 验证 role: "user"
+        assert_eq!(sys.get("role").unwrap(), "user");
+        
+        // 2. 验证 Antigravity 身份注入
+        let parts = sys.get("parts").unwrap().as_array().unwrap();
+        assert!(!parts.is_empty());
+        let first_text = parts[0].get("text").unwrap().as_str().unwrap();
+        assert!(first_text.contains("You are Antigravity"));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     #[test]
@@ -346,6 +381,7 @@ mod tests {
         // Should NOT inject duplicate, so only 1 part remains
         assert_eq!(parts.len(), 1);
     }
+<<<<<<< HEAD
 
     #[test]
     fn test_image_generation_with_reference_images() {
@@ -376,4 +412,6 @@ mod tests {
         // Verify all 15 parts (1 text + 14 images) are preserved
         assert_eq!(result_parts.len(), 15);
     }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

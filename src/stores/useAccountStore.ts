@@ -30,6 +30,10 @@ interface AccountState {
     toggleProxyStatus: (accountId: string, enable: boolean, reason?: string) => Promise<void>;
     warmUpAccounts: () => Promise<string>;
     warmUpAccount: (accountId: string) => Promise<string>;
+<<<<<<< HEAD
+=======
+    resetForbiddenAccounts: () => Promise<accountService.ResetStats>;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 export const useAccountStore = create<AccountState>((set, get) => ({
@@ -103,12 +107,28 @@ export const useAccountStore = create<AccountState>((set, get) => ({
     },
 
     switchAccount: async (accountId: string) => {
+<<<<<<< HEAD
         set({ loading: true, error: null });
         try {
             await accountService.switchAccount(accountId);
             await get().fetchCurrentAccount();
             set({ loading: false });
         } catch (error) {
+=======
+        console.log(`🔄 [Store] Requesting account switch to: ${accountId}`);
+        set({ loading: true, error: null });
+
+        try {
+            await accountService.switchAccount(accountId);
+            console.log(`✅ [Store] Backend switch completed for: ${accountId}`);
+
+            await get().fetchCurrentAccount();
+            console.log(`✅ [Store] Current account refreshed`);
+
+            set({ loading: false });
+        } catch (error) {
+            console.error(`❌ [Store] Switch failed:`, error);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             set({ error: String(error), loading: false });
             throw error;
         }
@@ -130,7 +150,14 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         set({ loading: true, error: null });
         try {
             const stats = await accountService.refreshAllQuotas();
+<<<<<<< HEAD
             await get().fetchAccounts();
+=======
+            await Promise.all([
+                get().fetchAccounts(),
+                get().fetchCurrentAccount()
+            ]);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             set({ loading: false });
             return stats;
         } catch (error) {
@@ -263,6 +290,10 @@ export const useAccountStore = create<AccountState>((set, get) => ({
         try {
             await accountService.toggleProxyStatus(accountId, enable, reason);
             await get().fetchAccounts();
+<<<<<<< HEAD
+=======
+            await get().fetchCurrentAccount();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         } catch (error) {
             console.error('[AccountStore] Toggle proxy status failed:', error);
             throw error;
@@ -294,4 +325,20 @@ export const useAccountStore = create<AccountState>((set, get) => ({
             throw error;
         }
     },
+<<<<<<< HEAD
+=======
+
+    resetForbiddenAccounts: async () => {
+        set({ loading: true, error: null });
+        try {
+            const stats = await accountService.resetForbiddenAccounts();
+            await get().fetchAccounts();
+            set({ loading: false });
+            return stats;
+        } catch (error) {
+            set({ error: String(error), loading: false });
+            throw error;
+        }
+    },
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }));

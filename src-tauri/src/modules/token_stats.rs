@@ -55,7 +55,11 @@ pub struct AccountTrendPoint {
     pub account_data: std::collections::HashMap<String, u64>,
 }
 
+<<<<<<< HEAD
 pub(crate) fn get_db_path() -> Result<PathBuf, String> {
+=======
+fn get_db_path() -> Result<PathBuf, String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let data_dir = crate::modules::account::get_data_dir()?;
     Ok(data_dir.join("token_stats.db"))
 }

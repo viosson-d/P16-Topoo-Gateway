@@ -1,0 +1,85 @@
+{
+  "language": "en",
+  "theme": "system",
+  "auto_refresh": false,
+  "refresh_interval": 15,
+  "auto_sync": false,
+  "sync_interval": 5,
+  "default_export_path": null,
+  "proxy": {
+    "enabled": false,
+    "allow_lan_access": true,
+    "auth_mode": "off",
+    "port": 8046,
+    "api_key": "sk-17afbacc59024899a451574dfb080ea4",
+    "auto_start": true,
+    "custom_mapping": {},
+    "request_timeout": 120,
+    "enable_logging": true,
+    "upstream_proxy": {
+      "enabled": false,
+      "url": ""
+    },
+    "zai": {
+      "enabled": false,
+      "base_url": "https://api.z.ai/api/anthropic",
+      "api_key": "",
+      "dispatch_mode": "off",
+      "model_mapping": {},
+      "models": {
+        "opus": "glm-4.7",
+        "sonnet": "glm-4.7",
+        "haiku": "glm-4.5-air"
+      },
+      "mcp": {
+        "enabled": false,
+        "web_search_enabled": false,
+        "web_reader_enabled": false,
+        "vision_enabled": false
+      }
+    },
+    "scheduling": {
+      "mode": "Balance",
+      "max_wait_seconds": 60
+    },
+    "experimental": {
+      "enable_signature_cache": true,
+      "enable_tool_loop_recovery": true,
+      "enable_cross_model_checks": true,
+      "enable_usage_scaling": true,
+      "context_compression_threshold_l1": 0.4,
+      "context_compression_threshold_l2": 0.55,
+      "context_compression_threshold_l3": 0.7
+    }
+  },
+  "antigravity_executable": null,
+  "antigravity_args": null,
+  "auto_launch": true,
+  "scheduled_warmup": {
+    "enabled": false,
+    "monitored_models": [
+      "gemini-3-flash",
+      "claude-sonnet-4-5",
+      "gemini-3-pro-high",
+      "gemini-3-pro-image"
+    ]
+  },
+  "quota_protection": {
+    "enabled": false,
+    "threshold_percentage": 10,
+    "monitored_models": [
+      "claude-sonnet-4-5",
+      "gemini-3-pro-high",
+      "gemini-3-flash",
+      "gemini-3-pro-image"
+    ]
+  },
+  "pinned_quota_models": {
+    "models": [
+      "gemini-3-pro-high",
+      "gemini-3-flash",
+      "gemini-3-pro-image",
+      "claude-sonnet-4-5-thinking"
+    ]
+  }
+}

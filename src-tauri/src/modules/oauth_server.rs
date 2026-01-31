@@ -1,6 +1,10 @@
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
+<<<<<<< HEAD
 use tokio::sync::mpsc;
+=======
+use tokio::sync::oneshot;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use tokio::sync::watch;
 use std::sync::{Mutex, OnceLock};
 use tauri::Url;
@@ -8,12 +12,18 @@ use crate::modules::oauth;
 
 struct OAuthFlowState {
     auth_url: String,
+<<<<<<< HEAD
     #[allow(dead_code)]
     redirect_uri: String,
     state: String,
     cancel_tx: watch::Sender<bool>,
     code_tx: mpsc::Sender<Result<String, String>>,
     code_rx: Option<mpsc::Receiver<Result<String, String>>>,
+=======
+    redirect_uri: String,
+    cancel_tx: watch::Sender<bool>,
+    code_rx: Option<oneshot::Receiver<Result<String, String>>>,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 static OAUTH_FLOW_STATE: OnceLock<Mutex<Option<OAuthFlowState>>> = OnceLock::new();
@@ -43,6 +53,7 @@ fn oauth_fail_html() -> &'static str {
     </html>"
 }
 
+<<<<<<< HEAD
 async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Result<String, String> {
 
     // Return URL if flow already exists and is still "fresh" (receiver hasn't been taken)
@@ -56,6 +67,15 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                 let _ = s.cancel_tx.send(true);
                 *state = None;
             }
+=======
+async fn ensure_oauth_flow_prepared(app_handle: &tauri::AppHandle) -> Result<String, String> {
+    use tauri::Emitter;
+
+    // Return URL if flow already exists
+    if let Ok(state) = get_oauth_flow_state().lock() {
+        if let Some(s) = state.as_ref() {
+            return Ok(s.auth_url.clone());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
@@ -120,6 +140,7 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
         format!("http://[::1]:{}/oauth-callback", port)
     };
 
+<<<<<<< HEAD
     let state_str = uuid::Uuid::new_v4().to_string();
     let auth_url = oauth::get_auth_url(&redirect_uri, &state_str);
 
@@ -127,6 +148,15 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
     let (cancel_tx, cancel_rx) = watch::channel(false);
     // Use mpsc instead of oneshot to allow multiple senders (listener OR manual input)
     let (code_tx, code_rx) = mpsc::channel::<Result<String, String>>(1);
+=======
+    let auth_url = oauth::get_auth_url(&redirect_uri);
+
+    // Cancellation signal (supports multiple consumers)
+    let (cancel_tx, cancel_rx) = watch::channel(false);
+    let (code_tx, code_rx) = oneshot::channel::<Result<String, String>>();
+
+    let code_tx = std::sync::Arc::new(tokio::sync::Mutex::new(Some(code_tx)));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // Start listeners immediately: even if the user authorizes before clicking "Start OAuth",
     // the browser can still hit our callback and finish the flow.
@@ -142,13 +172,21 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                 _ = rx.changed() => Err("OAuth cancelled".to_string()),
             } {
                 // Reuse the existing parsing/response code by constructing a temporary listener task
+<<<<<<< HEAD
                 // that sends into the shared mpsc channel.
+=======
+                // that sends into the shared oneshot.
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 let mut buffer = [0u8; 4096];
                 let bytes_read = stream.read(&mut buffer).await.unwrap_or(0);
                 let request = String::from_utf8_lossy(&buffer[..bytes_read]);
                 
                 // [FIX #931/850/778] More robust parsing and detailed logging
+<<<<<<< HEAD
                 let query_params = request
+=======
+                let code = request
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     .lines()
                     .next()
                     .and_then(|line| {
@@ -159,6 +197,7 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                         // Use a dummy base for parsing; redirect_uri is already set to localhost
                         Url::parse(&format!("http://localhost{}", path)).ok()
                     })
+<<<<<<< HEAD
                     .map(|url| {
                         let mut code = None;
                         let mut state = None;
@@ -174,6 +213,14 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                     None => (None, None),
                 };
 
+=======
+                    .and_then(|url| {
+                        url.query_pairs()
+                            .find(|(k, _)| k == "code")
+                            .map(|(_, v)| v.into_owned())
+                    });
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if code.is_none() && bytes_read > 0 {
                     crate::modules::logger::log_error(&format!(
                         "OAuth callback failed to parse code. Raw request (first 512 bytes): {}",
@@ -181,6 +228,7 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                     ));
                 }
 
+<<<<<<< HEAD
                 // Verify state
                 let state_valid = {
                     if let Ok(lock) = get_oauth_flow_state().lock() {
@@ -204,16 +252,31 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                         (Err("OAuth state mismatch".to_string()), oauth_fail_html())
                     },
                     (None, _) => (Err("Failed to get Authorization Code in callback".to_string()), oauth_fail_html()),
+=======
+                let (result, response_html) = match code {
+                    Some(code) => {
+                        crate::modules::logger::log_info("Successfully captured OAuth code from IPv4 listener");
+                        (Ok(code), oauth_success_html())
+                    },
+                    None => (Err("Failed to get Authorization Code in callback".to_string()), oauth_fail_html()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 };
                 
                 let _ = stream.write_all(response_html.as_bytes()).await;
                 let _ = stream.flush().await;
 
+<<<<<<< HEAD
                 if let Some(h) = app_handle {
                     use tauri::Emitter;
                     let _ = h.emit("oauth-callback-received", ());
                 }
                 let _ = tx.send(result).await;
+=======
+                if let Some(sender) = tx.lock().await.take() {
+                    let _ = app_handle.emit("oauth-callback-received", ());
+                    let _ = sender.send(result);
+                }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         });
     }
@@ -231,7 +294,11 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                 let bytes_read = stream.read(&mut buffer).await.unwrap_or(0);
                 let request = String::from_utf8_lossy(&buffer[..bytes_read]);
                 
+<<<<<<< HEAD
                 let query_params = request
+=======
+                let code = request
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     .lines()
                     .next()
                     .and_then(|line| {
@@ -241,6 +308,7 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                     .and_then(|path| {
                         Url::parse(&format!("http://localhost{}", path)).ok()
                     })
+<<<<<<< HEAD
                     .map(|url| {
                         let mut code = None;
                         let mut state = None;
@@ -256,6 +324,14 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                     None => (None, None),
                 };
 
+=======
+                    .and_then(|url| {
+                        url.query_pairs()
+                            .find(|(k, _)| k == "code")
+                            .map(|(_, v)| v.into_owned())
+                    });
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if code.is_none() && bytes_read > 0 {
                     crate::modules::logger::log_error(&format!(
                         "OAuth callback failed to parse code (IPv6). Raw request: {}",
@@ -263,6 +339,7 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                     ));
                 }
 
+<<<<<<< HEAD
                 // Verify state
                 let state_valid = {
                     if let Ok(lock) = get_oauth_flow_state().lock() {
@@ -286,16 +363,31 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
                         (Err("OAuth state mismatch".to_string()), oauth_fail_html())
                     },
                     (None, _) => (Err("Failed to get Authorization Code in callback".to_string()), oauth_fail_html()),
+=======
+                let (result, response_html) = match code {
+                    Some(code) => {
+                        crate::modules::logger::log_info("Successfully captured OAuth code from IPv6 listener");
+                        (Ok(code), oauth_success_html())
+                    },
+                    None => (Err("Failed to get Authorization Code in callback".to_string()), oauth_fail_html()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 };
                 
                 let _ = stream.write_all(response_html.as_bytes()).await;
                 let _ = stream.flush().await;
 
+<<<<<<< HEAD
                 if let Some(h) = app_handle {
                     use tauri::Emitter;
                     let _ = h.emit("oauth-callback-received", ());
                 }
                 let _ = tx.send(result).await;
+=======
+                if let Some(sender) = tx.lock().await.take() {
+                    let _ = app_handle.emit("oauth-callback-received", ());
+                    let _ = sender.send(result);
+                }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         });
     }
@@ -305,25 +397,38 @@ async fn ensure_oauth_flow_prepared(app_handle: Option<tauri::AppHandle>) -> Res
         *state = Some(OAuthFlowState {
             auth_url: auth_url.clone(),
             redirect_uri,
+<<<<<<< HEAD
             state: state_str,
             cancel_tx,
             code_tx,
+=======
+            cancel_tx,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             code_rx: Some(code_rx),
         });
     }
 
     // Send event to frontend (for display/copying link)
+<<<<<<< HEAD
     if let Some(h) = app_handle {
         use tauri::Emitter;
         let _ = h.emit("oauth-url-generated", &auth_url);
     }
+=======
+    let _ = app_handle.emit("oauth-url-generated", &auth_url);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     Ok(auth_url)
 }
 
 /// Pre-generate OAuth URL (does not open browser, does not block waiting for callback)
+<<<<<<< HEAD
 pub async fn prepare_oauth_url(app_handle: Option<tauri::AppHandle>) -> Result<String, String> {
     ensure_oauth_flow_prepared(app_handle).await
+=======
+pub async fn prepare_oauth_url(app_handle: tauri::AppHandle) -> Result<String, String> {
+    ensure_oauth_flow_prepared(&app_handle).await
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Cancel current OAuth flow
@@ -337,6 +442,7 @@ pub fn cancel_oauth_flow() {
 }
 
 /// Start OAuth flow and wait for callback, then exchange token
+<<<<<<< HEAD
 pub async fn start_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result<oauth::TokenResponse, String> {
     // Ensure URL + listener are ready (this way if the user authorizes first, it won't get stuck)
     let auth_url = ensure_oauth_flow_prepared(app_handle.clone()).await?;
@@ -351,6 +457,21 @@ pub async fn start_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result<oa
 
     // Take code_rx to wait for it
     let (mut code_rx, redirect_uri) = {
+=======
+pub async fn start_oauth_flow(app_handle: tauri::AppHandle) -> Result<oauth::TokenResponse, String> {
+    // Ensure URL + listener are ready (this way if the user authorizes first, it won't get stuck)
+    let auth_url = ensure_oauth_flow_prepared(&app_handle).await?;
+
+    // Open default browser
+    use tauri_plugin_opener::OpenerExt;
+    app_handle
+        .opener()
+        .open_url(&auth_url, None::<String>)
+        .map_err(|e| format!("failed_to_open_browser: {}", e))?;
+
+    // Take code_rx to wait for it
+    let (code_rx, redirect_uri) = {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let mut lock = get_oauth_flow_state()
             .lock()
             .map_err(|_| "OAuth state lock corrupted".to_string())?;
@@ -365,11 +486,18 @@ pub async fn start_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result<oa
     };
 
     // Wait for code (if user has already authorized, this returns immediately)
+<<<<<<< HEAD
     // For mpsc, we use recv()
     let code = match code_rx.recv().await {
         Some(Ok(code)) => code,
         Some(Err(e)) => return Err(e),
         None => return Err("OAuth flow channel closed unexpectedly".to_string()),
+=======
+    let code = match code_rx.await {
+        Ok(Ok(code)) => code,
+        Ok(Err(e)) => return Err(e),
+        Err(_) => return Err("Failed to wait for OAuth callback".to_string()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     };
 
     // Clean up flow state (release cancel_tx, etc.)
@@ -383,12 +511,21 @@ pub async fn start_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result<oa
 /// Завершить OAuth flow без открытия браузера.
 /// Предполагается, что пользователь открыл ссылку вручную (или ранее была открыта),
 /// а мы только ждём callback и обмениваем code на token.
+<<<<<<< HEAD
 pub async fn complete_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result<oauth::TokenResponse, String> {
     // Ensure URL + listeners exist
     let _ = ensure_oauth_flow_prepared(app_handle).await?;
 
     // Take receiver to wait for code
     let (mut code_rx, redirect_uri) = {
+=======
+pub async fn complete_oauth_flow(app_handle: tauri::AppHandle) -> Result<oauth::TokenResponse, String> {
+    // Ensure URL + listeners exist
+    let _ = ensure_oauth_flow_prepared(&app_handle).await?;
+
+    // Take receiver to wait for code
+    let (code_rx, redirect_uri) = {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let mut lock = get_oauth_flow_state()
             .lock()
             .map_err(|_| "OAuth state lock corrupted".to_string())?;
@@ -402,10 +539,17 @@ pub async fn complete_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result
         (rx, state.redirect_uri.clone())
     };
 
+<<<<<<< HEAD
     let code = match code_rx.recv().await {
         Some(Ok(code)) => code,
         Some(Err(e)) => return Err(e),
         None => return Err("OAuth flow channel closed unexpectedly".to_string()),
+=======
+    let code = match code_rx.await {
+        Ok(Ok(code)) => code,
+        Ok(Err(e)) => return Err(e),
+        Err(_) => return Err("Failed to wait for OAuth callback".to_string()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     };
 
     if let Ok(mut lock) = get_oauth_flow_state().lock() {
@@ -414,6 +558,7 @@ pub async fn complete_oauth_flow(app_handle: Option<tauri::AppHandle>) -> Result
 
     oauth::exchange_code(&code, &redirect_uri).await
 }
+<<<<<<< HEAD
 
 /// Manually submit an OAuth code to complete the flow.
 /// This is used when the user manually copies the code/URL from the browser
@@ -487,3 +632,5 @@ pub fn prepare_oauth_flow_manually(redirect_uri: String, state_str: String) -> R
 
     Ok((auth_url, code_rx))
 }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

@@ -35,6 +35,7 @@ pub struct OpenAIRequest {
     pub size: Option<String>,
     #[serde(default)]
     pub quality: Option<String>,
+<<<<<<< HEAD
     #[serde(default, rename = "personGeneration")]
     pub person_generation: Option<String>,
     // [NEW] Thinking/Extended Thinking 支持 (兼容 Anthropic/Claude 协议)
@@ -49,6 +50,8 @@ pub struct ThinkingConfig {
     pub thinking_type: Option<String>, // "enabled" or "disabled"
     #[serde(rename = "budget_tokens")]
     pub budget_tokens: Option<u32>,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,13 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+<<<<<<< HEAD
 import { Plus, Database, Globe, FileClock, Loader2, CheckCircle2, XCircle, Copy, Check, Info, Link2 } from 'lucide-react';
+=======
+import { Plus, Database, FileClock, Loader2, CheckCircle2, XCircle, Copy, Check, X } from 'lucide-react';
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { useAccountStore } from '../../stores/useAccountStore';
 import { useTranslation } from 'react-i18next';
 import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
 import { request as invoke } from '../../utils/request';
+<<<<<<< HEAD
 import { isTauri } from '../../utils/env';
 import { copyToClipboard } from '../../utils/clipboard';
+=======
+import { Button } from '../ui/button';
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 interface AddAccountDialogProps {
     onAdd: (email: string, refreshToken: string) => Promise<void>;
@@ -17,6 +25,7 @@ type Status = 'idle' | 'loading' | 'success' | 'error';
 
 function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
     const { t } = useTranslation();
+<<<<<<< HEAD
     const fetchAccounts = useAccountStore(state => state.fetchAccounts);
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'oauth' | 'token' | 'import'>(isTauri() ? 'oauth' : 'token');
@@ -24,6 +33,13 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
     const [oauthUrl, setOauthUrl] = useState('');
     const [oauthUrlCopied, setOauthUrlCopied] = useState(false);
     const [manualCode, setManualCode] = useState('');
+=======
+    const [isOpen, setIsOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'oauth' | 'token' | 'import'>('oauth');
+    const [refreshToken, setRefreshToken] = useState('');
+    const [oauthUrl, setOauthUrl] = useState('');
+    const [oauthUrlCopied, setOauthUrlCopied] = useState(false);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // UI State
     const [status, setStatus] = useState<Status>('idle');
@@ -52,7 +68,10 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
 
     // Listen for OAuth URL
     useEffect(() => {
+<<<<<<< HEAD
         if (!isTauri()) return;
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let unlisten: (() => void) | undefined;
 
         const setupListener = async () => {
@@ -71,7 +90,10 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
 
     // Listen for OAuth callback completion (user may open the URL manually without clicking Start)
     useEffect(() => {
+<<<<<<< HEAD
         if (!isTauri()) return;
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let unlisten: (() => void) | undefined;
 
         const setupListener = async () => {
@@ -98,7 +120,11 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                     let errorMsg = String(error);
                     if (errorMsg.includes('Refresh Token') || errorMsg.includes('refresh_token')) {
                         setMessage(errorMsg);
+<<<<<<< HEAD
                     } else if (errorMsg.includes('Tauri') || errorMsg.toLowerCase().includes('environment') || errorMsg.includes('环境')) {
+=======
+                    } else if (errorMsg.includes('Tauri') || errorMsg.toLowerCase().includes('environment')) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         setMessage(t('common.environment_error', { error: errorMsg }));
                     } else {
                         setMessage(`${t('accounts.add.tabs.oauth')} ${t('common.error')}: ${errorMsg}`);
@@ -120,10 +146,17 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
         if (activeTab !== 'oauth') return;
         if (oauthUrl) return;
 
+<<<<<<< HEAD
         invoke<any>('prepare_oauth_url')
             .then((res) => {
                 const url = typeof res === 'string' ? res : res?.url;
                 if (url && url.length > 0) setOauthUrl(url);
+=======
+        invoke<string>('prepare_oauth_url')
+            .then((url) => {
+                // Set directly (also emitted via event), to avoid any race if event is missed.
+                if (typeof url === 'string' && url.length > 0) setOauthUrl(url);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             })
             .catch((e) => {
                 console.error('Failed to prepare OAuth URL:', e);
@@ -178,7 +211,11 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
             // 如果是 refresh_token 缺失错误,显示完整信息(包含解决方案)
             if (errorMsg.includes('Refresh Token') || errorMsg.includes('refresh_token')) {
                 setMessage(errorMsg);
+<<<<<<< HEAD
             } else if (errorMsg.includes('Tauri') || errorMsg.toLowerCase().includes('environment') || errorMsg.includes('环境')) {
+=======
+            } else if (errorMsg.includes('Tauri') || errorMsg.toLowerCase().includes('environment')) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 // 环境错误
                 setMessage(t('common.environment_error', { error: errorMsg }));
             } else {
@@ -273,6 +310,7 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
         }
     };
 
+<<<<<<< HEAD
     const handleOAuthWeb = async () => {
         try {
             setStatus('loading');
@@ -343,6 +381,9 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
             handleOAuthWeb();
             return;
         }
+=======
+    const handleOAuth = () => {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // Default flow: opens the default browser and completes automatically.
         // (If user opened the URL manually, completion is also triggered by oauth-callback-received.)
         handleAction(t('accounts.add.tabs.oauth'), startOAuthLogin, { clearOauthUrl: false });
@@ -355,6 +396,7 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
 
     const handleCopyUrl = async () => {
         if (oauthUrl) {
+<<<<<<< HEAD
             const success = await copyToClipboard(oauthUrl);
             if (success) {
                 setOauthUrlCopied(true);
@@ -394,6 +436,14 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
             } else {
                 setMessage(`${t('common.error')}: ${errStr}`);
                 setStatus('error');
+=======
+            try {
+                await navigator.clipboard.writeText(oauthUrl);
+                setOauthUrlCopied(true);
+                window.setTimeout(() => setOauthUrlCopied(false), 1500);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }
     };
@@ -408,10 +458,13 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
 
     const handleImportCustomDb = async () => {
         try {
+<<<<<<< HEAD
             if (!isTauri()) {
                 alert(t('common.tauri_api_not_loaded') || 'Storage import only works in desktop app.');
                 return;
             }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             const selected = await open({
                 multiple: false,
                 filters: [{
@@ -457,16 +510,29 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
 
     return (
         <>
+<<<<<<< HEAD
             <button
                 className="px-4 py-2 bg-white dark:bg-base-100 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-base-200 transition-colors flex items-center gap-2 shadow-sm border border-gray-200/50 dark:border-base-300 relative z-[100]"
+=======
+            <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 h-8 text-xs font-medium"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 onClick={() => {
                     console.log('AddAccountDialog button clicked');
                     setIsOpen(true);
                 }}
             >
+<<<<<<< HEAD
                 <Plus className="w-4 h-4" />
                 {t('accounts.add_account')}
             </button>
+=======
+                <Plus className="w-3.5 h-3.5" />
+                {t('accounts.add_account')}
+            </Button>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             {isOpen && createPortal(
                 <div
@@ -474,11 +540,16 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                     style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
                 >
                     {/* Draggable Top Region */}
+<<<<<<< HEAD
                     <div data-tauri-drag-region className="fixed top-0 left-0 right-0 h-8 z-[1]" />
+=======
+                    <div className="fixed top-0 left-0 right-0 h-8 z-[1]" />
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
                     {/* Click outside to close */}
                     <div className="absolute inset-0 z-[0]" onClick={() => setIsOpen(false)} />
 
+<<<<<<< HEAD
                     <div className="bg-white dark:bg-base-100 text-gray-900 dark:text-base-content rounded-2xl shadow-2xl w-full max-w-lg p-6 relative z-[10] m-4 max-h-[90vh] overflow-y-auto">
                         <h3 className="font-bold text-lg mb-4">{t('accounts.add.title')}</h3>
 
@@ -543,10 +614,59 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                                     <div className="space-y-3">
                                         <button
                                             className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+=======
+                    <div className="bg-background text-foreground rounded-lg shadow-lg border w-full max-w-[480px] p-0 relative z-[10] m-4 max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-4 py-3 border-b bg-muted/20">
+                            <h3 className="font-medium text-sm">{t('accounts.add.title')}</h3>
+                            <button onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-foreground">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* Tabs (Settings Style) */}
+                        <div className="flex items-center border-b px-2 gap-1 bg-muted/10">
+                            {[
+                                { id: 'oauth', label: t('accounts.add.tabs.oauth') },
+                                { id: 'token', label: t('accounts.add.tabs.token') },
+                                { id: 'import', label: t('accounts.add.tabs.import') },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    className={`py-2 px-3 text-[12px] font-medium border-b-2 transition-all ${activeTab === tab.id
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    onClick={() => setActiveTab(tab.id as any)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="p-4 overflow-y-auto">
+                            {/* 状态提示区 */}
+                            <StatusAlert />
+
+                            {/* OAuth 授权 */}
+                            {activeTab === 'oauth' && (
+                                <div className="space-y-4">
+                                    <div className="text-center space-y-2 py-4">
+                                        <h4 className="font-medium text-sm">{t('accounts.add.oauth.recommend')}</h4>
+                                        <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                                            {t('accounts.add.oauth.desc')}
+                                        </p>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Button
+                                            className="w-full h-8 text-xs font-medium"
+                                            size="sm"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                             onClick={handleOAuth}
                                             disabled={status === 'loading' || status === 'success'}
                                         >
                                             {status === 'loading' ? t('accounts.add.oauth.btn_waiting') : t('accounts.add.oauth.btn_start')}
+<<<<<<< HEAD
                                         </button>
 
                                         {oauthUrl && (
@@ -610,12 +730,45 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                                                 </button>
                                             </div>
                                         </div>
+=======
+                                        </Button>
+
+                                        {oauthUrl && (
+                                            <div className="space-y-2 pt-2">
+                                                <div className="text-[10px] text-muted-foreground font-medium">
+                                                    Manual Link
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 bg-muted p-2 rounded text-[10px] font-mono truncate text-muted-foreground">
+                                                        {oauthUrl}
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="h-8 w-8 shrink-0"
+                                                        onClick={handleCopyUrl}
+                                                    >
+                                                        {oauthUrlCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
+                                                    </Button>
+                                                </div>
+                                                <Button
+                                                    variant="secondary"
+                                                    className="w-full text-xs h-8"
+                                                    onClick={handleCompleteOAuth}
+                                                    disabled={status === 'loading' || status === 'success'}
+                                                >
+                                                    {t('accounts.add.oauth.btn_finish')}
+                                                </Button>
+                                            </div>
+                                        )}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     </div>
                                 </div>
                             )}
 
                             {/* Refresh Token */}
                             {activeTab === 'token' && (
+<<<<<<< HEAD
                                 <div className="space-y-4 py-2">
                                     <div className="bg-gray-50 dark:bg-base-200 p-4 rounded-lg border border-gray-200 dark:border-base-300">
                                         <div className="flex justify-between items-center mb-2">
@@ -623,18 +776,48 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                                         </div>
                                         <textarea
                                             className="textarea textarea-bordered w-full h-32 font-mono text-xs leading-relaxed focus:outline-none focus:border-blue-500 transition-colors bg-white dark:bg-base-100 text-gray-900 dark:text-base-content border-gray-300 dark:border-base-300 placeholder:text-gray-400"
+=======
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <span className="text-[12px] font-medium">{t('accounts.add.token.label')}</span>
+                                        <textarea
+                                            className="w-full p-2 text-xs font-mono bg-muted/50 rounded-md border min-h-[120px] focus:outline-none focus:ring-1 focus:ring-primary/50"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                             placeholder={t('accounts.add.token.placeholder')}
                                             value={refreshToken}
                                             onChange={(e) => setRefreshToken(e.target.value)}
                                             disabled={status === 'loading' || status === 'success'}
                                         />
+<<<<<<< HEAD
                                         <p className="text-[10px] text-gray-400 mt-2">
                                             {t('accounts.add.token.hint')}
                                         </p>
+=======
+                                    </div>
+                                    <div className="flex justify-end gap-2 pt-2">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setIsOpen(false)}
+                                            className="text-xs font-medium"
+                                        >
+                                            {t('accounts.add.btn_cancel')}
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            onClick={handleSubmit}
+                                            disabled={status === 'loading' || status === 'success'}
+                                            className="text-xs font-medium"
+                                        >
+                                            {status === 'loading' && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+                                            {t('accounts.add.btn_confirm')}
+                                        </Button>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     </div>
                                 </div>
                             )}
 
+<<<<<<< HEAD
                             {/* 从数据库导入 */}
                             {activeTab === 'import' && (
                                 <div className="space-y-6 py-2">
@@ -682,10 +865,36 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                                             <FileClock className="w-4 h-4" />
                                             {t('accounts.add.import.btn_v1')}
                                         </button>
+=======
+                            {/* Import */}
+                            {activeTab === 'import' && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <h4 className="text-[12px] font-medium text-muted-foreground">{t('accounts.add.import.scheme_a')}</h4>
+                                        <div className="grid gap-2">
+                                            <Button variant="outline" size="sm" className="justify-start h-8 text-xs" onClick={handleImportDb}>
+                                                <Database className="w-3 h-3 mr-2 text-muted-foreground" />
+                                                {t('accounts.add.import.btn_db')}
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="justify-start h-8 text-xs" onClick={handleImportCustomDb}>
+                                                <Database className="w-3 h-3 mr-2 text-muted-foreground" />
+                                                {t('accounts.add.import.btn_custom_db') || 'Custom DB'}
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <h4 className="text-[12px] font-medium text-muted-foreground">{t('accounts.add.import.scheme_b')}</h4>
+                                        <Button variant="outline" size="sm" className="w-full justify-start h-8 text-xs" onClick={handleImportV1}>
+                                            <FileClock className="w-3 h-3 mr-2 text-muted-foreground" />
+                                            {t('accounts.add.import.btn_v1')}
+                                        </Button>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     </div>
                                 </div>
                             )}
                         </div>
+<<<<<<< HEAD
 
                         <div className="flex gap-3 w-full mt-6">
                             <button
@@ -716,6 +925,12 @@ function AddAccountDialog({ onAdd }: AddAccountDialogProps) {
                 document.body
             )
             }
+=======
+                    </div>
+                </div>,
+                document.body
+            )}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         </>
     );
 }

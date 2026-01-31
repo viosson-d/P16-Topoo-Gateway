@@ -188,6 +188,7 @@ pub fn filter_invalid_thinking_blocks_with_family(
             let original_len = blocks.len();
             blocks.retain(|block| {
                 if let ContentBlock::Thinking { signature, .. } = block {
+<<<<<<< HEAD
                     // 1. Basic length check - allow empty signatures to pass through for compatibility
                     let sig = match signature {
                         Some(s) if s.len() >= MIN_SIGNATURE_LENGTH || s.is_empty() => s,
@@ -195,6 +196,14 @@ pub fn filter_invalid_thinking_blocks_with_family(
                         _ => {
                             stripped_count += 1;
                             return false;
+=======
+                    // 1. Basic length check
+                    let sig = match signature {
+                        Some(s) if s.len() >= MIN_SIGNATURE_LENGTH => s,
+                        _ => {
+                            stripped_count += 1;
+                            return false; 
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         }
                     };
                     
@@ -206,6 +215,7 @@ pub fn filter_invalid_thinking_blocks_with_family(
                                 stripped_count += 1;
                                 return false;
                             }
+<<<<<<< HEAD
                         } else {
                             // [CRITICAL] Signature family not found in cache. 
                             // This happens after a server restart when memory is cleared.
@@ -221,6 +231,9 @@ pub fn filter_invalid_thinking_blocks_with_family(
                         info!("[Thinking-Sanitizer] Dropping unverified signature (no target family)");
                         stripped_count += 1;
                         return false;
+=======
+                        }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                 }
                 true

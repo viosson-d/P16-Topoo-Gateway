@@ -15,8 +15,14 @@ impl tracing_subscriber::fmt::time::FormatTime for LocalTimer {
 }
 
 pub fn get_log_dir() -> Result<PathBuf, String> {
+<<<<<<< HEAD
     let data_dir = get_data_dir()?;
     let log_dir = data_dir.join("logs");
+=======
+    // Use the application data directory for logs
+    // This will use the same fallback logic as account.rs (project root app_data if needed)
+    let log_dir = get_data_dir()?.join("logs");
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     if !log_dir.exists() {
         fs::create_dir_all(&log_dir).map_err(|e| format!("Failed to create log directory: {}", e))?;
@@ -25,6 +31,10 @@ pub fn get_log_dir() -> Result<PathBuf, String> {
     Ok(log_dir)
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// Initialize the log system
 pub fn init_logger() {
     // Capture log macro logs
@@ -81,7 +91,11 @@ pub fn init_logger() {
     }
 }
 
+<<<<<<< HEAD
 /// Cleanup log files older than specified days OR if total size exceeds limit
+=======
+/// Cleanup log files older than specified days
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 pub fn cleanup_old_logs(days_to_keep: u64) -> Result<(), String> {
     use std::time::{SystemTime, UNIX_EPOCH};
     
@@ -89,10 +103,13 @@ pub fn cleanup_old_logs(days_to_keep: u64) -> Result<(), String> {
     if !log_dir.exists() {
         return Ok(());
     }
+<<<<<<< HEAD
 
     // Constants for size-based cleanup
     const MAX_TOTAL_SIZE_BYTES: u64 = 1024 * 1024 * 1024; // 1GB
     const TARGET_SIZE_BYTES: u64 = 512 * 1024 * 1024;    // 512MB
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -100,18 +117,30 @@ pub fn cleanup_old_logs(days_to_keep: u64) -> Result<(), String> {
         .as_secs();
     
     let cutoff_time = now.saturating_sub(days_to_keep * 24 * 60 * 60);
+<<<<<<< HEAD
     
     let mut entries_info = Vec::new();
+=======
+    let mut deleted_count = 0;
+    let mut total_size_freed = 0u64;
+    
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let entries = fs::read_dir(&log_dir)
         .map_err(|e| format!("Failed to read log directory: {}", e))?;
     
     for entry in entries {
         if let Ok(entry) = entry {
             let path = entry.path();
+<<<<<<< HEAD
+=======
+            
+            // Only process files, skip directories
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if !path.is_file() {
                 continue;
             }
             
+<<<<<<< HEAD
             if let Ok(metadata) = fs::metadata(&path) {
                 let modified = metadata.modified().unwrap_or(SystemTime::now());
                 let modified_secs = modified
@@ -167,6 +196,28 @@ pub fn cleanup_old_logs(days_to_keep: u64) -> Result<(), String> {
                 total_size_freed += size;
                 current_total_size -= size;
                 info!("Deleted log file (size limit): {:?}", path.file_name());
+=======
+            // Get file modification time
+            if let Ok(metadata) = fs::metadata(&path) {
+                if let Ok(modified) = metadata.modified() {
+                    let modified_secs = modified
+                        .duration_since(UNIX_EPOCH)
+                        .map(|d| d.as_secs())
+                        .unwrap_or(0);
+                    
+                    // Delete file if older than cutoff time
+                    if modified_secs < cutoff_time {
+                        let file_size = metadata.len();
+                        if let Err(e) = fs::remove_file(&path) {
+                            warn!("Failed to delete old log file {:?}: {}", path, e);
+                        } else {
+                            deleted_count += 1;
+                            total_size_freed += file_size;
+                            info!("Deleted old log file: {:?}", path.file_name());
+                        }
+                    }
+                }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }
     }

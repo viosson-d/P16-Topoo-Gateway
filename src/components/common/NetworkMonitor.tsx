@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useNetworkMonitorStore, NetworkRequest } from '../../stores/networkMonitorStore';
 import { X, Play, Pause, Trash2, Activity, ChevronDown } from 'lucide-react';
+<<<<<<< HEAD
 import { useTranslation } from 'react-i18next';
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 const NetworkMonitor: React.FC = () => {
     const { requests, isOpen, setIsOpen, isRecording, toggleRecording, clearRequests } = useNetworkMonitorStore();
     const [selectedRequest, setSelectedRequest] = useState<NetworkRequest | null>(null);
+<<<<<<< HEAD
     const { t } = useTranslation();
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // If not open, show a small floating button
     if (!isOpen) {
@@ -15,7 +21,11 @@ const NetworkMonitor: React.FC = () => {
                 <button
                     onClick={() => setIsOpen(true)}
                     className="btn btn-circle btn-primary shadow-lg"
+<<<<<<< HEAD
                     title={t('monitor.network.open', 'ネットワークモニターを開く')}
+=======
+                    title="Open Network Monitor"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 >
                     <Activity size={24} />
                     {requests.filter(r => r.status === 'pending').length > 0 && (
@@ -35,25 +45,38 @@ const NetworkMonitor: React.FC = () => {
             <div className="flex items-center justify-between p-4 border-b border-base-300 bg-base-200/50">
                 <div className="flex items-center gap-2">
                     <Activity className="text-primary" size={20} />
+<<<<<<< HEAD
                     <h2 className="font-bold text-lg">{t('monitor.network.title', 'ネットワークモニター')}</h2>
                     <span className="badge badge-sm">
                         {t('monitor.network.requests_count', '{{count}} 件', { count: requests.length })}
                     </span>
+=======
+                    <h2 className="font-bold text-lg">Network Monitor</h2>
+                    <span className="badge badge-sm">{requests.length} requests</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={toggleRecording}
                         className={`btn btn-sm btn-circle ${isRecording ? 'btn-error' : 'btn-success'}`}
+<<<<<<< HEAD
                         title={isRecording
                             ? t('monitor.network.stop_recording', '記録を停止')
                             : t('monitor.network.start_recording', '記録を開始')}
+=======
+                        title={isRecording ? 'Stop Recording' : 'Start Recording'}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     >
                         {isRecording ? <Pause size={14} /> : <Play size={14} />}
                     </button>
                     <button
                         onClick={clearRequests}
                         className="btn btn-sm btn-circle btn-ghost"
+<<<<<<< HEAD
                         title={t('monitor.network.clear_requests', 'リクエストをクリア')}
+=======
+                        title="Clear Requests"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     >
                         <Trash2 size={16} />
                     </button>
@@ -73,10 +96,17 @@ const NetworkMonitor: React.FC = () => {
                     <table className="table table-xs table-pin-rows w-full">
                         <thead>
                             <tr className="bg-base-200">
+<<<<<<< HEAD
                                 <th className="w-16">{t('monitor.network.table.status', '状態')}</th>
                                 <th>{t('monitor.network.table.command', 'コマンド')}</th>
                                 <th className="w-20 text-right">{t('monitor.network.table.time', '時刻')}</th>
                                 <th className="w-20 text-right">{t('monitor.network.table.duration', '所要時間')}</th>
+=======
+                                <th className="w-16">Status</th>
+                                <th>Command</th>
+                                <th className="w-20 text-right">Time</th>
+                                <th className="w-20 text-right">Duration</th>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             </tr>
                         </thead>
                         <tbody>
@@ -103,7 +133,11 @@ const NetworkMonitor: React.FC = () => {
                             {requests.length === 0 && (
                                 <tr>
                                     <td colSpan={4} className="text-center py-8 opacity-50">
+<<<<<<< HEAD
                                         {t('monitor.network.empty', '記録されたリクエストはありません')}
+=======
+                                        No requests recorded
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     </td>
                                 </tr>
                             )}
@@ -116,30 +150,50 @@ const NetworkMonitor: React.FC = () => {
                     <div className="flex-1 md:w-1/2 overflow-y-auto bg-base-100 flex flex-col absolute inset-0 md:static z-10 w-full">
                         <div className="flex items-center justify-between p-2 border-b border-base-300 bg-base-200/30 md:hidden">
                             <button onClick={() => setSelectedRequest(null)} className="btn btn-sm btn-ghost">
+<<<<<<< HEAD
                                 <ChevronDown size={16} className="rotate-90" /> {t('common.back', '戻る')}
+=======
+                                <ChevronDown size={16} className="rotate-90" /> Back
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             </button>
                             <span className="font-mono text-xs">{selectedRequest.cmd}</span>
                         </div>
 
                         <div className="p-4 space-y-4">
                             <div>
+<<<<<<< HEAD
                                 <h3 className="text-xs font-bold uppercase opacity-50 mb-1">{t('monitor.network.sections.general', '概要')}</h3>
+=======
+                                <h3 className="text-xs font-bold opacity-50 mb-1">General</h3>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 <div className="bg-base-200 rounded p-2 text-xs space-y-1">
                                     <div className="flex justify-between">
                                         <span className="opacity-70">ID:</span>
                                         <span className="font-mono select-all">{selectedRequest.id}</span>
                                     </div>
                                     <div className="flex justify-between">
+<<<<<<< HEAD
                                         <span className="opacity-70">{t('monitor.network.fields.status', '状態')}:</span>
                                         <BadgeStatus status={selectedRequest.status} />
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="opacity-70">{t('monitor.network.fields.start_time', '開始時刻')}:</span>
+=======
+                                        <span className="opacity-70">Status:</span>
+                                        <BadgeStatus status={selectedRequest.status} />
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="opacity-70">Start Time:</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         <span>{new Date(selectedRequest.startTime).toLocaleString()}</span>
                                     </div>
                                     {selectedRequest.duration && (
                                         <div className="flex justify-between">
+<<<<<<< HEAD
                                             <span className="opacity-70">{t('monitor.network.fields.duration', '所要時間')}:</span>
+=======
+                                            <span className="opacity-70">Duration:</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                             <span>{selectedRequest.duration}ms</span>
                                         </div>
                                     )}
@@ -147,15 +201,24 @@ const NetworkMonitor: React.FC = () => {
                             </div>
 
                             <div>
+<<<<<<< HEAD
                                 <h3 className="text-xs font-bold uppercase opacity-50 mb-1">{t('monitor.network.sections.request_args', 'リクエスト引数')}</h3>
+=======
+                                <h3 className="text-xs font-bold opacity-50 mb-1">Request Args</h3>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 <JsonView data={selectedRequest.args} />
                             </div>
 
                             <div>
+<<<<<<< HEAD
                                 <h3 className="text-xs font-bold uppercase opacity-50 mb-1">
                                     {selectedRequest.status === 'error'
                                         ? t('monitor.network.sections.error_details', 'エラー詳細')
                                         : t('monitor.network.sections.response', 'レスポンス')}
+=======
+                                <h3 className="text-xs font-bold opacity-50 mb-1">
+                                    {selectedRequest.status === 'error' ? 'Error Details' : 'Response'}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 </h3>
                                 {(selectedRequest.response || selectedRequest.error) ? (
                                     <JsonView
@@ -163,7 +226,11 @@ const NetworkMonitor: React.FC = () => {
                                         isError={selectedRequest.status === 'error'}
                                     />
                                 ) : (
+<<<<<<< HEAD
                                     <div className="text-xs opacity-50 italic">{t('monitor.network.waiting', '応答待ち...')}</div>
+=======
+                                    <div className="text-xs opacity-50 italic">Waiting for response...</div>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 )}
                             </div>
                         </div>
@@ -175,21 +242,33 @@ const NetworkMonitor: React.FC = () => {
 };
 
 const BadgeStatus = ({ status }: { status: NetworkRequest['status'] }) => {
+<<<<<<< HEAD
     const { t } = useTranslation();
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     switch (status) {
         case 'success':
             return <span className="badge badge-xs badge-success">200</span>;
         case 'error':
+<<<<<<< HEAD
             return <span className="badge badge-xs badge-error">{t('monitor.network.badge_error', 'エラー')}</span>;
+=======
+            return <span className="badge badge-xs badge-error">Err</span>;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         case 'pending':
             return <span className="loading loading-spinner loading-xs text-warning"></span>;
     }
 };
 
 const JsonView = ({ data, isError = false }: { data: any, isError?: boolean }) => {
+<<<<<<< HEAD
     const { t } = useTranslation();
     if (data === undefined || data === null) {
         return <div className="text-xs opacity-50 italic">{t('common.empty', '空')}</div>;
+=======
+    if (data === undefined || data === null) {
+        return <div className="text-xs opacity-50 italic">Empty</div>;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     return (

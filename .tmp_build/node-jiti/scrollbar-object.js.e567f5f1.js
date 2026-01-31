@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});exports. default = {":root":{"scrollbar-color":"color-mix(in oklch, currentColor 35%, #0000) #0000"}}; /* v7-1547788a8f4ffc82 */

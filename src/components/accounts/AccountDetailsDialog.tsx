@@ -16,7 +16,11 @@ export default function AccountDetailsDialog({ account, onClose }: AccountDetail
     return createPortal(
         <div className="modal modal-open z-[100]">
             {/* Draggable Top Region */}
+<<<<<<< HEAD
             <div data-tauri-drag-region className="fixed top-0 left-0 right-0 h-8 z-[110]" />
+=======
+            <div  className="fixed top-0 left-0 right-0 h-8 z-[110]" />
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             <div className="modal-box relative max-w-3xl bg-white dark:bg-base-100 shadow-2xl rounded-2xl p-0 overflow-hidden">
                 {/* Header */}
@@ -26,6 +30,7 @@ export default function AccountDetailsDialog({ account, onClose }: AccountDetail
                         <div className="px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-base-200 border border-gray-200 dark:border-base-300 text-xs font-mono text-gray-500 dark:text-gray-400">
                             {account.email}
                         </div>
+<<<<<<< HEAD
                         {account.quota?.subscription_tier && (
                             <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${account.quota.subscription_tier === 'ultra' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
                                     account.quota.subscription_tier === 'pro' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-gray-100 text-gray-600 dark:bg-base-300 dark:text-gray-400'
@@ -33,6 +38,8 @@ export default function AccountDetailsDialog({ account, onClose }: AccountDetail
                                 {account.quota.subscription_tier}
                             </div>
                         )}
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     </div>
                     <button
                         onClick={onClose}
@@ -42,6 +49,7 @@ export default function AccountDetailsDialog({ account, onClose }: AccountDetail
                     </button>
                 </div>
 
+<<<<<<< HEAD
                 {/* Status Alerts */}
                 {(account.disabled || account.proxy_disabled) && (
                     <div className="px-6 py-3 bg-red-50 dark:bg-red-950/20 border-b border-red-100 dark:border-red-900/30 flex flex-col gap-1">
@@ -122,6 +130,48 @@ export default function AccountDetailsDialog({ account, onClose }: AccountDetail
                                 </div>
                             )}
                     </div>
+=======
+                {/* Content */}
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
+                    {account.quota?.models?.map((model: ModelQuota) => (
+                        <div key={model.name} className="p-4 rounded-xl border border-gray-100 dark:border-base-200 bg-white dark:bg-base-100 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-sm transition-all group">
+                            <div className="flex justify-between items-start mb-3">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
+                                    {model.name}
+                                </span>
+                                <span
+                                    className={`text-xs font-bold px-2 py-0.5 rounded-md ${model.percentage >= 50 ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                        model.percentage >= 20 ? 'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                                            'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                        }`}
+                                >
+                                    {model.percentage}%
+                                </span>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="h-1.5 w-full bg-gray-100 dark:bg-base-200 rounded-full overflow-hidden mb-3">
+                                <div
+                                    className={`h-full rounded-full transition-all duration-500 ${model.percentage >= 50 ? 'bg-emerald-500' :
+                                        model.percentage >= 20 ? 'bg-orange-400' :
+                                            'bg-red-500'
+                                        }`}
+                                    style={{ width: `${model.percentage}%` }}
+                                ></div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 font-mono">
+                                <Clock size={10} />
+                                <span>{t('accounts.reset_time')}: {formatDate(model.reset_time) || t('common.unknown')}</span>
+                            </div>
+                        </div>
+                    )) || (
+                            <div className="col-span-2 py-10 text-center text-gray-400 flex flex-col items-center">
+                                <AlertCircle className="w-8 h-8 mb-2 opacity-20" />
+                                <span>{t('accounts.no_data')}</span>
+                            </div>
+                        )}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 </div>
             </div>
             <div className="modal-backdrop bg-black/40 backdrop-blur-sm" onClick={onClose}></div>

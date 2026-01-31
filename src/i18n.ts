@@ -10,10 +10,13 @@ import tr from "./locales/tr.json";
 import vi from "./locales/vi.json";
 import pt from "./locales/pt.json";
 import ru from "./locales/ru.json";
+<<<<<<< HEAD
 import ko from "./locales/ko.json";
 import ar from "./locales/ar.json";
 import es from "./locales/es.json";
 import my from "./locales/my.json";
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 i18n
     // detect user language
@@ -59,6 +62,7 @@ i18n
             ru: {
                 translation: ru,
             },
+<<<<<<< HEAD
             ko: {
                 translation: ko,
             },
@@ -83,6 +87,8 @@ i18n
             "ms-MY": {
                 translation: my,
             },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         fallbackLng: "en",
         debug: false, // Set to true for development

@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 import { Shield, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+=======
+import { Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Switch } from '@/components/ui/switch';
+import { cn } from "@/lib/utils";
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { QuotaProtectionConfig } from '../../types/config';
 
 interface QuotaProtectionProps {
@@ -52,6 +59,7 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
     const exampleThreshold = Math.floor(exampleTotal * config.threshold_percentage / 100);
 
     return (
+<<<<<<< HEAD
         <div className="animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -87,17 +95,41 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
                     {/* 百分比设置 */}
                     <div className="flex items-center gap-4">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+=======
+        <div className="group bg-white dark:bg-muted/5 transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-muted/10">
+            <div className="flex items-center justify-between py-2.5 px-3">
+                <div className="flex flex-col gap-0.5">
+                    <span className="text-[12px] font-medium text-foreground">{t('settings.quota_protection.title')}</span>
+                    <span className="text-[11px] text-muted-foreground/60">{t('settings.quota_protection.enable_desc')}</span>
+                </div>
+                <Switch
+                    size="sm"
+                    checked={config.enabled}
+                    onCheckedChange={handleEnabledChange}
+                />
+            </div>
+
+            {config.enabled && (
+                <div className="px-3 pb-3 pt-3 border-t border-border/50 space-y-4 animate-in slide-in-from-top-1 duration-200">
+                    <div className="flex items-center gap-4">
+                        <label className="text-[11px] font-medium text-foreground">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             {t('settings.quota_protection.threshold_label')}
                         </label>
                         <div className="relative flex items-center gap-2">
                             <input
                                 type="number"
+<<<<<<< HEAD
                                 className="w-24 px-3 py-2 bg-gray-50 dark:bg-base-200 border border-gray-200 dark:border-base-300 rounded-lg focus:ring-2 focus:ring-rose-500 outline-none text-sm font-bold text-rose-600 dark:text-rose-400"
+=======
+                                className="w-16 px-2 py-1 bg-background border border-border rounded-md focus:ring-1 focus:ring-primary outline-none text-xs font-medium text-foreground"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 min="1"
                                 max="99"
                                 value={config.threshold_percentage}
                                 onChange={(e) => handlePercentageChange(e.target.value)}
                             />
+<<<<<<< HEAD
                             <span className="text-sm font-bold text-gray-400 dark:text-gray-500">%</span>
                         </div>
                     </div>
@@ -109,6 +141,18 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
                                 {t('settings.quota_protection.monitored_models_label')}
                             </label>
                             <p className="text-[10px] text-gray-400 dark:text-gray-500">
+=======
+                            <span className="text-xs text-muted-foreground">%</span>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <div className="flex flex-col gap-1">
+                            <label className="text-[11px] font-medium text-foreground">
+                                {t('settings.quota_protection.monitored_models_label')}
+                            </label>
+                            <p className="text-[10px] text-muted-foreground/60">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 {t('settings.quota_protection.monitored_models_desc')}
                             </p>
                         </div>
@@ -119,6 +163,7 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
                                     <div
                                         key={model.id}
                                         onClick={() => toggleModel(model.id)}
+<<<<<<< HEAD
                                         className={`
                                             flex items-center justify-between p-2 rounded-lg border cursor-pointer transition-all duration-200
                                             ${isSelected
@@ -135,12 +180,30 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
                                         `}>
                                             <Check size={10} strokeWidth={4} />
                                         </div>
+=======
+                                        className={cn(
+                                            "flex items-center justify-between p-2 rounded-md border cursor-pointer transition-all duration-200",
+                                            isSelected
+                                                ? "bg-secondary/50 border-secondary-foreground/20 text-foreground"
+                                                : "bg-background border-border hover:border-border/80 text-muted-foreground hover:bg-muted/50"
+                                        )}
+                                    >
+                                        <span className={cn("text-[11px] font-medium truncate pr-2", isSelected ? "text-foreground" : "text-muted-foreground")}>
+                                            {model.label}
+                                        </span>
+                                        {isSelected && (
+                                            <div className="w-3 h-3 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
+                                                <Check size={8} strokeWidth={4} />
+                                            </div>
+                                        )}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
 
+<<<<<<< HEAD
                     {/* 示例提示卡片 */}
                     <div className="flex items-start gap-3 p-3 bg-blue-50/50 dark:bg-gray-800/50 rounded-xl border border-blue-100/50 dark:border-base-300">
                         <div className="text-blue-500 mt-0.5">
@@ -148,13 +211,25 @@ const QuotaProtection = ({ config, onChange }: QuotaProtectionProps) => {
                         </div>
                         <div className="flex flex-col gap-1">
                             <p className="text-xs text-blue-700/80 dark:text-gray-300/90 leading-relaxed font-medium">
+=======
+                    <div className="flex items-start gap-3 p-3 bg-muted/40 rounded-lg border border-border/50">
+                        <div className="text-muted-foreground mt-0.5">
+                            <span className="text-xs">💡</span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <p className="text-[11px] text-muted-foreground leading-relaxed">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 {t('settings.quota_protection.example', {
                                     percentage: config.threshold_percentage,
                                     total: exampleTotal,
                                     threshold: exampleThreshold
                                 })}
                             </p>
+<<<<<<< HEAD
                             <span className="block font-bold text-emerald-600 dark:text-emerald-400 text-[10px] uppercase tracking-wide">
+=======
+                            <span className="block font-medium text-foreground text-[10px]">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 ✓ {t('settings.quota_protection.auto_restore_info')}
                             </span>
                         </div>

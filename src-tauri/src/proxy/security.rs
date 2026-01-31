@@ -1,13 +1,21 @@
+<<<<<<< HEAD
 use crate::proxy::config::{ProxyAuthMode, ProxyConfig, SecurityMonitorConfig};
+=======
+use crate::proxy::config::{ProxyAuthMode, ProxyConfig};
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 #[derive(Debug, Clone)]
 pub struct ProxySecurityConfig {
     pub auth_mode: ProxyAuthMode,
     pub api_key: String,
+<<<<<<< HEAD
     pub admin_password: Option<String>,
     pub allow_lan_access: bool,
     pub port: u16,
     pub security_monitor: SecurityMonitorConfig,
+=======
+    pub allow_lan_access: bool,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 impl ProxySecurityConfig {
@@ -15,10 +23,14 @@ impl ProxySecurityConfig {
         Self {
             auth_mode: config.auth_mode.clone(),
             api_key: config.api_key.clone(),
+<<<<<<< HEAD
             admin_password: config.admin_password.clone(),
             allow_lan_access: config.allow_lan_access,
             port: config.port,
             security_monitor: config.security_monitor.clone(),
+=======
+            allow_lan_access: config.allow_lan_access,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
@@ -45,10 +57,14 @@ mod tests {
         let s = ProxySecurityConfig {
             auth_mode: ProxyAuthMode::Auto,
             api_key: "sk-test".to_string(),
+<<<<<<< HEAD
             admin_password: None,
             allow_lan_access: false,
             port: 8080,
             security_monitor: crate::proxy::config::SecurityMonitorConfig::default(),
+=======
+            allow_lan_access: false,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         };
         assert!(matches!(s.effective_auth_mode(), ProxyAuthMode::Off));
     }
@@ -58,10 +74,14 @@ mod tests {
         let s = ProxySecurityConfig {
             auth_mode: ProxyAuthMode::Auto,
             api_key: "sk-test".to_string(),
+<<<<<<< HEAD
             admin_password: None,
             allow_lan_access: true,
             port: 8080,
             security_monitor: crate::proxy::config::SecurityMonitorConfig::default(),
+=======
+            allow_lan_access: true,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         };
         assert!(matches!(
             s.effective_auth_mode(),

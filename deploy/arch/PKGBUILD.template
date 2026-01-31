@@ -17,6 +17,7 @@ sha256sums_x86_64=("${_sha256_x86_64}")
 sha256sums_aarch64=("${_sha256_aarch64}")
 
 package() {
+<<<<<<< HEAD
   # Extract the data archive from the deb package
   # The compression format can be .zst, .xz, or .gz depending on the build environment
   # Using a wildcard to automatically match data.tar.*
@@ -29,6 +30,10 @@ package() {
     error "Could not find data archive (data.tar.*)"
     return 1
   fi
+=======
+  # Extract the data.tar.zst from the deb package
+  tar -xf data.tar.zst -C "${pkgdir}"
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
   
   # Fix permissions if necessary
   chmod -R 755 "${pkgdir}/usr/bin"

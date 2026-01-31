@@ -3,6 +3,10 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tokio::time::{self, Duration};
+<<<<<<< HEAD
+=======
+use tauri::Manager;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use crate::modules::{config, logger, quota, account};
 use crate::models::Account;
 use std::path::PathBuf;
@@ -36,13 +40,30 @@ fn save_warmup_history(history: &HashMap<String, i64>) {
 }
 
 pub fn record_warmup_history(key: &str, timestamp: i64) {
+<<<<<<< HEAD
     let mut history = WARMUP_HISTORY.lock().unwrap();
+=======
+    let mut history = match WARMUP_HISTORY.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => {
+            crate::modules::logger::log_warn("Warmup history lock poisoned, recovering...");
+            poisoned.into_inner()
+        }
+    };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     history.insert(key.to_string(), timestamp);
     save_warmup_history(&history);
 }
 
 pub fn check_cooldown(key: &str, cooldown_seconds: i64) -> bool {
+<<<<<<< HEAD
     let history = WARMUP_HISTORY.lock().unwrap();
+=======
+    let history = match WARMUP_HISTORY.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => poisoned.into_inner(),
+    };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     if let Some(&last_ts) = history.get(key) {
         let now = chrono::Utc::now().timestamp();
         now - last_ts < cooldown_seconds
@@ -51,7 +72,11 @@ pub fn check_cooldown(key: &str, cooldown_seconds: i64) -> bool {
     }
 }
 
+<<<<<<< HEAD
 pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate::commands::proxy::ProxyServiceState) {
+=======
+pub fn start_scheduler(app_handle: tauri::AppHandle) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     tauri::async_runtime::spawn(async move {
         logger::log_info("Smart Warmup Scheduler started. Monitoring quota at 100%...");
         
@@ -100,7 +125,11 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                 };
 
                 // Get fresh quota
+<<<<<<< HEAD
                 let Ok((fresh_quota, _)) = quota::fetch_quota_with_cache(&token, &account.email, Some(&pid)).await else {
+=======
+                let Ok((fresh_quota, _)) = quota::fetch_quota_with_cache(&token, &account.email, Some(&pid), account.quota.clone()).await else {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     continue;
                 };
 
@@ -121,7 +150,14 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                         
                         // Check cooldown: do not repeat warmup within 4 hours
                         {
+<<<<<<< HEAD
                             let history = WARMUP_HISTORY.lock().unwrap();
+=======
+                            let history = match WARMUP_HISTORY.lock() {
+                                Ok(guard) => guard,
+                                Err(p) => p.into_inner(),
+                            };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             if let Some(&last_warmup_ts) = history.get(&history_key) {
                                 let cooldown_seconds = 14400;
                                 if now_ts - last_warmup_ts < cooldown_seconds {
@@ -149,7 +185,14 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                         let model_to_ping = model.name.clone();
                         let history_key = format!("{}:{}:100", account.email, model_to_ping);
                         
+<<<<<<< HEAD
                         let mut history = WARMUP_HISTORY.lock().unwrap();
+=======
+                        let mut history = match WARMUP_HISTORY.lock() {
+                            Ok(g) => g,
+                            Err(p) => p.into_inner(),
+                        };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         if history.remove(&history_key).is_some() {
                             save_warmup_history(&history);
                             logger::log_info(&format!(
@@ -176,8 +219,11 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                 ));
 
                 let handle_for_warmup = app_handle.clone();
+<<<<<<< HEAD
                 let state_for_warmup = proxy_state.clone();
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 tokio::spawn(async move {
                     let mut success = 0;
                     let batch_size = 3;
@@ -227,9 +273,16 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                         success, total
                     ));
 
+<<<<<<< HEAD
                     // Refresh quota
                     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
                     let _ = crate::commands::refresh_all_quotas_internal(&state_for_warmup, handle_for_warmup).await;
+=======
+                    // Refresh quota, sync to frontend
+                    tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+                    let state = handle_for_warmup.state::<crate::commands::proxy::ProxyServiceState>();
+                    let _ = crate::commands::refresh_all_quotas(state).await;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 });
             } else if skipped_cooldown > 0 {
                 logger::log_info(&format!(
@@ -240,6 +293,7 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                 logger::log_info("[Scheduler] Scan completed, no models with 100% quota need warmup");
             }
 
+<<<<<<< HEAD
             // Sync to frontend if handle exists
             if let Some(handle) = app_handle.as_ref() {
                 let handle_inner = handle.clone();
@@ -250,11 +304,28 @@ pub fn start_scheduler(app_handle: Option<tauri::AppHandle>, proxy_state: crate:
                     logger::log_info("[Scheduler] Quota data synced to frontend");
                 });
             }
+=======
+            // Refresh frontend display after scan (ensure UI has latest data)
+            let handle_inner = app_handle.clone();
+            tokio::spawn(async move {
+                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+                let state = handle_inner.state::<crate::commands::proxy::ProxyServiceState>();
+                let _ = crate::commands::refresh_all_quotas(state).await;
+                logger::log_info("[Scheduler] Quota data synced to frontend");
+            });
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             // Regularly clean up history (keep last 24 hours)
             {
                 let now_ts = Utc::now().timestamp();
+<<<<<<< HEAD
                 let mut history = WARMUP_HISTORY.lock().unwrap();
+=======
+                let mut history = match WARMUP_HISTORY.lock() {
+                    Ok(g) => g,
+                    Err(p) => p.into_inner(),
+                };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 let cutoff = now_ts - 86400; // 24 hours ago
                 history.retain(|_, &mut ts| ts > cutoff);
             }
@@ -271,7 +342,11 @@ pub async fn trigger_warmup_for_account(account: &Account) {
     };
 
     // Get quota info (prefer cache as refresh command likely just updated disk/cache)
+<<<<<<< HEAD
     let Ok((fresh_quota, _)) = quota::fetch_quota_with_cache(&token, &account.email, Some(&pid)).await else {
+=======
+    let Ok((fresh_quota, _)) = quota::fetch_quota_with_cache(&token, &account.email, Some(&pid), account.quota.clone()).await else {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         return;
     };
 
@@ -284,7 +359,14 @@ pub async fn trigger_warmup_for_account(account: &Account) {
         if model.percentage == 100 {
             // Check history to avoid repeated warmup (with cooldown)
             {
+<<<<<<< HEAD
                 let mut history = WARMUP_HISTORY.lock().unwrap();
+=======
+                let mut history = match WARMUP_HISTORY.lock() {
+                    Ok(g) => g,
+                    Err(p) => p.into_inner(),
+                };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 
                 // 4 hour cooldown (Pro account resets every 5h, 1h margin)
                 if let Some(&last_warmup_ts) = history.get(&history_key) {
@@ -311,7 +393,14 @@ pub async fn trigger_warmup_for_account(account: &Account) {
             }
         } else if model.percentage < 100 {
             // Quota not full, clear history, allow warmup next time it's 100%
+<<<<<<< HEAD
             let mut history = WARMUP_HISTORY.lock().unwrap();
+=======
+            let mut history = match WARMUP_HISTORY.lock() {
+                Ok(g) => g,
+                Err(p) => p.into_inner(),
+            };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             history.remove(&history_key);
         }
     }

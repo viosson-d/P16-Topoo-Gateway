@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 use serde_json::{json, Value};
 use once_cell::sync::Lazy;
 use super::tool_adapter::ToolAdapter;
@@ -30,6 +31,9 @@ static TOOL_ADAPTERS: Lazy<Vec<Box<dyn ToolAdapter>>> = Lazy::new(|| {
         // Box::new(DatabaseAdapter),
     ]
 });
+=======
+use serde_json::Value;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// 递归清理 JSON Schema 以符合 Gemini 接口要求
 ///
@@ -58,6 +62,7 @@ pub fn clean_json_schema(value: &mut Value) {
     }
 
     // 递归清理
+<<<<<<< HEAD
     clean_json_schema_recursive(value, true);
 }
 
@@ -91,6 +96,9 @@ pub fn clean_json_schema_for_tool(value: &mut Value, tool_name: &str) {
     if let Some(adapter) = adapter {
         let _ = adapter.post_process(value);
     }
+=======
+    clean_json_schema_recursive(value);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// [NEW #952] 递归收集所有层级的 $defs 和 definitions
@@ -179,7 +187,11 @@ fn flatten_refs(map: &mut serde_json::Map<String, Value>, defs: &serde_json::Map
     }
 }
 
+<<<<<<< HEAD
 fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool {
+=======
+fn clean_json_schema_recursive(value: &mut Value) -> bool {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let mut is_effectively_nullable = false;
 
     match value {
@@ -187,6 +199,7 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
             // 0. [NEW] 合并 allOf
             merge_all_of(map);
 
+<<<<<<< HEAD
             // 0.5 [NEW] 结构归一化 (Normalization)
             // 针对某些 MCP 工具（如 pencil）误用 items 定义对象属性的情况进行修复。
             // 如果 type=object 或包含 properties，但又定义了 items，Gemini 会因为 items 只能出现在 array 中而报错。
@@ -212,6 +225,13 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                 for (k, v) in props {
                     // properties 的每一个值都必须是一个独立的 Schema 节点
                     if clean_json_schema_recursive(v, true) {
+=======
+            // 1. [CRITICAL] 深度递归处理子项
+            if let Some(Value::Object(props)) = map.get_mut("properties") {
+                let mut nullable_keys = std::collections::HashSet::new();
+                for (k, v) in props {
+                    if clean_json_schema_recursive(v) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         nullable_keys.insert(k.clone());
                     }
                 }
@@ -228,6 +248,7 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                         }
                     }
                 }
+<<<<<<< HEAD
 
                 // [NEW] 隐式类型注入：如果有 properties 但没 type，补全为 object
                 if !map.contains_key("type") {
@@ -253,6 +274,13 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                     if k != "anyOf" && k != "oneOf" && k != "allOf" && k != "enum" && k != "type" {
                         clean_json_schema_recursive(v, false);
                     }
+=======
+            } else if let Some(items) = map.get_mut("items") {
+                clean_json_schema_recursive(items);
+            } else {
+                for v in map.values_mut() {
+                    clean_json_schema_recursive(v);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
 
@@ -260,12 +288,20 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
             // 必须在合并逻辑之前执行，确保合并的分支已经被清洗
             if let Some(Value::Array(any_of)) = map.get_mut("anyOf") {
                 for branch in any_of.iter_mut() {
+<<<<<<< HEAD
                     clean_json_schema_recursive(branch, true);
+=======
+                    clean_json_schema_recursive(branch);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
             if let Some(Value::Array(one_of)) = map.get_mut("oneOf") {
                 for branch in one_of.iter_mut() {
+<<<<<<< HEAD
                     clean_json_schema_recursive(branch, true);
+=======
+                    clean_json_schema_recursive(branch);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
 
@@ -282,7 +318,11 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
             }
 
             if let Some(union_array) = union_to_merge {
+<<<<<<< HEAD
                 if let Some((best_branch, all_types)) = extract_best_schema_from_union(&union_array) {
+=======
+                if let Some(best_branch) = extract_best_schema_from_union(&union_array) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     if let Value::Object(branch_obj) = best_branch {
                         for (k, v) in branch_obj {
                             if k == "properties" {
@@ -318,18 +358,22 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                             }
                         }
                     }
+<<<<<<< HEAD
                     
                     // [NEW] 添加类型提示到描述中 (参考 CLIProxyAPI)
                     if all_types.len() > 1 {
                         let type_hint = format!("Accepts: {}", all_types.join(" | "));
                         append_hint_to_description(map, type_hint);
                     }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
 
             // 3. [SAFETY] 检查当前对象是否为 JSON Schema 节点
             // 只有当对象看起来像 Schema (包含 type, properties, items, enum, anyOf 等) 时，才执行白名单过滤。
             // 否则，如果它是一个普通的 Value (如 request.rs 中的 functionCall 对象)，直接应用激进过滤会破坏结构。
+<<<<<<< HEAD
             let allowed_fields = [
                 "type",
                 "description",
@@ -376,6 +420,70 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                 let keys_to_remove: Vec<String> = map
                     .keys()
                     .filter(|k| !allowed_fields.contains(&k.as_str()))
+=======
+            let looks_like_schema = map.contains_key("type")
+                || map.contains_key("properties")
+                || map.contains_key("items")
+                || map.contains_key("enum")
+                || map.contains_key("anyOf")
+                || map.contains_key("oneOf")
+                || map.contains_key("allOf");
+
+            if looks_like_schema {
+                // 4. [ROBUST] 约束迁移：在被白名单过滤前，将校验项转为描述 Hint
+                let mut hints = Vec::new();
+                let constraints = [
+                    ("minLength", "minLen"),
+                    ("maxLength", "maxLen"),
+                    ("pattern", "pattern"),
+                    ("minimum", "min"),
+                    ("maximum", "max"),
+                    ("multipleOf", "multipleOf"),
+                    ("exclusiveMinimum", "exclMin"),
+                    ("exclusiveMaximum", "exclMax"),
+                    ("minItems", "minItems"),
+                    ("maxItems", "maxItems"),
+                    ("propertyNames", "propertyNames"),
+                    ("format", "format"),
+                ];
+                for (field, label) in constraints {
+                    if let Some(val) = map.get(field) {
+                        if !val.is_null() {
+                            let val_str = if let Some(s) = val.as_str() {
+                                s.to_string()
+                            } else {
+                                val.to_string()
+                            };
+                            hints.push(format!("{}: {}", label, val_str));
+                        }
+                    }
+                }
+                if !hints.is_empty() {
+                    let suffix = format!(" [Constraint: {}]", hints.join(", "));
+                    let desc_val = map
+                        .entry("description".to_string())
+                        .or_insert_with(|| Value::String("".to_string()));
+                    if let Value::String(s) = desc_val {
+                        if !s.contains(&suffix) {
+                            s.push_str(&suffix);
+                        }
+                    }
+                }
+
+                // 5. [CRITICAL] 白名单过滤：彻底物理移除 Gemini 不支持的内容，防止 400 错误
+                let allowed_fields = std::collections::HashSet::from([
+                    "type",
+                    "description",
+                    "properties",
+                    "required",
+                    "items",
+                    "enum",
+                    "title",
+                ]);
+                let keys_to_remove: Vec<String> = map
+                    .keys()
+                    .filter(|k| !allowed_fields.contains(k.as_str()))
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     .cloned()
                     .collect();
                 for k in keys_to_remove {
@@ -383,6 +491,7 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                 }
 
                 // 6. [SAFETY] 处理空 Object
+<<<<<<< HEAD
                 // [FIX] 移除 reason 字段注入逻辑
                 // 之前的实现会为空 Object 注入 reason 字段，导致 Gemini CLI 等工具报 "malformed function call"
                 // 因为模型会生成包含 reason 参数的调用，但工具定义中并没有这个参数
@@ -390,6 +499,19 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                 if map.get("type").and_then(|t| t.as_str()) == Some("object") {
                     if !map.contains_key("properties") {
                         map.insert("properties".to_string(), serde_json::json!({}));
+=======
+                if map.get("type").and_then(|t| t.as_str()) == Some("object") {
+                    let has_props = map
+                        .get("properties")
+                        .and_then(|p| p.as_object())
+                        .map(|o| !o.is_empty())
+                        .unwrap_or(false);
+                    if !has_props {
+                        map.insert("properties".to_string(), serde_json::json!({
+                            "reason": { "type": "string", "description": "Reason for calling this tool" }
+                        }));
+                        map.insert("required".to_string(), serde_json::json!(["reason"]));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                 }
 
@@ -410,6 +532,7 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                     }
                 }
 
+<<<<<<< HEAD
                 if !map.contains_key("type") {
                     if map.contains_key("enum") {
                         map.insert("type".to_string(), Value::String("string".to_string()));
@@ -429,6 +552,8 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                     "string"
                 };
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 // 8. 处理 type 字段
                 if let Some(type_val) = map.get_mut("type") {
                     let mut selected_type = None;
@@ -455,9 +580,14 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
                         }
                         _ => {}
                     }
+<<<<<<< HEAD
                     
                     *type_val =
                         Value::String(selected_type.unwrap_or_else(|| fallback.to_string()));
+=======
+                    *type_val =
+                        Value::String(selected_type.unwrap_or_else(|| "string".to_string()));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
 
                 if is_effectively_nullable {
@@ -492,7 +622,11 @@ fn clean_json_schema_recursive(value: &mut Value, is_schema_node: bool) -> bool 
             // [FIX] 递归清理数组中的每个元素
             // 这确保了所有数组类型的值（包括但不限于 anyOf、oneOf、items、enum 等）都会被递归处理
             for item in arr.iter_mut() {
+<<<<<<< HEAD
                 clean_json_schema_recursive(item, is_schema_node);
+=======
+                clean_json_schema_recursive(item);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }
         _ => {}
@@ -576,6 +710,7 @@ fn merge_all_of(map: &mut serde_json::Map<String, Value>) {
     }
 }
 
+<<<<<<< HEAD
 /// [NEW] 将提示信息追加到 description 字段
 /// 参考 CLIProxyAPI 的 Lazy Hint 策略
 fn append_hint_to_description(map: &mut serde_json::Map<String, Value>, hint: String) {
@@ -616,6 +751,8 @@ fn move_constraints_to_description(map: &mut serde_json::Map<String, Value>) {
     }
 }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// [NEW] 计算 Schema 分支的复杂度得分 (用于 anyOf/oneOf 择优)
 /// 评分标准: Object (3) > Array (2) > Scalar (1) > Null (0)
 fn score_schema_option(val: &Value) -> i32 {
@@ -637,6 +774,7 @@ fn score_schema_option(val: &Value) -> i32 {
     0
 }
 
+<<<<<<< HEAD
 
 /// [NEW] 从 anyOf/oneOf 联合类型数组中选取最佳非 null Schema 分支
 /// 返回: (最佳Schema, 所有可能的类型列表)
@@ -656,12 +794,22 @@ fn extract_best_schema_from_union(union_array: &Vec<Value>) -> Option<(Value, Ve
             }
         }
         
+=======
+/// [NEW] 从 anyOf/oneOf 联合类型数组中选取最佳非 null Schema 分支
+fn extract_best_schema_from_union(union_array: &Vec<Value>) -> Option<Value> {
+    let mut best_option: Option<&Value> = None;
+    let mut best_score = -1;
+
+    for item in union_array {
+        let score = score_schema_option(item);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if score > best_score {
             best_score = score;
             best_option = Some(item);
         }
     }
 
+<<<<<<< HEAD
     best_option.cloned().map(|schema| (schema, all_types))
 }
 
@@ -685,6 +833,9 @@ fn get_schema_type_name(schema: &Value) -> Option<String> {
     }
     
     None
+=======
+    best_option.cloned()
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 修正工具调用参数的类型，使其符合 schema 定义
@@ -1397,6 +1548,7 @@ mod tests {
         assert!(level2_props["useLevel1"].get("$ref").is_none());
         assert!(level2_props["useLevel2"].get("$ref").is_none());
     }
+<<<<<<< HEAD
 
     // [NEW TEST] 验证对非标准字段（如 cornerRadius）的清洗和启发式修复
     #[test]
@@ -1506,4 +1658,6 @@ mod tests {
         assert_eq!(config["properties"]["size"]["type"], "number");
         assert_eq!(config["type"], "object");
     }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

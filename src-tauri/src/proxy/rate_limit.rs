@@ -13,6 +13,13 @@ pub enum RateLimitReason {
     ModelCapacityExhausted,
     /// 服务器错误 (5xx)
     ServerError,
+<<<<<<< HEAD
+=======
+    /// 身份验证错误 (401)
+    AuthenticationError,
+    /// 权限错误 (403)
+    PermissionError,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     /// 未知原因
     Unknown,
 }
@@ -56,6 +63,7 @@ impl RateLimitTracker {
         }
     }
     
+<<<<<<< HEAD
     /// 生成限流 Key
     /// - 账号级: "account_id"
     /// - 模型级: "account_id:model_id"
@@ -73,10 +81,17 @@ impl RateLimitTracker {
         
         // 1. 检查全局账号锁
         if let Some(info) = self.limits.get(account_id) {
+=======
+    /// 获取账号剩余的等待时间(秒)
+    pub fn get_remaining_wait(&self, account_id: &str) -> u64 {
+        if let Some(info) = self.limits.get(account_id) {
+            let now = SystemTime::now();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if info.reset_time > now {
                 return info.reset_time.duration_since(now).unwrap_or(Duration::from_secs(0)).as_secs();
             }
         }
+<<<<<<< HEAD
 
         // 2. 如果指定了模型，检查模型级锁
         if let Some(m) = model {
@@ -88,6 +103,8 @@ impl RateLimitTracker {
              }
         }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         0
     }
     
@@ -99,11 +116,16 @@ impl RateLimitTracker {
         if self.failure_counts.remove(account_id).is_some() {
             tracing::debug!("账号 {} 请求成功，已重置失败计数", account_id);
         }
+<<<<<<< HEAD
         // 清除账号级限流
         self.limits.remove(account_id);
         // 注意：我们暂时无法清除该账号下的所有模型级锁，因为我们不知道哪些模型被锁了
         // 除非遍历 limits。考虑到模型级锁通常是 QuotaExhausted，让其自然过期也是可以接受的。
         // 或者我们可以引入索引，但为了简单，暂时只清除 Account 级锁。
+=======
+        // 同时清除限流记录（如果有）
+        self.limits.remove(account_id);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     /// 精确锁定账号到指定时间点
@@ -128,8 +150,12 @@ impl RateLimitTracker {
             model: model.clone(),  // 🆕 支持模型级别限流
         };
         
+<<<<<<< HEAD
         let key = self.get_limit_key(account_id, model.as_deref());
         self.limits.insert(key, info);
+=======
+        self.limits.insert(account_id.to_string(), info);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         if let Some(m) = &model {
             tracing::info!(
@@ -186,10 +212,16 @@ impl RateLimitTracker {
         retry_after_header: Option<&str>,
         body: &str,
         model: Option<String>,
+<<<<<<< HEAD
         backoff_steps: &[u64], // [NEW] 传入退避配置
     ) -> Option<RateLimitInfo> {
         // 支持 429 (限流) 以及 500/503/529 (后端故障软避让)
         if status != 429 && status != 500 && status != 503 && status != 529 {
+=======
+    ) -> Option<RateLimitInfo> {
+        // 支持 429 (限流) 以及 500/503/529 (后端故障软避让), 401/403 (权限/授权故障)
+        if status != 429 && status != 500 && status != 503 && status != 529 && status != 401 && status != 403 {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             return None;
         }
         
@@ -197,6 +229,13 @@ impl RateLimitTracker {
         let reason = if status == 429 {
             tracing::warn!("Google 429 Error Body: {}", body);
             self.parse_rate_limit_reason(body)
+<<<<<<< HEAD
+=======
+        } else if status == 401 {
+            RateLimitReason::AuthenticationError
+        } else if status == 403 {
+            RateLimitReason::PermissionError
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         } else {
             RateLimitReason::ServerError
         };
@@ -225,12 +264,17 @@ impl RateLimitTracker {
                 // 获取连续失败次数，用于指数退避（带自动过期逻辑）
                 let failure_count = {
                     let now = SystemTime::now();
+<<<<<<< HEAD
                     // 这里我们使用 account_id 作为 key，不区分模型，
                     // 因为这里是为了计算连续“账号级”问题的退避。
                     // 如果需要针对模型的连续失败计数，可能需要改变 failure_counts 的 key。
                     // 暂时保持 account_id，这样如果一个模型一直挂，也会增加计数，符合逻辑。
                     let mut entry = self.failure_counts.entry(account_id.to_string()).or_insert((0, now));
                     
+=======
+                    let mut entry = self.failure_counts.entry(account_id.to_string()).or_insert((0, now));
+                    // 检查是否超过过期时间，如果是则重置计数
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     let elapsed = now.duration_since(entry.1).unwrap_or(Duration::from_secs(0)).as_secs();
                     if elapsed > FAILURE_COUNT_EXPIRY_SECONDS {
                         tracing::debug!("账号 {} 失败计数已过期（{}秒），重置为 0", account_id, elapsed);
@@ -243,6 +287,7 @@ impl RateLimitTracker {
                 
                 match reason {
                     RateLimitReason::QuotaExhausted => {
+<<<<<<< HEAD
                         // [智能限流] 根据 failure_count 和配置的 backoff_steps 计算
                         let index = (failure_count as usize).saturating_sub(1);
                         let lockout = if index < backoff_steps.len() {
@@ -279,6 +324,59 @@ impl RateLimitTracker {
                     },
                     RateLimitReason::Unknown => {
                         // 未知原因
+=======
+                        // [智能限流] 根据连续失败次数动态调整锁定时间
+                        // 第1次: 60s, 第2次: 5min, 第3次: 30min, 第4次+: 2h
+                        let lockout = match failure_count {
+                            1 => {
+                                tracing::warn!("检测到配额耗尽 (QUOTA_EXHAUSTED)，第1次失败，锁定 60秒");
+                                60
+                            },
+                            2 => {
+                                tracing::warn!("检测到配额耗尽 (QUOTA_EXHAUSTED)，第2次连续失败，锁定 5分钟");
+                                300
+                            },
+                            3 => {
+                                tracing::warn!("检测到配额耗尽 (QUOTA_EXHAUSTED)，第3次连续失败，锁定 30分钟");
+                                1800
+                            },
+                            _ => {
+                                tracing::warn!("检测到配额耗尽 (QUOTA_EXHAUSTED)，第{}次连续失败，锁定 2小时", failure_count);
+                                7200
+                            }
+                        };
+                        lockout
+                    },
+                    RateLimitReason::RateLimitExceeded => {
+                        // 速率限制：通常是短暂的，使用较短的默认值（30秒）
+                        tracing::debug!("检测到速率限制 (RATE_LIMIT_EXCEEDED)，使用默认值 30秒");
+                        30
+                    },
+                    RateLimitReason::ModelCapacityExhausted => {
+                        // 模型容量耗尽：服务端暂时无可用 GPU 实例
+                        // 这是临时性问题，使用较短的重试时间（15秒）
+                        tracing::warn!("检测到模型容量不足 (MODEL_CAPACITY_EXHAUSTED)，服务端暂无可用实例，15秒后重试");
+                        15
+                    },
+                    RateLimitReason::ServerError => {
+                        // 服务器错误：执行"软避让"，默认锁定 10 秒（减少锁定时间以更快重试）
+                        tracing::warn!("检测到 5xx 错误 ({}), 执行 10s 软避让...", status);
+                        10
+                    },
+                    RateLimitReason::AuthenticationError => {
+                        // 401 错误：通常是 Token 过期或被封禁，锁定 1 小时 (3600s)
+                        // 直到用户手动干预或 Token 更新
+                        tracing::error!("账号 {} 检测到 401 身份验证失败，锁定 1 小时", account_id);
+                        3600
+                    },
+                    RateLimitReason::PermissionError => {
+                        // 403 错误：通常是权限不足或地理位置受限，锁定 1 小时 (3600s)
+                        tracing::error!("账号 {} 检测到 403 权限错误，锁定 1 小时", account_id);
+                        3600
+                    },
+                    RateLimitReason::Unknown => {
+                        // 未知原因：使用中等默认值（60秒）
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         tracing::debug!("无法解析 429 限流原因, 使用默认值 60秒");
                         60
                     }
@@ -291,6 +389,7 @@ impl RateLimitTracker {
             retry_after_sec: retry_sec,
             detected_at: SystemTime::now(),
             reason,
+<<<<<<< HEAD
             model: model.clone(),
         };
         
@@ -307,6 +406,13 @@ impl RateLimitTracker {
         };
 
         self.limits.insert(key, info.clone());
+=======
+            model,
+        };
+        
+        // 存储
+        self.limits.insert(account_id.to_string(), info.clone());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         tracing::warn!(
             "账号 {} [{}] 限流类型: {:?}, 重置延时: {}秒",
@@ -366,11 +472,18 @@ impl RateLimitTracker {
     /// 通用时间解析函数：支持 "2h1m1s" 等所有格式组合
     fn parse_duration_string(&self, s: &str) -> Option<u64> {
         tracing::debug!("[时间解析] 尝试解析: '{}'", s);
+<<<<<<< HEAD
 
         // 使用正则表达式提取小时、分钟、秒、毫秒
         // 支持格式："2h1m1s", "1h30m", "5m", "30s", "500ms", "510.790006ms" 等
         // 🔧 [FIX] 修改 ms 部分支持小数: (\d+)ms -> (\d+(?:\.\d+)?)ms
         let re = Regex::new(r"(?:(\d+)h)?(?:(\d+)m)?(?:(\d+(?:\.\d+)?)s)?(?:(\d+(?:\.\d+)?)ms)?").ok()?;
+=======
+        
+        // 使用正则表达式提取小时、分钟、秒、毫秒
+        // 支持格式："2h1m1s", "1h30m", "5m", "30s", "500ms" 等
+        let re = Regex::new(r"(?:(\d+)h)?(?:(\d+)m)?(?:(\d+(?:\.\d+)?)s)?(?:(\d+)ms)?").ok()?;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let caps = match re.captures(s) {
             Some(c) => c,
             None => {
@@ -378,7 +491,11 @@ impl RateLimitTracker {
                 return None;
             }
         };
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let hours = caps.get(1)
             .and_then(|m| m.as_str().parse::<u64>().ok())
             .unwrap_or(0);
@@ -388,6 +505,7 @@ impl RateLimitTracker {
         let seconds = caps.get(3)
             .and_then(|m| m.as_str().parse::<f64>().ok())
             .unwrap_or(0.0);
+<<<<<<< HEAD
         // 🔧 [FIX] 毫秒也支持小数解析
         let milliseconds = caps.get(4)
             .and_then(|m| m.as_str().parse::<f64>().ok())
@@ -398,13 +516,29 @@ impl RateLimitTracker {
         // 🔧 [FIX] 计算总秒数，毫秒部分向上取整
         let total_seconds = hours * 3600 + minutes * 60 + seconds.ceil() as u64 + (milliseconds / 1000.0).ceil() as u64;
 
+=======
+        let milliseconds = caps.get(4)
+            .and_then(|m| m.as_str().parse::<u64>().ok())
+            .unwrap_or(0);
+        
+        tracing::debug!("[时间解析] 提取结果: {}h {}m {:.3}s {}ms", hours, minutes, seconds, milliseconds);
+        
+        // 计算总秒数
+        let total_seconds = hours * 3600 + minutes * 60 + seconds.ceil() as u64 + (milliseconds + 999) / 1000;
+        
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 如果总秒数为 0，说明解析失败
         if total_seconds == 0 {
             tracing::warn!("[时间解析] 失败: '{}' (总秒数为0)", s);
             None
         } else {
+<<<<<<< HEAD
             tracing::info!("[时间解析] ✓ 成功: '{}' => {}秒 ({}h {}m {:.1}s {:.1}ms)",
                 s, total_seconds, hours, minutes, seconds, milliseconds);
+=======
+            tracing::info!("[时间解析] ✓ 成功: '{}' => {}秒 ({}h {}m {:.1}s)", 
+                s, total_seconds, hours, minutes, seconds);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Some(total_seconds)
         }
     }
@@ -497,10 +631,19 @@ impl RateLimitTracker {
     }
     
     /// 检查账号是否仍在限流中
+<<<<<<< HEAD
     /// 检查账号是否仍在限流中 (支持模型级)
     pub fn is_rate_limited(&self, account_id: &str, model: Option<&str>) -> bool {
         // Checking using get_remaining_wait which handles both global and model keys
         self.get_remaining_wait(account_id, model) > 0
+=======
+    pub fn is_rate_limited(&self, account_id: &str) -> bool {
+        if let Some(info) = self.get(account_id) {
+            info.reset_time > SystemTime::now()
+        } else {
+            false
+        }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     /// 获取距离限流重置还有多少秒
@@ -538,6 +681,10 @@ impl RateLimitTracker {
     }
     
     /// 清除指定账号的限流记录
+<<<<<<< HEAD
+=======
+    #[allow(dead_code)]
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     pub fn clear(&self, account_id: &str) -> bool {
         self.limits.remove(account_id).is_some()
     }
@@ -600,8 +747,13 @@ mod tests {
     #[test]
     fn test_get_remaining_wait() {
         let tracker = RateLimitTracker::new();
+<<<<<<< HEAD
         tracker.parse_from_error("acc1", 429, Some("30"), "", None, &[]);
         let wait = tracker.get_remaining_wait("acc1", None);
+=======
+        tracker.parse_from_error("acc1", 429, Some("30"), "", None);
+        let wait = tracker.get_remaining_wait("acc1");
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         assert!(wait > 25 && wait <= 30);
     }
 
@@ -609,8 +761,13 @@ mod tests {
     fn test_safety_buffer() {
         let tracker = RateLimitTracker::new();
         // 如果 API 返回 1s，我们强制设为 2s
+<<<<<<< HEAD
         tracker.parse_from_error("acc1", 429, Some("1"), "", None, &[]);
         let wait = tracker.get_remaining_wait("acc1", None);
+=======
+        tracker.parse_from_error("acc1", 429, Some("1"), "", None);
+        let wait = tracker.get_remaining_wait("acc1");
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // Due to time passing, it might be 1 or 2
         assert!(wait >= 1 && wait <= 2);
     }

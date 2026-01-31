@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});exports. default = {":root, [data-theme]":{"background":"var(--page-scroll-bg, var(--root-bg))","color":"var(--color-base-content)"},":where(:root, [data-theme])":{"--root-bg":"var(--color-base-100)"}}; /* v7-cbe76a81326f384a */

@@ -1,4 +1,14 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+<<<<<<< HEAD
+=======
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
@@ -77,6 +87,7 @@ function Pagination({
                     {onPageSizeChange && (
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600 dark:text-gray-400">{t('common.per_page')}</span>
+<<<<<<< HEAD
                             <select
                                 value={itemsPerPage}
                                 onChange={(e) => onPageSizeChange(parseInt(e.target.value))}
@@ -86,6 +97,23 @@ function Pagination({
                                     <option key={size} value={size}>{size} {t('common.items')}</option>
                                 ))}
                             </select>
+=======
+                            <Select
+                                value={String(itemsPerPage)}
+                                onValueChange={(value) => onPageSizeChange(parseInt(value))}
+                            >
+                                <SelectTrigger className="w-[110px] h-8 text-sm">
+                                    <SelectValue placeholder={String(itemsPerPage)} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {pageSizeOptions.map(size => (
+                                        <SelectItem key={size} value={String(size)}>
+                                            {size} {t('common.items')}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         </div>
                     )}
                 </div>

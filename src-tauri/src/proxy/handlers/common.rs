@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 use tokio::time::{sleep, Duration};
 use tracing::{debug, info};
 use axum::{http::StatusCode, response::{IntoResponse, Response}, Json, extract::State};
@@ -140,12 +141,22 @@ pub fn should_rotate_account(status_code: u16) -> bool {
     }
 }
 
+=======
+use axum::{extract::State, extract::Json, http::StatusCode, response::IntoResponse};
+use serde_json::{json, Value};
+use crate::proxy::server::AppState;
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// Detects model capabilities and configuration
 /// POST /v1/models/detect
 pub async fn handle_detect_model(
     State(state): State<AppState>,
     Json(body): Json<Value>,
+<<<<<<< HEAD
 ) -> Response {
+=======
+) -> impl IntoResponse {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let model_name = body.get("model").and_then(|v| v.as_str()).unwrap_or("");
     
     if model_name.is_empty() {

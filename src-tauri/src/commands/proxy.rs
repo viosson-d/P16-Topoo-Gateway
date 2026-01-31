@@ -1,7 +1,10 @@
 use tauri::State;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+<<<<<<< HEAD
 use std::sync::atomic::{AtomicBool, Ordering};
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use serde::{Serialize, Deserialize};
 use crate::proxy::{ProxyConfig, TokenManager};
 use tokio::time::Duration;
@@ -18,6 +21,7 @@ pub struct ProxyStatus {
 }
 
 /// 反代服务全局状态
+<<<<<<< HEAD
 #[derive(Clone)]
 pub struct ProxyServiceState {
     pub instance: Arc<RwLock<Option<ProxyServiceInstance>>>,
@@ -29,6 +33,11 @@ pub struct ProxyServiceState {
 pub struct AdminServerInstance {
     pub axum_server: crate::proxy::AxumServer,
     pub server_handle: tokio::task::JoinHandle<()>,
+=======
+pub struct ProxyServiceState {
+    pub instance: Arc<RwLock<Option<ProxyServiceInstance>>>,
+    pub monitor: Arc<RwLock<Option<Arc<ProxyMonitor>>>>,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 反代服务实例
@@ -44,17 +53,25 @@ impl ProxyServiceState {
         Self {
             instance: Arc::new(RwLock::new(None)),
             monitor: Arc::new(RwLock::new(None)),
+<<<<<<< HEAD
             admin_server: Arc::new(RwLock::new(None)),
             starting: Arc::new(AtomicBool::new(false)),
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 }
 
+<<<<<<< HEAD
 /// 启动反代服务 (Tauri 命令)
+=======
+/// 启动反代服务
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 #[tauri::command]
 pub async fn start_proxy_service(
     config: ProxyConfig,
     state: State<'_, ProxyServiceState>,
+<<<<<<< HEAD
     cf_state: State<'_, crate::commands::cloudflared::CloudflaredState>,
     app_handle: tauri::AppHandle,
 ) -> Result<ProxyStatus, String> {
@@ -95,17 +112,31 @@ pub async fn internal_start_proxy_service(
 
     // 使用自定义 Drop guard 确保无论成功失败都会重置 starting 状态
     let _starting_guard = StartingGuard(state.starting.clone());
+=======
+    app_handle: tauri::AppHandle,
+) -> Result<ProxyStatus, String> {
+    let mut instance_lock = state.instance.write().await;
+    
+    // 防止重复启动
+    if instance_lock.is_some() {
+        return Err("服务已在运行中".to_string());
+    }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // Ensure monitor exists
     {
         let mut monitor_lock = state.monitor.write().await;
         if monitor_lock.is_none() {
+<<<<<<< HEAD
             let app_handle = if let crate::modules::integration::SystemManager::Desktop(ref h) = integration {
                 Some(h.clone())
             } else {
                 None
             };
             *monitor_lock = Some(Arc::new(ProxyMonitor::new(1000, app_handle)));
+=======
+            *monitor_lock = Some(Arc::new(ProxyMonitor::new(1000, Some(app_handle.clone()))));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
         // Sync enabled state from config
         if let Some(monitor) = monitor_lock.as_ref() {
@@ -113,6 +144,7 @@ pub async fn internal_start_proxy_service(
         }
     }
     
+<<<<<<< HEAD
     let _monitor = state.monitor.read().await.as_ref().unwrap().clone();
     
     // 檢查並啟動管理服務器（如果尚未運行）
@@ -141,11 +173,35 @@ pub async fn internal_start_proxy_service(
     // 3. 加載賬號
     let active_accounts = token_manager.load_accounts().await
         .unwrap_or(0);
+=======
+    let monitor = state.monitor.read().await.as_ref().unwrap().clone();
+    
+    // 2. 初始化 Token 管理器
+    let app_data_dir = crate::modules::account::get_data_dir()?;
+    // Ensure accounts dir exists even if the user will only use non-Google providers (e.g. z.ai).
+    let _ = crate::modules::account::get_accounts_dir()?;
+    let accounts_dir = app_data_dir.clone();
+    
+    let token_manager = Arc::new(TokenManager::new(accounts_dir));
+    token_manager.start_auto_cleanup(); // 启动限流记录自动清理后台任务
+    // 同步 UI 传递的调度配置
+    token_manager.update_sticky_config(config.scheduling.clone()).await;
+    
+    // 3. 加载账号
+    let active_accounts = token_manager.load_accounts().await
+        .map_err(|e| format!("加载账号失败: {}", e))?;
+    
+    // 3a. [FIX #820] 同步当前活跃账号，确保启动后立即尊重用户的账号选择
+    if let Ok(Some(id)) = crate::modules::get_current_account_id() {
+        token_manager.set_preferred_account(Some(id)).await;
+    }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     if active_accounts == 0 {
         let zai_enabled = config.zai.enabled
             && !matches!(config.zai.dispatch_mode, crate::proxy::ZaiDispatchMode::Off);
         if !zai_enabled {
+<<<<<<< HEAD
             tracing::warn!("沒有可用賬號，反代邏輯將暫停，請通過管理界面添加。");
             return Ok(ProxyStatus {
                 running: false,
@@ -175,6 +231,47 @@ pub async fn internal_start_proxy_service(
     
     // 成功启动后，guard 在这里结束并重置 starting 是 OK 的
     // 但其实我们可以直接手动掉，或者相信 guard
+=======
+            return Err("没有可用账号，请先添加账号".to_string());
+        }
+    }
+    
+    // 启动 Axum 服务器
+    let (axum_server, server_handle) =
+        match crate::proxy::AxumServer::start(
+            config.get_bind_address().to_string(),
+            config.port,
+            token_manager.clone(),
+            config.custom_mapping.clone(),
+            config.request_timeout,
+            config.upstream_proxy.clone(),
+            crate::proxy::ProxySecurityConfig::from_proxy_config(&config),
+            config.zai.clone(),
+            monitor.clone(),
+            config.experimental.clone(),
+
+        ).await {
+            Ok((server, handle)) => (server, handle),
+            Err(e) => return Err(format!("启动 Axum 服务器失败: {}", e)),
+        };
+    
+    // 创建服务实例
+    let instance = ProxyServiceInstance {
+        config: config.clone(),
+        token_manager: token_manager.clone(), // Clone for ProxyServiceInstance
+        axum_server,
+        server_handle,
+    };
+    
+    *instance_lock = Some(instance);
+    
+
+    // 保存配置到全局 AppConfig
+    let mut app_config = crate::modules::config::load_app_config().map_err(|e| e)?;
+    app_config.proxy = config.clone();
+    crate::modules::config::save_app_config(&app_config).map_err(|e| e)?;
+    
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(ProxyStatus {
         running: true,
         port: config.port,
@@ -183,6 +280,7 @@ pub async fn internal_start_proxy_service(
     })
 }
 
+<<<<<<< HEAD
 /// 确保管理服务器正在运行
 pub async fn ensure_admin_server(
     config: ProxyConfig,
@@ -244,6 +342,8 @@ pub async fn ensure_admin_server(
     Ok(())
 }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// 停止反代服务
 #[tauri::command]
 pub async fn stop_proxy_service(
@@ -255,10 +355,18 @@ pub async fn stop_proxy_service(
         return Err("服务未运行".to_string());
     }
     
+<<<<<<< HEAD
     // 停止 Axum 服务器 (仅逻辑停止，不杀死进程)
     if let Some(instance) = instance_lock.take() {
         instance.axum_server.set_running(false).await;
         // 已移除 instance.axum_server.stop() 调用，防止杀死 Admin Server
+=======
+    // 停止 Axum 服务器
+    if let Some(instance) = instance_lock.take() {
+        instance.axum_server.stop();
+        // 等待服务器任务完成
+        instance.server_handle.await.ok();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     Ok(())
@@ -269,6 +377,7 @@ pub async fn stop_proxy_service(
 pub async fn get_proxy_status(
     state: State<'_, ProxyServiceState>,
 ) -> Result<ProxyStatus, String> {
+<<<<<<< HEAD
     // 优先检查启动标志，避免被写锁阻塞
     if state.starting.load(Ordering::SeqCst) {
         return Ok(ProxyStatus {
@@ -308,6 +417,23 @@ pub async fn get_proxy_status(
                 active_accounts: 0,
             })
         }
+=======
+    let instance_lock = state.instance.read().await;
+    
+    match instance_lock.as_ref() {
+        Some(instance) => Ok(ProxyStatus {
+            running: true,
+            port: instance.config.port,
+            base_url: format!("http://127.0.0.1:{}", instance.config.port),
+            active_accounts: instance.token_manager.len(),
+        }),
+        None => Ok(ProxyStatus {
+            running: false,
+            port: 0,
+            base_url: String::new(),
+            active_accounts: 0,
+        }),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
@@ -369,10 +495,20 @@ pub async fn get_proxy_logs_paginated(
     limit: Option<usize>,
     offset: Option<usize>,
 ) -> Result<Vec<ProxyRequestLog>, String> {
+<<<<<<< HEAD
     crate::modules::proxy_db::get_logs_summary(
         limit.unwrap_or(20),
         offset.unwrap_or(0)
     )
+=======
+    let limit = limit.unwrap_or(20);
+    let offset = offset.unwrap_or(0);
+    tokio::task::spawn_blocking(move || {
+        crate::modules::proxy_db::get_logs_summary(limit, offset)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 获取单条日志的完整详情
@@ -380,13 +516,29 @@ pub async fn get_proxy_logs_paginated(
 pub async fn get_proxy_log_detail(
     log_id: String,
 ) -> Result<ProxyRequestLog, String> {
+<<<<<<< HEAD
     crate::modules::proxy_db::get_log_detail(&log_id)
+=======
+    tokio::task::spawn_blocking(move || {
+        crate::modules::proxy_db::get_log_detail(&log_id)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 获取日志总数
 #[tauri::command]
 pub async fn get_proxy_logs_count() -> Result<u64, String> {
+<<<<<<< HEAD
     crate::modules::proxy_db::get_logs_count()
+=======
+    tokio::task::spawn_blocking(move || {
+        crate::modules::proxy_db::get_logs_count()
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 导出所有日志到指定文件
@@ -394,6 +546,7 @@ pub async fn get_proxy_logs_count() -> Result<u64, String> {
 pub async fn export_proxy_logs(
     file_path: String,
 ) -> Result<usize, String> {
+<<<<<<< HEAD
     let logs = crate::modules::proxy_db::get_all_logs_for_export()?;
     let count = logs.len();
     
@@ -404,6 +557,22 @@ pub async fn export_proxy_logs(
         .map_err(|e| format!("Failed to write file: {}", e))?;
     
     Ok(count)
+=======
+    tokio::task::spawn_blocking(move || {
+        let logs = crate::modules::proxy_db::get_all_logs_for_export()?;
+        let count = logs.len();
+        
+        let json = serde_json::to_string_pretty(&logs)
+            .map_err(|e| format!("Failed to serialize logs: {}", e))?;
+        
+        std::fs::write(&file_path, json)
+            .map_err(|e| format!("Failed to write file: {}", e))?;
+        
+        Ok(count)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 导出指定的日志JSON到文件
@@ -433,7 +602,15 @@ pub async fn get_proxy_logs_count_filtered(
     filter: String,
     errors_only: bool,
 ) -> Result<u64, String> {
+<<<<<<< HEAD
     crate::modules::proxy_db::get_logs_count_filtered(&filter, errors_only)
+=======
+    tokio::task::spawn_blocking(move || {
+        crate::modules::proxy_db::get_logs_count_filtered(&filter, errors_only)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 获取带搜索条件的分页日志
@@ -444,7 +621,15 @@ pub async fn get_proxy_logs_filtered(
     limit: usize,
     offset: usize,
 ) -> Result<Vec<crate::proxy::monitor::ProxyRequestLog>, String> {
+<<<<<<< HEAD
     crate::modules::proxy_db::get_logs_filtered(&filter, errors_only, limit, offset)
+=======
+    tokio::task::spawn_blocking(move || {
+        crate::modules::proxy_db::get_logs_filtered(&filter, errors_only, limit, offset)
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 生成 API Key
@@ -457,6 +642,10 @@ pub fn generate_api_key() -> String {
 #[tauri::command]
 pub async fn reload_proxy_accounts(
     state: State<'_, ProxyServiceState>,
+<<<<<<< HEAD
+=======
+    preferred_id: Option<String>,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 ) -> Result<usize, String> {
     let instance_lock = state.instance.read().await;
 
@@ -466,6 +655,31 @@ pub async fn reload_proxy_accounts(
         // won't be routed to the previously bound (wrong) account
         instance.token_manager.clear_all_sessions();
 
+<<<<<<< HEAD
+=======
+        // 5a. [CRITICAL] Sync "Active Account" to "Preferred Account"
+        // This ensures the Proxy Service respects the user's manual "Switch" selection immediately.
+        // We prioritize the `preferred_id` passed directly from the switch_account command to avoid disk sync lag.
+        if let Some(id) = preferred_id {
+            crate::modules::logger::log_info(&format!("Reloading Proxy: Enforcing preferred account (provided): {}", id));
+            instance.token_manager.set_preferred_account(Some(id)).await;
+        } else {
+            match crate::modules::get_current_account_id() {
+                 Ok(Some(id)) => {
+                     crate::modules::logger::log_info(&format!("Reloading Proxy: Enforcing preferred account (from disk): {}", id));
+                     instance.token_manager.set_preferred_account(Some(id)).await;
+                 }
+                 Ok(None) => {
+                     crate::modules::logger::log_info("Reloading Proxy: No active account set, defaulting to Round-Robin.");
+                     instance.token_manager.set_preferred_account(None).await;
+                 }
+                 Err(e) => {
+                     crate::modules::logger::log_error(&format!("Reloading Proxy: Failed to get current account: {}", e));
+                 }
+            }
+        }
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 重新加载账号
         let count = instance.token_manager.load_accounts().await
             .map_err(|e| format!("重新加载账号失败: {}", e))?;
@@ -664,6 +878,7 @@ pub async fn set_preferred_account(
     if let Some(instance) = instance_lock.as_ref() {
         // 过滤空字符串为 None
         let cleaned_id = account_id.filter(|s| !s.trim().is_empty());
+<<<<<<< HEAD
 
         // 1. 更新内存状态
         instance.token_manager.set_preferred_account(cleaned_id.clone()).await;
@@ -681,6 +896,9 @@ pub async fn set_preferred_account(
             tracing::info!("🔄 [FIX #820] Round-robin mode enabled and persisted");
         }
 
+=======
+        instance.token_manager.set_preferred_account(cleaned_id).await;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         Ok(())
     } else {
         Err("服务未运行".to_string())
@@ -700,6 +918,7 @@ pub async fn get_preferred_account(
     }
 }
 
+<<<<<<< HEAD
 /// 清除指定账号的限流记录
 #[tauri::command]
 pub async fn clear_proxy_rate_limit(
@@ -725,5 +944,76 @@ pub async fn clear_all_proxy_rate_limits(
         Ok(())
     } else {
         Err("服务未运行".to_string())
+=======
+
+/// 强制清理网关端口 (8045, 19527)
+#[tauri::command]
+pub async fn force_cleanup_ports() -> Result<String, String> {
+    let ports = vec![8045, 19527];
+    let mut killed_count = 0;
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        use std::process::Command;
+        for port in ports {
+            // Find PIDs using the port
+            let output = Command::new("lsof")
+                .args(&["-t", "-i", &format!(":{}", port)])
+                .output()
+                .map_err(|e| format!("Failed to run lsof: {}", e))?;
+
+            let pids = String::from_utf8_lossy(&output.stdout);
+            for pid_str in pids.lines() {
+                if let Ok(pid) = pid_str.trim().parse::<u32>() {
+                    // Skip self
+                    if pid == std::process::id() {
+                        continue;
+                    }
+                    
+                    // Kill the process
+                    let _ = Command::new("kill").arg("-9").arg(pid.to_string()).status();
+                    killed_count += 1;
+                    tracing::info!("Killed process {} on port {}", pid, port);
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        use std::process::Command;
+        for port in ports {
+            // Find PIDs using netstat
+            let output = Command::new("cmd")
+                .args(&["/C", &format!("netstat -ano | findstr :{}", port)])
+                .output()
+                .map_err(|e| format!("Failed to run netstat: {}", e))?;
+
+            let lines = String::from_utf8_lossy(&output.stdout);
+            for line in lines.lines() {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if let Some(pid_str) = parts.last() {
+                    if let Ok(pid) = pid_str.trim().parse::<u32>() {
+                        // Skip self
+                        if pid == std::process::id() {
+                            continue;
+                        }
+
+                        let _ = Command::new("taskkill")
+                            .args(&["/F", "/PID", &pid.to_string()])
+                            .status();
+                        killed_count += 1;
+                        tracing::info!("Killed process {} on port {}", pid, port);
+                    }
+                }
+            }
+        }
+    }
+
+    if killed_count == 0 {
+        Ok("没有检测到占用端口的外部进程".to_string())
+    } else {
+        Ok(format!("成功清理了 {} 个冲突进程", killed_count))
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

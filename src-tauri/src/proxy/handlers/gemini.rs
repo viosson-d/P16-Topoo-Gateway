@@ -6,9 +6,12 @@ use tracing::{debug, error, info};
 use crate::proxy::mappers::gemini::{wrap_request, unwrap_response};
 use crate::proxy::server::AppState;
 use crate::proxy::session_manager::SessionManager;
+<<<<<<< HEAD
 use crate::proxy::handlers::common::{determine_retry_strategy, apply_retry_strategy, should_rotate_account, RetryStrategy};
 use crate::proxy::debug_logger;
 use tokio::time::Duration;
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
  
 const MAX_RETRY_ATTEMPTS: usize = 3;
  
@@ -27,13 +30,17 @@ pub async fn handle_generate(
     };
 
     crate::modules::logger::log_info(&format!("Received Gemini request: {}/{}", model_name, method));
+<<<<<<< HEAD
     let trace_id = format!("req_{}", chrono::Utc::now().timestamp_subsec_millis());
     let debug_cfg = state.debug_logging.read().await.clone();
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 1. 验证方法
     if method != "generateContent" && method != "streamGenerateContent" {
         return Err((StatusCode::BAD_REQUEST, format!("Unsupported method: {}", method)));
     }
+<<<<<<< HEAD
     if debug_logger::is_enabled(&debug_cfg) {
         let original_payload = json!({
             "kind": "original_request",
@@ -53,6 +60,9 @@ pub async fn handle_generate(
     if force_stream_internally {
         // debug!("[AutoConverter] Converting non-stream request to stream");
     }
+=======
+    let is_stream = method == "streamGenerateContent";
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 2. 获取 UpstreamClient 和 TokenManager
     let upstream = state.upstream.clone();
@@ -62,6 +72,10 @@ pub async fn handle_generate(
     
     let mut last_error = String::new();
     let mut last_email: Option<String> = None;
+<<<<<<< HEAD
+=======
+    let mut last_account_name: Option<String> = None;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     for attempt in 0..max_attempts {
         // 3. 模型路由解析
@@ -83,8 +97,13 @@ pub async fn handle_generate(
         });
 
         let config = crate::proxy::mappers::common_utils::resolve_request_config(
+<<<<<<< HEAD
             &model_name,
             &mapped_model,
+=======
+            &model_name, 
+            &mapped_model, 
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             &tools_val,
             None,  // size (not applicable for Gemini native protocol)
             None   // quality
@@ -95,7 +114,11 @@ pub async fn handle_generate(
         let session_id = SessionManager::extract_gemini_session_id(&body, &model_name);
 
         // 关键：在重试尝试 (attempt > 0) 时强制轮换账号
+<<<<<<< HEAD
         let (access_token, project_id, email, _wait_ms) = match token_manager.get_token(&config.request_type, attempt > 0, Some(&session_id), &config.final_model).await {
+=======
+        let (access_token, project_id, email, account_name) = match token_manager.get_token(&config.request_type, attempt > 0, Some(&session_id), &config.final_model).await {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Ok(t) => t,
             Err(e) => {
                 return Err((StatusCode::SERVICE_UNAVAILABLE, format!("Token error: {}", e)));
@@ -103,12 +126,17 @@ pub async fn handle_generate(
         };
 
         last_email = Some(email.clone());
+<<<<<<< HEAD
+=======
+        last_account_name = account_name.clone();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         info!("✓ Using account: {} (type: {})", email, config.request_type);
 
         // 5. 包装请求 (project injection)
         // [FIX #765] Pass session_id to wrap_request for signature injection
         let wrapped_body = wrap_request(&body, &project_id, &mapped_model, Some(&session_id));
 
+<<<<<<< HEAD
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
                 "kind": "v1internal_request",
@@ -123,6 +151,8 @@ pub async fn handle_generate(
             debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "v1internal_request", &payload).await;
         }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 5. 上游调用
         let query_string = if is_stream { Some("alt=sse") } else { None };
         let upstream_method = if is_stream { "streamGenerateContent" } else { "generateContent" };
@@ -147,6 +177,7 @@ pub async fn handle_generate(
                 use bytes::{Bytes, BytesMut};
                 use futures::StreamExt;
                 
+<<<<<<< HEAD
                 let meta = json!({
                     "protocol": "gemini",
                     "trace_id": trace_id,
@@ -163,6 +194,9 @@ pub async fn handle_generate(
                     "upstream_response",
                     meta,
                 );
+=======
+                let mut response_stream = response.bytes_stream();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 let mut buffer = BytesMut::new();
                 let s_id = session_id.clone(); // Clone for stream closure
 
@@ -200,7 +234,10 @@ pub async fn handle_generate(
                     continue;
                 }
 
+<<<<<<< HEAD
                 let s_id_for_stream = s_id.clone();
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 let stream = async_stream::stream! {
                     let mut first_data = first_chunk;
                     loop {
@@ -250,9 +287,14 @@ pub async fn handle_generate(
                                                         if let Some(parts) = cand.get("content").and_then(|c| c.get("parts")).and_then(|p| p.as_array()) {
                                                             for part in parts {
                                                                 if let Some(sig) = part.get("thoughtSignature").and_then(|s| s.as_str()) {
+<<<<<<< HEAD
                                                                     crate::proxy::SignatureCache::global()
                                                                         .cache_session_signature(&s_id_for_stream, sig.to_string(), 1);
                                                                     debug!("[Gemini-SSE] Cached signature (len: {}) for session: {}", sig.len(), s_id_for_stream);
+=======
+                                                                    crate::proxy::SignatureCache::global().cache_session_signature(&s_id, sig.to_string());
+                                                                    debug!("[Gemini-SSE] Cached signature (len: {}) for session: {}", sig.len(), s_id);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                                                 }
                                                             }
                                                         }
@@ -286,6 +328,7 @@ pub async fn handle_generate(
                     }
                 };
                 
+<<<<<<< HEAD
                 if client_wants_stream {
                     let body = Body::from_stream(stream);
                     return Ok(Response::builder()
@@ -313,6 +356,20 @@ pub async fn handle_generate(
                          }
                     }
                 }
+=======
+                let body = Body::from_stream(stream);
+                return Ok(Response::builder()
+                    .header("Content-Type", "text/event-stream")
+                    .header("Cache-Control", "no-cache")
+                    .header("Connection", "keep-alive")
+                    .header("X-Accel-Buffering", "no")
+                    .header("X-Account-Email", &email)
+                    .header("X-Account-Name", account_name.as_deref().unwrap_or(""))
+                    .header("X-Mapped-Model", &mapped_model)
+                    .body(body)
+                    .unwrap()
+                    .into_response());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             let gemini_resp: Value = response
@@ -333,8 +390,12 @@ pub async fn handle_generate(
                         if let Some(parts) = cand.get("content").and_then(|c| c.get("parts")).and_then(|p| p.as_array()) {
                             for part in parts {
                                 if let Some(sig) = part.get("thoughtSignature").and_then(|s| s.as_str()) {
+<<<<<<< HEAD
                                     crate::proxy::SignatureCache::global()
                                         .cache_session_signature(&session_id, sig.to_string(), 1);
+=======
+                                    crate::proxy::SignatureCache::global().cache_session_signature(&session_id, sig.to_string());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     debug!("[Gemini-Response] Cached signature (len: {}) for session: {}", sig.len(), session_id);
                                 }
                             }
@@ -344,7 +405,11 @@ pub async fn handle_generate(
             }
 
             let unwrapped = unwrap_response(&gemini_resp);
+<<<<<<< HEAD
             return Ok((StatusCode::OK, [("X-Account-Email", email.as_str()), ("X-Mapped-Model", mapped_model.as_str())], Json(unwrapped)).into_response());
+=======
+            return Ok((StatusCode::OK, [("X-Account-Email", email.as_str()), ("X-Account-Name", account_name.as_deref().unwrap_or("")), ("X-Mapped-Model", mapped_model.as_str())], Json(unwrapped)).into_response());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         // 处理错误并重试
@@ -352,6 +417,7 @@ pub async fn handle_generate(
         let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
         let error_text = response.text().await.unwrap_or_else(|_| format!("HTTP {}", status_code));
         last_error = format!("HTTP {}: {}", status_code, error_text);
+<<<<<<< HEAD
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
                 "kind": "upstream_response_error",
@@ -377,6 +443,21 @@ pub async fn handle_generate(
             if !should_rotate_account(status_code) {
                 debug!("[{}] Keeping same account for status {} (Gemini server-side issue)", trace_id, status_code);
             }
+=======
+ 
+        // 只有 429 (限流), 529 (过载), 503, 403 (权限) 和 401 (认证失效) 触发账号轮换
+        if status_code == 429 || status_code == 529 || status_code == 503 || status_code == 500 || status_code == 403 || status_code == 401 {
+            // 记录限流信息 (全局同步)
+            token_manager.mark_rate_limited(&email, status_code, retry_after.as_deref(), &error_text);
+
+            // 只有明确包含 "QUOTA_EXHAUSTED" 才停止，避免误判上游的频率限制提示 (如 "check quota")
+            if status_code == 429 && error_text.contains("QUOTA_EXHAUSTED") {
+                error!("Gemini Quota exhausted (429) on account {} attempt {}/{}, stopping to protect pool.", email, attempt + 1, max_attempts);
+                return Ok((status, [("X-Account-Email", email.as_str()), ("X-Account-Name", account_name.as_deref().unwrap_or(""))], error_text).into_response());
+            }
+
+            tracing::warn!("Gemini Upstream {} on account {} attempt {}/{}, rotating account", status_code, email, attempt + 1, max_attempts);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             continue;
         }
 
@@ -413,7 +494,11 @@ pub async fn handle_generate(
     }
 
     if let Some(email) = last_email {
+<<<<<<< HEAD
         Ok((StatusCode::TOO_MANY_REQUESTS, [("X-Account-Email", email)], format!("All accounts exhausted. Last error: {}", last_error)).into_response())
+=======
+        Ok((StatusCode::TOO_MANY_REQUESTS, [("X-Account-Email", email), ("X-Account-Name", last_account_name.unwrap_or_default())], format!("All accounts exhausted. Last error: {}", last_error)).into_response())
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     } else {
         Ok((StatusCode::TOO_MANY_REQUESTS, format!("All accounts exhausted. Last error: {}", last_error)).into_response())
     }
@@ -455,7 +540,11 @@ pub async fn handle_get_model(Path(model_name): Path<String>) -> impl IntoRespon
 
 pub async fn handle_count_tokens(State(state): State<AppState>, Path(_model_name): Path<String>, Json(_body): Json<Value>) -> Result<impl IntoResponse, (StatusCode, String)> {
     let model_group = "gemini";
+<<<<<<< HEAD
     let (_access_token, _project_id, _, _wait_ms) = state.token_manager.get_token(model_group, false, None, "gemini").await
+=======
+    let (_access_token, _project_id, _, _) = state.token_manager.get_token(model_group, false, None, "gemini").await
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         .map_err(|e| (StatusCode::SERVICE_UNAVAILABLE, format!("Token error: {}", e)))?;
     
     Ok(Json(json!({"totalTokens": 0})))

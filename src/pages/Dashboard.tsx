@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -15,11 +16,32 @@ import { Account } from '../types/account';
 function Dashboard() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+=======
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { useAccountStore } from '../stores/useAccountStore';
+import { showToast } from '../components/common/ToastContainer';
+import { cn } from '../lib/utils';
+import AddAccountDialog from '../components/accounts/AddAccountDialog';
+import { DashboardInsights } from '../components/dashboard/DashboardInsights';
+import { UsageChart } from '../components/dashboard/UsageChart';
+import { RecentActivity } from '../components/dashboard/RecentActivity';
+import { ControlHub } from '../components/dashboard/ControlHub';
+import { useActivityStore } from '../stores/useActivityStore';
+
+import { PageHeader } from '../components/layout/PageHeader';
+import { PageContainer } from '../components/layout/PageContainer';
+
+function Dashboard() {
+    const { t, i18n } = useTranslation();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     const {
         accounts,
         currentAccount,
         fetchAccounts,
         fetchCurrentAccount,
+<<<<<<< HEAD
         switchAccount,
         addAccount,
         refreshQuota,
@@ -32,15 +54,48 @@ function Dashboard() {
     }, []);
 
     // 计算统计数据
+=======
+        addAccount,
+        refreshQuota,
+        error
+    } = useAccountStore();
+
+    const {
+        fetchUsageHistory,
+        fetchRecentActivity,
+        setupListeners
+    } = useActivityStore();
+
+    useEffect(() => {
+        fetchAccounts();
+        fetchCurrentAccount();
+        fetchUsageHistory();
+        fetchRecentActivity();
+
+        // Setup realtime listeners
+        let unlisten: (() => void) | undefined;
+        setupListeners().then(fn => {
+            unlisten = fn;
+        });
+
+        return () => {
+            if (unlisten) unlisten();
+        };
+    }, []);
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     const stats = useMemo(() => {
         const geminiQuotas = accounts
             .map(a => a.quota?.models.find(m => m.name.toLowerCase() === 'gemini-3-pro-high')?.percentage || 0)
             .filter(q => q > 0);
 
+<<<<<<< HEAD
         const geminiImageQuotas = accounts
             .map(a => a.quota?.models.find(m => m.name.toLowerCase() === 'gemini-3-pro-image')?.percentage || 0)
             .filter(q => q > 0);
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         const claudeQuotas = accounts
             .map(a => a.quota?.models.find(m => m.name.toLowerCase() === 'claude-sonnet-4-5')?.percentage || 0)
             .filter(q => q > 0);
@@ -49,11 +104,16 @@ function Dashboard() {
             if (a.quota?.is_forbidden) return false;
             const gemini = a.quota?.models.find(m => m.name.toLowerCase() === 'gemini-3-pro-high')?.percentage || 0;
             const claude = a.quota?.models.find(m => m.name.toLowerCase() === 'claude-sonnet-4-5')?.percentage || 0;
+<<<<<<< HEAD
             return gemini < 20 || claude < 20;
+=======
+            return gemini < 10 || claude < 10;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }).length;
 
         return {
             total: accounts.length,
+<<<<<<< HEAD
             avgGemini: geminiQuotas.length > 0
                 ? Math.round(geminiQuotas.reduce((a, b) => a + b, 0) / geminiQuotas.length)
                 : 0,
@@ -105,12 +165,33 @@ function Dashboard() {
             showToast(t('dashboard.toast.refresh_success'), 'success');
         } catch (error) {
             console.error('[Dashboard] Refresh failed:', error);
+=======
+            avgGemini: geminiQuotas.length ? Math.round(geminiQuotas.reduce((a, b) => a + b, 0) / geminiQuotas.length) : 0,
+            avgClaude: claudeQuotas.length ? Math.round(claudeQuotas.reduce((a, b) => a + b, 0) / claudeQuotas.length) : 0,
+            lowQuota: lowQuotaCount
+        };
+    }, [accounts]);
+
+    const handleRefreshCurrent = async () => {
+        if (!currentAccount) return;
+        setIsRefreshing(true);
+        try {
+            await Promise.all([
+                refreshQuota(currentAccount.id),
+                fetchUsageHistory(),
+                fetchRecentActivity()
+            ]);
+            await fetchCurrentAccount();
+            showToast(t('dashboard.toast.refresh_success'), 'success');
+        } catch (error) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             showToast(`${t('dashboard.toast.refresh_error')}: ${error}`, 'error');
         } finally {
             setIsRefreshing(false);
         }
     };
 
+<<<<<<< HEAD
     const exportAccountsToJson = async (accountsToExport: Account[]) => {
         try {
             if (accountsToExport.length === 0) {
@@ -294,6 +375,74 @@ function Dashboard() {
                 </div>
             </div>
         </div>
+=======
+    const handleAddAccount = async (email: string, refreshToken: string) => {
+        await addAccount(email, refreshToken);
+        await fetchAccounts();
+    };
+
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    return (
+        <PageContainer className="select-none h-full overflow-y-auto">
+            <PageHeader
+                title="Dashboard"
+                description={t('dashboard.updated_at', {
+                    time: new Date().toLocaleString(i18n.language, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric'
+                    })
+                })}
+            >
+                <AddAccountDialog onAdd={handleAddAccount} />
+                <button
+                    onClick={handleRefreshCurrent}
+                    disabled={isRefreshing}
+                    className="h-7 w-7 flex items-center justify-center p-0 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 border border-transparent hover:border-border/40"
+                >
+                    <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground/35", isRefreshing && "animate-spin")} />
+                </button>
+            </PageHeader>
+
+            <div className="flex flex-col flex-1 min-h-0 gap-4">
+                {/* Error State Display */}
+                {error && (
+                    <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-lg p-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 shrink-0">
+                        <AlertTriangle className="w-4 h-4 shrink-0" />
+                        <p className="flex-1 font-medium">Data Load Error: {error}</p>
+                        <button
+                            onClick={() => { fetchAccounts(); fetchCurrentAccount(); }}
+                            className="px-3 py-1 rounded-md bg-white dark:bg-black/20 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-xs font-semibold"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                )}
+
+                {/* Hero Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+                    <DashboardInsights stats={stats} t={t} />
+                </div>
+
+                {/* Chart Section */}
+                <div className="shrink-0">
+                    <UsageChart />
+                </div>
+
+                {/* Operations Hub - Expands to fill remaining space */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-[600px]">
+                    <div className="lg:col-span-6 flex flex-col h-full min-h-0">
+                        <ControlHub className="h-full" />
+                    </div>
+                    <div className="lg:col-span-6 flex flex-col h-full min-h-0">
+                        <RecentActivity />
+                    </div>
+                </div>
+            </div>
+        </PageContainer>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     );
 }
 

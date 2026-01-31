@@ -327,6 +327,7 @@ pub fn sync_config(app: &CliApp, proxy_url: &str, api_key: &str) -> Result<(), S
                     let env = json.as_object_mut().unwrap().entry("env").or_insert(serde_json::json!({}));
                     if let Some(env_obj) = env.as_object_mut() {
                         env_obj.insert("ANTHROPIC_BASE_URL".to_string(), Value::String(proxy_url.to_string()));
+<<<<<<< HEAD
                         if !api_key.is_empty() {
                             env_obj.insert("ANTHROPIC_API_KEY".to_string(), Value::String(api_key.to_string()));
                             
@@ -342,6 +343,9 @@ pub fn sync_config(app: &CliApp, proxy_url: &str, api_key: &str) -> Result<(), S
                             // 如果 API Key 为空，则移除该键，避免设置为空字符串
                             env_obj.remove("ANTHROPIC_API_KEY");
                         }
+=======
+                        env_obj.insert("ANTHROPIC_API_KEY".to_string(), Value::String(api_key.to_string()));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                     content = serde_json::to_string_pretty(&json).unwrap();
                 }

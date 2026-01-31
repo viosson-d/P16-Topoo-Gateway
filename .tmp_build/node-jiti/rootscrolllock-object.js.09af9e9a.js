@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});exports. default = {":root:not(span)":{"overflow":"var(--page-overflow)"}}; /* v7-190eaab295948841 */

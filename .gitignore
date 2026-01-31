@@ -46,3 +46,10 @@ __pycache__/
 CLIProxyAPI/
 DOCKER_DEPLOYMENT.md
 .cargo_home/
+target/
+src-tauri/target/
+.agent/
+app_data/
+chat_logs/
+.tmp/
+reference/

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { Pin, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+=======
+import { Check } from 'lucide-react';
+import { cn } from "@/lib/utils";
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { PinnedQuotaModelsConfig } from '../../types/config';
 
 interface PinnedQuotaModelsProps {
@@ -8,7 +13,10 @@ interface PinnedQuotaModelsProps {
 }
 
 const PinnedQuotaModels = ({ config, onChange }: PinnedQuotaModelsProps) => {
+<<<<<<< HEAD
     const { t } = useTranslation();
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     const toggleModel = (model: string) => {
         const currentModels = config.models || [];
@@ -33,6 +41,7 @@ const PinnedQuotaModels = ({ config, onChange }: PinnedQuotaModelsProps) => {
     ];
 
     return (
+<<<<<<< HEAD
         <div className="animate-in fade-in duration-500">
             <div className="flex items-center gap-4">
                 {/* 图标部分 - 使用蓝紫色调 */}
@@ -85,6 +94,39 @@ const PinnedQuotaModels = ({ config, onChange }: PinnedQuotaModelsProps) => {
                 </div>
 
 
+=======
+        <div className="p-3">
+            <div className="grid grid-cols-4 gap-2">
+                {modelOptions.map((model) => {
+                    const isSelected = config.models?.includes(model.id);
+                    return (
+                        <div
+                            key={model.id}
+                            onClick={() => toggleModel(model.id)}
+                            className={cn(
+                                "flex items-center justify-between p-2 rounded-md border cursor-pointer transition-all duration-200",
+                                isSelected
+                                    ? "bg-secondary/50 border-secondary-foreground/20 text-foreground"
+                                    : "bg-background border-border hover:border-border/80 text-muted-foreground hover:bg-muted/50"
+                            )}
+                        >
+                            <div className="flex flex-col min-w-0 overflow-hidden">
+                                <span className={cn("text-[11px] font-medium truncate", isSelected ? "text-foreground" : "text-muted-foreground")}>
+                                    {model.label}
+                                </span>
+                                <span className="text-[9px] text-muted-foreground/60 mt-0.5 truncate pr-1">
+                                    {model.desc}
+                                </span>
+                            </div>
+                            {isSelected && (
+                                <div className="w-3 h-3 rounded-full bg-foreground text-background flex items-center justify-center flex-shrink-0">
+                                    <Check size={8} strokeWidth={4} />
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             </div>
         </div>
     );

@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports, "__esModule", {value: true});exports. default = {"@property --radialprogress":{"syntax":"\"<percentage>\"","inherits":"true","initial-value":"0%"}}; /* v7-b7317caf4f32a524 */

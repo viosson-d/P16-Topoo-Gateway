@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 use crate::models::{Account, AppConfig, QuotaData};
+=======
+use crate::models::{Account, AppConfig, QuotaData, TokenData};
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use crate::modules;
 use tauri_plugin_opener::OpenerExt;
 use tauri::{Emitter, Manager};
@@ -9,8 +13,11 @@ pub mod proxy;
 pub mod autostart;
 // 导出 cloudflared 命令
 pub mod cloudflared;
+<<<<<<< HEAD
 // 导出 security 命令 (IP 监控)
 pub mod security;
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// 列出所有账号
 #[tauri::command]
@@ -25,6 +32,7 @@ pub async fn add_account(
     _email: String,
     refresh_token: String,
 ) -> Result<Account, String> {
+<<<<<<< HEAD
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app.clone())
     );
@@ -38,11 +46,47 @@ pub async fn add_account(
     let _ = crate::commands::proxy::reload_proxy_accounts(
         app.state::<crate::commands::proxy::ProxyServiceState>(),
     ).await;
+=======
+    // 1. 使用 refresh_token 获取 access_token
+    // 注意：这里我们忽略传入的 _email，而是直接去 Google 获取真实的邮箱
+    let token_res = modules::oauth::refresh_access_token(&refresh_token).await?;
+
+    // 2. 获取用户信息
+    let user_info = modules::oauth::get_user_info(&token_res.access_token).await?;
+
+    // 3. 构造 TokenData
+    let token = TokenData::new(
+        token_res.access_token,
+        refresh_token, // 继续使用用户传入的 refresh_token
+        token_res.expires_in,
+        Some(user_info.email.clone()),
+        None, // project_id 将在需要时获取
+        None, // session_id
+    );
+
+    // 4. 使用真实的 email 添加或更新账号
+    let account =
+        modules::upsert_account(user_info.email.clone(), user_info.get_display_name(), token)?;
+
+    modules::logger::log_info(&format!("添加账号成功: {}", account.email));
+
+    // 5. 自动触发刷新额度
+    let mut account = account;
+    let _ = internal_refresh_account_quota(&app, &mut account).await;
+
+    // 6. If proxy is running, reload token pool so changes take effect immediately.
+    let _ = crate::commands::proxy::reload_proxy_accounts(
+        app.state::<crate::commands::proxy::ProxyServiceState>(),
+        None,
+    )
+    .await;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     Ok(account)
 }
 
 /// 删除账号
+<<<<<<< HEAD
 /// 删除账号
 #[tauri::command]
 pub async fn delete_account(
@@ -58,6 +102,19 @@ pub async fn delete_account(
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
 
+=======
+#[tauri::command]
+pub async fn delete_account(app: tauri::AppHandle, account_id: String) -> Result<(), String> {
+    modules::logger::log_info(&format!("收到删除账号请求: {}", account_id));
+    modules::delete_account(&account_id).map_err(|e| {
+        modules::logger::log_error(&format!("删除账号失败: {}", e));
+        e
+    })?;
+    modules::logger::log_info(&format!("账号删除成功: {}", account_id));
+
+    // 强制同步托盘
+    crate::modules::tray::update_tray_menus(&app);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(())
 }
 
@@ -65,7 +122,10 @@ pub async fn delete_account(
 #[tauri::command]
 pub async fn delete_accounts(
     app: tauri::AppHandle,
+<<<<<<< HEAD
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     account_ids: Vec<String>,
 ) -> Result<(), String> {
     modules::logger::log_info(&format!(
@@ -79,29 +139,40 @@ pub async fn delete_accounts(
 
     // 强制同步托盘
     crate::modules::tray::update_tray_menus(&app);
+<<<<<<< HEAD
 
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(())
 }
 
 /// 重新排序账号列表
 /// 根据传入的账号ID数组顺序更新账号排列
 #[tauri::command]
+<<<<<<< HEAD
 pub async fn reorder_accounts(
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
     account_ids: Vec<String>,
 ) -> Result<(), String> {
+=======
+pub async fn reorder_accounts(account_ids: Vec<String>) -> Result<(), String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     modules::logger::log_info(&format!("收到账号重排序请求，共 {} 个账号", account_ids.len()));
     modules::account::reorder_accounts(&account_ids).map_err(|e| {
         modules::logger::log_error(&format!("账号重排序失败: {}", e));
         e
+<<<<<<< HEAD
     })?;
 
     // Reload pool to reflect new order if running
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
     Ok(())
+=======
+    })
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 切换账号
@@ -111,6 +182,7 @@ pub async fn switch_account(
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
     account_id: String,
 ) -> Result<(), String> {
+<<<<<<< HEAD
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app.clone())
     );
@@ -124,6 +196,35 @@ pub async fn switch_account(
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
     
     Ok(())
+=======
+    modules::logger::log_info(&format!("🔄 [Switch] Starting account switch to: {}", account_id));
+    
+    let res = modules::switch_account(&account_id).await;
+    
+    match &res {
+        Ok(_) => {
+            modules::logger::log_info(&format!("✅ [Switch] Account switch succeeded: {}", account_id));
+            crate::modules::tray::update_tray_menus(&app);
+            
+            // [FIX #820] Notify proxy to clear stale session bindings and reload accounts
+            // We pass the new account_id directly to ensure immediate synchronization without waiting for disk writes.
+            match crate::commands::proxy::reload_proxy_accounts(proxy_state, Some(account_id.clone())).await {
+                Ok(count) => {
+                    modules::logger::log_info(&format!("✅ [Switch] Proxy reloaded with {} accounts, preferred: {}", count, account_id));
+                }
+                Err(e) => {
+                    modules::logger::log_error(&format!("❌ [Switch] Proxy reload failed: {}", e));
+                    return Err(format!("Account switched but proxy reload failed: {}", e));
+                }
+            }
+        }
+        Err(e) => {
+            modules::logger::log_error(&format!("❌ [Switch] Account switch failed: {}", e));
+        }
+    }
+    
+    res
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 获取当前账号
@@ -198,10 +299,17 @@ pub async fn fetch_account_quota(
 
 pub use modules::account::RefreshStats;
 
+<<<<<<< HEAD
 /// 刷新所有账号配额 (内部实现)
 pub async fn refresh_all_quotas_internal(
     proxy_state: &crate::commands::proxy::ProxyServiceState,
     app_handle: Option<tauri::AppHandle>,
+=======
+/// 刷新所有账号配额
+#[tauri::command]
+pub async fn refresh_all_quotas(
+    proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 ) -> Result<RefreshStats, String> {
     let stats = modules::account::refresh_all_quotas_logic().await?;
 
@@ -211,6 +319,7 @@ pub async fn refresh_all_quotas_internal(
         let _ = instance.token_manager.reload_all_accounts().await;
     }
 
+<<<<<<< HEAD
     // 发送全局刷新事件给 UI (如果需要)
     if let Some(handle) = app_handle {
         use tauri::Emitter;
@@ -228,6 +337,32 @@ pub async fn refresh_all_quotas(
 ) -> Result<RefreshStats, String> {
     refresh_all_quotas_internal(&proxy_state, Some(app_handle)).await
 }
+=======
+    Ok(stats)
+}
+
+/// 重置所有被封禁账号的状态
+#[tauri::command]
+pub async fn reset_forbidden_accounts(
+    app: tauri::AppHandle,
+    proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
+) -> Result<modules::account::ResetStats, String> {
+    modules::logger::log_info("收到重置封禁账号请求");
+    let stats = modules::account::reset_forbidden_accounts_logic()?;
+    
+    // 更新托盘菜单
+    crate::modules::tray::update_tray_menus(&app);
+    
+    // 如果反代服务正在运行,重新加载账号池
+    let instance_lock = proxy_state.instance.read().await;
+    if let Some(instance) = instance_lock.as_ref() {
+        let _ = instance.token_manager.reload_all_accounts().await;
+    }
+    
+    Ok(stats)
+}
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// 获取设备指纹（当前 storage.json + 账号绑定）
 #[tauri::command]
 pub async fn get_device_profiles(
@@ -326,6 +461,13 @@ pub async fn save_config(
 ) -> Result<(), String> {
     modules::save_app_config(&config)?;
 
+<<<<<<< HEAD
+=======
+    // [FIX] Reload global HTTP clients to apply new proxy settings immediately
+    // This fixes the issue where changing proxy settings didn't affect internal API calls until restart
+    crate::utils::http::update_proxy_clients();
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // 通知托盘配置已更新
     let _ = app.emit("config://updated", ());
 
@@ -345,12 +487,19 @@ pub async fn save_config(
         instance.axum_server.update_zai(&config.proxy).await;
         // 更新实验性配置
         instance.axum_server.update_experimental(&config.proxy).await;
+<<<<<<< HEAD
         // 更新调试日志配置
         instance.axum_server.update_debug_logging(&config.proxy).await;
         // [NEW] 更新 User-Agent 配置
         instance.axum_server.update_user_agent(&config.proxy).await;
         // 更新熔断配置
         instance.token_manager.update_circuit_breaker_config(config.circuit_breaker.clone()).await;
+=======
+        
+        // [OPTIMIZATION] Update TokenManager config cache (quota protection, etc.)
+        instance.token_manager.update_config(&config);
+        
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         tracing::debug!("已同步热更新反代服务配置");
     }
 
@@ -362,6 +511,7 @@ pub async fn save_config(
 #[tauri::command]
 pub async fn start_oauth_login(app_handle: tauri::AppHandle) -> Result<Account, String> {
     modules::logger::log_info("开始 OAuth 授权流程...");
+<<<<<<< HEAD
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app_handle.clone())
     );
@@ -374,6 +524,65 @@ pub async fn start_oauth_login(app_handle: tauri::AppHandle) -> Result<Account, 
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(
         app_handle.state::<crate::commands::proxy::ProxyServiceState>(),
+=======
+
+    // 1. 启动 OAuth 流程获取 Token
+    let token_res = modules::oauth_server::start_oauth_flow(app_handle.clone()).await?;
+
+    // 2. 检查 refresh_token
+    let refresh_token = token_res.refresh_token.ok_or_else(|| {
+        "未获取到 Refresh Token。\n\n\
+         可能原因:\n\
+         1. 您之前已授权过此应用,Google 不会再次返回 refresh_token\n\n\
+         解决方案:\n\
+         1. 访问 https://myaccount.google.com/permissions\n\
+         2. 撤销 'Antigravity Tools' 的访问权限\n\
+         3. 重新进行 OAuth 授权\n\n\
+         或者使用 'Refresh Token' 标签页手动添加账号"
+            .to_string()
+    })?;
+
+    // 3. 获取用户信息
+    let user_info = modules::oauth::get_user_info(&token_res.access_token).await?;
+    modules::logger::log_info(&format!("获取用户信息成功: {}", user_info.email));
+
+    // 4. 尝试获取项目ID
+    let project_id = crate::proxy::project_resolver::fetch_project_id(&token_res.access_token)
+        .await
+        .ok();
+
+    if let Some(ref pid) = project_id {
+        modules::logger::log_info(&format!("获取项目ID成功: {}", pid));
+    } else {
+        modules::logger::log_warn("未能获取项目ID,将在后续懒加载");
+    }
+
+    // 5. 构造 TokenData
+    let token_data = TokenData::new(
+        token_res.access_token,
+        refresh_token,
+        token_res.expires_in,
+        Some(user_info.email.clone()),
+        project_id,
+        None,
+    );
+
+    // 6. 添加或更新到账号列表
+    modules::logger::log_info("正在保存账号信息...");
+    let mut account = modules::upsert_account(
+        user_info.email.clone(),
+        user_info.get_display_name(),
+        token_data,
+    )?;
+
+    // 7. 自动触发刷新额度
+    let _ = internal_refresh_account_quota(&app_handle, &mut account).await;
+
+    // 8. If proxy is running, reload token pool so changes take effect immediately.
+    let _ = crate::commands::proxy::reload_proxy_accounts(
+        app_handle.state::<crate::commands::proxy::ProxyServiceState>(),
+        None,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     )
     .await;
 
@@ -384,6 +593,7 @@ pub async fn start_oauth_login(app_handle: tauri::AppHandle) -> Result<Account, 
 #[tauri::command]
 pub async fn complete_oauth_login(app_handle: tauri::AppHandle) -> Result<Account, String> {
     modules::logger::log_info("完成 OAuth 授权流程 (manual)...");
+<<<<<<< HEAD
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app_handle.clone())
     );
@@ -396,6 +606,65 @@ pub async fn complete_oauth_login(app_handle: tauri::AppHandle) -> Result<Accoun
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(
         app_handle.state::<crate::commands::proxy::ProxyServiceState>(),
+=======
+
+    // 1. 等待回调并交换 Token（不 open browser）
+    let token_res = modules::oauth_server::complete_oauth_flow(app_handle.clone()).await?;
+
+    // 2. 检查 refresh_token
+    let refresh_token = token_res.refresh_token.ok_or_else(|| {
+        "未获取到 Refresh Token。\n\n\
+         可能原因:\n\
+         1. 您之前已授权过此应用,Google 不会再次返回 refresh_token\n\n\
+         解决方案:\n\
+         1. 访问 https://myaccount.google.com/permissions\n\
+         2. 撤销 'Antigravity Tools' 的访问权限\n\
+         3. 重新进行 OAuth 授权\n\n\
+         或者使用 'Refresh Token' 标签页手动添加账号"
+            .to_string()
+    })?;
+
+    // 3. 获取用户信息
+    let user_info = modules::oauth::get_user_info(&token_res.access_token).await?;
+    modules::logger::log_info(&format!("获取用户信息成功: {}", user_info.email));
+
+    // 4. 尝试获取项目ID
+    let project_id = crate::proxy::project_resolver::fetch_project_id(&token_res.access_token)
+        .await
+        .ok();
+
+    if let Some(ref pid) = project_id {
+        modules::logger::log_info(&format!("获取项目ID成功: {}", pid));
+    } else {
+        modules::logger::log_warn("未能获取项目ID,将在后续懒加载");
+    }
+
+    // 5. 构造 TokenData
+    let token_data = TokenData::new(
+        token_res.access_token,
+        refresh_token,
+        token_res.expires_in,
+        Some(user_info.email.clone()),
+        project_id,
+        None,
+    );
+
+    // 6. 添加或更新到账号列表
+    modules::logger::log_info("正在保存账号信息...");
+    let mut account = modules::upsert_account(
+        user_info.email.clone(),
+        user_info.get_display_name(),
+        token_data,
+    )?;
+
+    // 7. 自动触发刷新额度
+    let _ = internal_refresh_account_quota(&app_handle, &mut account).await;
+
+    // 8. If proxy is running, reload token pool so changes take effect immediately.
+    let _ = crate::commands::proxy::reload_proxy_accounts(
+        app_handle.state::<crate::commands::proxy::ProxyServiceState>(),
+        None,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     )
     .await;
 
@@ -405,10 +674,14 @@ pub async fn complete_oauth_login(app_handle: tauri::AppHandle) -> Result<Accoun
 /// 预生成 OAuth 授权链接 (不打开浏览器)
 #[tauri::command]
 pub async fn prepare_oauth_url(app_handle: tauri::AppHandle) -> Result<String, String> {
+<<<<<<< HEAD
     let service = modules::account_service::AccountService::new(
         crate::modules::integration::SystemManager::Desktop(app_handle.clone())
     );
     service.prepare_oauth_url().await
+=======
+    crate::modules::oauth_server::prepare_oauth_url(app_handle).await
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 #[tauri::command]
@@ -417,6 +690,7 @@ pub async fn cancel_oauth_login() -> Result<(), String> {
     Ok(())
 }
 
+<<<<<<< HEAD
 /// 手动提交 OAuth Code (用于 Docker/远程环境无法自动回调时)
 #[tauri::command]
 pub async fn submit_oauth_code(code: String, state: Option<String>) -> Result<(), String> {
@@ -431,6 +705,12 @@ pub async fn import_v1_accounts(
     app: tauri::AppHandle,
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
 ) -> Result<Vec<Account>, String> {
+=======
+// --- 导入命令 ---
+
+#[tauri::command]
+pub async fn import_v1_accounts(app: tauri::AppHandle) -> Result<Vec<Account>, String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let accounts = modules::migration::import_from_v1().await?;
 
     // 对导入的账号尝试刷新一波
@@ -438,17 +718,24 @@ pub async fn import_v1_accounts(
         let _ = internal_refresh_account_quota(&app, &mut account).await;
     }
 
+<<<<<<< HEAD
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(accounts)
 }
 
 #[tauri::command]
+<<<<<<< HEAD
 pub async fn import_from_db(
     app: tauri::AppHandle,
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
 ) -> Result<Account, String> {
+=======
+pub async fn import_from_db(app: tauri::AppHandle) -> Result<Account, String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // 同步函数包装为 async
     let mut account = modules::migration::import_from_db().await?;
 
@@ -462,19 +749,26 @@ pub async fn import_from_db(
     // 刷新托盘图标展示
     crate::modules::tray::update_tray_menus(&app);
 
+<<<<<<< HEAD
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(account)
 }
 
 #[tauri::command]
 #[allow(dead_code)]
+<<<<<<< HEAD
 pub async fn import_custom_db(
     app: tauri::AppHandle,
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
     path: String,
 ) -> Result<Account, String> {
+=======
+pub async fn import_custom_db(app: tauri::AppHandle, path: String) -> Result<Account, String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // 调用重构后的自定义导入函数
     let mut account = modules::migration::import_from_custom_db_path(path).await?;
 
@@ -488,17 +782,24 @@ pub async fn import_custom_db(
     // 刷新托盘图标展示
     crate::modules::tray::update_tray_menus(&app);
 
+<<<<<<< HEAD
     // Reload token pool
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(account)
 }
 
 #[tauri::command]
+<<<<<<< HEAD
 pub async fn sync_account_from_db(
     app: tauri::AppHandle,
     proxy_state: tauri::State<'_, crate::commands::proxy::ProxyServiceState>,
 ) -> Result<Option<Account>, String> {
+=======
+pub async fn sync_account_from_db(app: tauri::AppHandle) -> Result<Option<Account>, String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // 1. 获取 DB 中的 Refresh Token
     let db_refresh_token = match modules::migration::get_refresh_token_from_db() {
         Ok(token) => token,
@@ -527,7 +828,11 @@ pub async fn sync_account_from_db(
     }
 
     // 4. 执行完整导入
+<<<<<<< HEAD
     let account = import_from_db(app, proxy_state).await?;
+=======
+    let account = import_from_db(app).await?;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(Some(account))
 }
 
@@ -549,6 +854,7 @@ pub async fn clear_log_cache() -> Result<(), String> {
     modules::logger::clear_logs()
 }
 
+<<<<<<< HEAD
 /// 清理 Antigravity 应用缓存
 /// 用于解决登录失败、版本验证错误等问题
 #[tauri::command]
@@ -565,6 +871,8 @@ pub async fn get_antigravity_cache_paths() -> Result<Vec<String>, String> {
         .collect())
 }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// 打开数据目录
 #[tauri::command]
 pub async fn open_data_folder() -> Result<(), String> {
@@ -610,6 +918,7 @@ pub async fn show_main_window(window: tauri::Window) -> Result<(), String> {
     window.show().map_err(|e| e.to_string())
 }
 
+<<<<<<< HEAD
 /// 设置窗口主题（用于同步 Windows 标题栏按钮颜色）
 #[tauri::command]
 pub async fn set_window_theme(window: tauri::Window, theme: String) -> Result<(), String> {
@@ -624,6 +933,8 @@ pub async fn set_window_theme(window: tauri::Window, theme: String) -> Result<()
     window.set_theme(tauri_theme).map_err(|e| e.to_string())
 }
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// 获取 Antigravity 可执行文件路径
 #[tauri::command]
 pub async fn get_antigravity_path(bypass_config: Option<bool>) -> Result<String, String> {
@@ -748,7 +1059,11 @@ pub async fn toggle_proxy_status(
     ));
 
     // 4. 如果反代服务正在运行,重新加载账号池
+<<<<<<< HEAD
     let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state).await;
+=======
+    let _ = crate::commands::proxy::reload_proxy_accounts(proxy_state, None).await;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 5. 更新托盘菜单
     crate::modules::tray::update_tray_menus(&app);

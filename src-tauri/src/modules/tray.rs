@@ -2,11 +2,19 @@ use tauri::{
     image::Image,
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, TrayIconBuilder, TrayIconEvent},
+<<<<<<< HEAD
     Manager, Emitter, Listener,
 };
 use crate::modules;
 
 pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
+=======
+    Manager, Runtime, Emitter, Listener,
+};
+use crate::modules;
+
+pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // 1. Load config to get language settings
     let config = modules::load_app_config().unwrap_or_default();
     let texts = modules::i18n::get_tray_texts(&config.language);
@@ -68,6 +76,7 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                     }
                 }
                 "quit" => {
+<<<<<<< HEAD
                     // 先停止 Admin Server，避免僵尸 socket
                     let state = app.state::<crate::commands::proxy::ProxyServiceState>();
                     let admin_server = state.admin_server.clone();
@@ -80,6 +89,8 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                     });
                     // 給一點時間讓 socket 關閉
                     std::thread::sleep(std::time::Duration::from_millis(200));
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     app.exit(0);
                 }
                 "refresh_curr" => {
@@ -124,10 +135,14 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
                              };
                              
                              // 2. Switch
+<<<<<<< HEAD
                              let integration = crate::modules::integration::DesktopIntegration {
                                  app_handle: app_handle.clone(),
                              };
                              if let Ok(_) = modules::switch_account(&next_account.id, &integration).await {
+=======
+                             if let Ok(_) = modules::switch_account(&next_account.id).await {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                  // 3. Notify frontend
                                  let _ = app_handle.emit("tray://account-switched", next_account.id.clone());
                                  // 4. Update tray
@@ -173,7 +188,11 @@ pub fn create_tray(app: &tauri::AppHandle) -> tauri::Result<()> {
 }
 
 /// Helper function to update tray menu
+<<<<<<< HEAD
 pub fn update_tray_menus(app: &tauri::AppHandle) {
+=======
+pub fn update_tray_menus<R: Runtime>(app: &tauri::AppHandle<R>) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let app_clone = app.clone();
     tauri::async_runtime::spawn(async move {
          // Read config to get language
@@ -245,7 +264,11 @@ pub fn update_tray_menus(app: &tauri::AppHandle) {
              let sep2 = PredefinedMenuItem::separator(&app_clone).ok();
              let sep3 = PredefinedMenuItem::separator(&app_clone).ok();
              
+<<<<<<< HEAD
              let mut items: Vec<&dyn tauri::menu::IsMenuItem<tauri::Wry>> = vec![&i_u];
+=======
+             let mut items: Vec<&dyn tauri::menu::IsMenuItem<R>> = vec![&i_u];
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
              // Add dynamic quota items
              for item in &quota_items {
                  items.push(item);

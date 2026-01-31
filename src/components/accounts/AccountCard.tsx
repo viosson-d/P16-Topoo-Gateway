@@ -1,6 +1,10 @@
 import { ArrowRightLeft, RefreshCw, Trash2, Download, Info, Lock, Ban, Diamond, Gem, Circle, Clock, ToggleLeft, ToggleRight, Fingerprint, Sparkles } from 'lucide-react';
 import { Account } from '../../types/account';
+<<<<<<< HEAD
 import { getQuotaColor, formatTimeRemaining, getTimeRemainingColor } from '../../utils/format';
+=======
+import { formatTimeRemaining } from '../../utils/format';
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { cn } from '../../utils/cn';
 import { useTranslation } from 'react-i18next';
 
@@ -28,6 +32,7 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
     const geminiFlashModel = account.quota?.models.find(m => m.name === 'gemini-3-flash');
     const geminiImageModel = account.quota?.models.find(m => m.name === 'gemini-3-pro-image');
     const claudeModel = account.quota?.models.find(m => m.name === 'claude-sonnet-4-5-thinking');
+<<<<<<< HEAD
     const isDisabled = Boolean(account.disabled);
 
     const getColorClass = (percentage: number) => {
@@ -47,6 +52,18 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
             case 'warning': return 'text-amber-500 dark:text-amber-400';
             default: return 'text-gray-400 dark:text-gray-500 opacity-60';
         }
+=======
+    const isDisabled = Boolean(account.proxy_disabled);
+
+    const getColorClass = (_percentage: number) => {
+        // Reverted to system secondary color
+        return 'bg-secondary';
+    };
+
+    const getTimeColorClass = (_resetTime: string | undefined) => {
+        // Reverted to static gray/primary based on user feedback
+        return 'text-gray-500 dark:text-gray-400';
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     };
 
     return (
@@ -62,6 +79,10 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
             <div className="flex-none flex items-start gap-3 mb-2">
                 <input
                     type="checkbox"
+<<<<<<< HEAD
+=======
+                    title={t('common.select_account', 'Select Account')}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     className="mt-1 checkbox checkbox-xs rounded border-2 border-gray-400 dark:border-gray-500 checked:border-blue-600 checked:bg-blue-600 [--chkbg:theme(colors.blue.600)] [--chkfg:white]"
                     checked={selected}
                     onChange={() => onSelect()}
@@ -70,19 +91,29 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                         <h3 className={cn(
+<<<<<<< HEAD
                             "font-semibold text-sm truncate",
+=======
+                            "font-medium text-sm truncate",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             isCurrent ? "text-blue-700 dark:text-blue-400" : "text-gray-900 dark:text-base-content"
                         )} title={account.email}>
                             {account.email}
                         </h3>
                         <div className="flex items-center gap-1.5 shrink-0">
                             {isCurrent && (
+<<<<<<< HEAD
                                 <span className="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[9px] font-bold shadow-sm border border-blue-200/50">
                                     {t('accounts.current').toUpperCase()}
+=======
+                                <span className="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-medium shadow-sm border border-blue-200/50">
+                                    {t('accounts.current')}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 </span>
                             )}
                             {isDisabled && (
                                 <span
+<<<<<<< HEAD
                                     className="px-1.5 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-[9px] font-bold flex items-center gap-1 shadow-sm border border-rose-200/50"
                                     title={account.disabled_reason || t('accounts.disabled_tooltip')}
                                 >
@@ -103,6 +134,19 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                 <span className="px-1.5 py-0.5 rounded-md bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-[9px] font-bold flex items-center gap-1 shadow-sm border border-red-200/50" title={t('accounts.forbidden_tooltip')}>
                                     <Lock className="w-2.5 h-2.5" />
                                     {t('accounts.forbidden').toUpperCase()}
+=======
+                                    className="px-1.5 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-[10px] font-medium flex items-center gap-1 shadow-sm border border-rose-200/50"
+                                    title={account.disabled_reason || t('accounts.disabled_tooltip')}
+                                >
+                                    <Ban className="w-3 h-3" />
+                                    {t('accounts.disabled')}
+                                </span>
+                            )}
+                            {account.quota?.is_forbidden && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-[10px] font-medium flex items-center gap-1 shadow-sm border border-red-200/50" title={t('accounts.forbidden_tooltip')}>
+                                    <Lock className="w-3 h-3" />
+                                    {t('accounts.forbidden')}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 </span>
                             )}
                             {/* 订阅类型徽章 */}
@@ -110,23 +154,41 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                 const tier = account.quota.subscription_tier.toLowerCase();
                                 if (tier.includes('ultra')) {
                                     return (
+<<<<<<< HEAD
                                         <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[9px] font-bold shadow-sm">
                                             <Gem className="w-2.5 h-2.5 fill-current" />
                                             ULTRA
+=======
+                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] font-medium shadow-sm">
+                                            <Gem className="w-3 h-3 fill-current" />
+                                            Ultra
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         </span>
                                     );
                                 } else if (tier.includes('pro')) {
                                     return (
+<<<<<<< HEAD
                                         <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[9px] font-bold shadow-sm">
                                             <Diamond className="w-2.5 h-2.5 fill-current" />
                                             PRO
+=======
+                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-medium shadow-sm">
+                                            <Diamond className="w-3 h-3 fill-current" />
+                                            Pro
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         </span>
                                     );
                                 } else {
                                     return (
+<<<<<<< HEAD
                                         <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[9px] font-bold shadow-sm border border-gray-200 dark:border-white/10">
                                             <Circle className="w-2.5 h-2.5" />
                                             FREE
+=======
+                                        <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[10px] font-medium shadow-sm border border-gray-200 dark:border-white/10">
+                                            <Circle className="w-3 h-3" />
+                                            Free
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         </span>
                                     );
                                 }
@@ -150,12 +212,21 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                             <div className="relative h-[26px] flex items-center px-1 rounded-lg overflow-hidden border border-gray-100/50 dark:border-white/5 bg-gray-50/30 dark:bg-white/5 group/quota">
                                 {geminiProModel && (
                                     <div
+<<<<<<< HEAD
                                         className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20 ${getColorClass(geminiProModel.percentage)}`}
                                         style={{ width: `${geminiProModel.percentage}%` }}
                                     />
                                 )}
                                 <div className="relative z-10 w-full flex items-center text-[9px] font-mono leading-none whitespace-nowrap">
                                     <span className="w-[46px] text-gray-500 dark:text-gray-400 font-bold truncate pr-0.5" title="Gemini 3 Pro">G3 Pro</span>
+=======
+                                        className={cn("absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20", getColorClass(geminiProModel.percentage))}
+                                        style={{ width: `${geminiProModel.percentage}%` } as React.CSSProperties}
+                                    />
+                                )}
+                                <div className="relative z-10 w-full flex items-center text-[10px] font-mono leading-none whitespace-nowrap">
+                                    <span className="w-[46px] text-gray-500 dark:text-gray-400 font-medium truncate pr-0.5" title="Gemini 3 Pro">G3 Pro</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     <div className="flex-1 flex justify-center overflow-hidden">
                                         {geminiProModel?.reset_time ? (
                                             <span className={cn("flex items-center gap-0.5 font-medium transition-colors whitespace-nowrap", getTimeColorClass(geminiProModel.reset_time))}>
@@ -166,9 +237,14 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                             <span className="text-gray-300 dark:text-gray-600 italic scale-90">N/A</span>
                                         )}
                                     </div>
+<<<<<<< HEAD
                                     <span className={cn("w-[30px] text-right font-bold transition-colors shrink-0",
                                         getQuotaColor(geminiProModel?.percentage || 0) === 'success' ? 'text-emerald-600 dark:text-emerald-400' :
                                             getQuotaColor(geminiProModel?.percentage || 0) === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'
+=======
+                                    <span className={cn("w-[30px] text-right font-medium transition-colors shrink-0",
+                                        'text-gray-600 dark:text-gray-400'
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     )}>
                                         {(geminiProModel?.percentage || 0)}%
                                     </span>
@@ -179,12 +255,21 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                             <div className="relative h-[26px] flex items-center px-1 rounded-lg overflow-hidden border border-gray-100/50 dark:border-white/5 bg-gray-50/30 dark:bg-white/5 group/quota">
                                 {geminiFlashModel && (
                                     <div
+<<<<<<< HEAD
                                         className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20 ${getColorClass(geminiFlashModel.percentage)}`}
                                         style={{ width: `${geminiFlashModel.percentage}%` }}
                                     />
                                 )}
                                 <div className="relative z-10 w-full flex items-center text-[9px] font-mono leading-none whitespace-nowrap">
                                     <span className="w-[46px] text-gray-500 dark:text-gray-400 font-bold truncate pr-0.5" title="Gemini 3 Flash">G3 Flash</span>
+=======
+                                        className={cn("absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20", getColorClass(geminiFlashModel.percentage))}
+                                        style={{ width: `${geminiFlashModel.percentage}%` } as React.CSSProperties}
+                                    />
+                                )}
+                                <div className="relative z-10 w-full flex items-center text-[10px] font-mono leading-none whitespace-nowrap">
+                                    <span className="w-[46px] text-gray-500 dark:text-gray-400 font-medium truncate pr-0.5" title="Gemini 3 Flash">G3 Flash</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     <div className="flex-1 flex justify-center overflow-hidden">
                                         {geminiFlashModel?.reset_time ? (
                                             <span className={cn("flex items-center gap-0.5 font-medium transition-colors whitespace-nowrap", getTimeColorClass(geminiFlashModel.reset_time))}>
@@ -196,8 +281,12 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                         )}
                                     </div>
                                     <span className={cn("w-[30px] text-right font-bold transition-colors shrink-0",
+<<<<<<< HEAD
                                         getQuotaColor(geminiFlashModel?.percentage || 0) === 'success' ? 'text-emerald-600 dark:text-emerald-400' :
                                             getQuotaColor(geminiFlashModel?.percentage || 0) === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'
+=======
+                                        'text-gray-600 dark:text-gray-400'
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     )}>
                                         {(geminiFlashModel?.percentage || 0)}%
                                     </span>
@@ -208,12 +297,21 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                             <div className="relative h-[26px] flex items-center px-1 rounded-lg overflow-hidden border border-gray-100/50 dark:border-white/5 bg-gray-50/30 dark:bg-white/5 group/quota">
                                 {geminiImageModel && (
                                     <div
+<<<<<<< HEAD
                                         className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20 ${getColorClass(geminiImageModel.percentage)}`}
                                         style={{ width: `${geminiImageModel.percentage}%` }}
                                     />
                                 )}
                                 <div className="relative z-10 w-full flex items-center text-[9px] font-mono leading-none whitespace-nowrap">
                                     <span className="w-[46px] text-gray-500 dark:text-gray-400 font-bold truncate pr-0.5" title="Gemini 3 Pro Image">G3 Image</span>
+=======
+                                        className={cn("absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20", getColorClass(geminiImageModel.percentage))}
+                                        style={{ width: `${geminiImageModel.percentage}%` } as React.CSSProperties}
+                                    />
+                                )}
+                                <div className="relative z-10 w-full flex items-center text-[10px] font-mono leading-none whitespace-nowrap">
+                                    <span className="w-[46px] text-gray-500 dark:text-gray-400 font-medium truncate pr-0.5" title="Gemini 3 Pro Image">G3 Image</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     <div className="flex-1 flex justify-center overflow-hidden">
                                         {geminiImageModel?.reset_time ? (
                                             <span className={cn("flex items-center gap-0.5 font-medium transition-colors whitespace-nowrap", getTimeColorClass(geminiImageModel.reset_time))}>
@@ -225,8 +323,12 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                         )}
                                     </div>
                                     <span className={cn("w-[30px] text-right font-bold transition-colors shrink-0",
+<<<<<<< HEAD
                                         getQuotaColor(geminiImageModel?.percentage || 0) === 'success' ? 'text-emerald-600 dark:text-emerald-400' :
                                             getQuotaColor(geminiImageModel?.percentage || 0) === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'
+=======
+                                        'text-gray-600 dark:text-gray-400'
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     )}>
                                         {(geminiImageModel?.percentage || 0)}%
                                     </span>
@@ -237,12 +339,21 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                             <div className="relative h-[26px] flex items-center px-1 rounded-lg overflow-hidden border border-gray-100/50 dark:border-white/5 bg-gray-50/30 dark:bg-white/5 group/quota">
                                 {claudeModel && (
                                     <div
+<<<<<<< HEAD
                                         className={`absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20 ${getColorClass(claudeModel.percentage)}`}
                                         style={{ width: `${claudeModel.percentage}%` }}
                                     />
                                 )}
                                 <div className="relative z-10 w-full flex items-center text-[9px] font-mono leading-none whitespace-nowrap">
                                     <span className="w-[46px] text-gray-500 dark:text-gray-400 font-bold truncate pr-0.5" title="Claude-sonnet-4.5">Claude 4.5</span>
+=======
+                                        className={cn("absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-15 dark:opacity-20", getColorClass(claudeModel.percentage))}
+                                        style={{ width: `${claudeModel.percentage}%` } as React.CSSProperties}
+                                    />
+                                )}
+                                <div className="relative z-10 w-full flex items-center text-[10px] font-mono leading-none whitespace-nowrap">
+                                    <span className="w-[46px] text-gray-500 dark:text-gray-400 font-medium truncate pr-0.5" title="Claude-sonnet-4.5">Claude 4.5</span>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     <div className="flex-1 flex justify-center overflow-hidden">
                                         {claudeModel?.reset_time ? (
                                             <span className={cn("flex items-center gap-0.5 font-medium transition-colors whitespace-nowrap", getTimeColorClass(claudeModel.reset_time))}>
@@ -254,8 +365,12 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                                         )}
                                     </div>
                                     <span className={cn("w-[30px] text-right font-bold transition-colors shrink-0",
+<<<<<<< HEAD
                                         getQuotaColor(claudeModel?.percentage || 0) === 'success' ? 'text-emerald-600 dark:text-emerald-400' :
                                             getQuotaColor(claudeModel?.percentage || 0) === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'
+=======
+                                        'text-gray-600 dark:text-gray-400'
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     )}>
                                         {(claudeModel?.percentage || 0)}%
                                     </span>
@@ -299,7 +414,11 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                         <button
                             className={`p-1.5 rounded-lg transition-all ${(isRefreshing || isDisabled) ? 'text-orange-600 bg-orange-50 dark:bg-orange-900/10 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/30'}`}
                             onClick={(e) => { e.stopPropagation(); onWarmup(); }}
+<<<<<<< HEAD
                             title={isDisabled ? t('accounts.disabled_tooltip') : (isRefreshing ? t('common.loading') : t('accounts.warmup_this', '预热该账号'))}
+=======
+                            title={isDisabled ? t('accounts.disabled_tooltip') : (isRefreshing ? t('common.loading') : t('accounts.warmup_this'))}
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             disabled={isRefreshing || isDisabled}
                         >
                             <Sparkles className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-pulse' : ''}`} />
@@ -347,7 +466,11 @@ function AccountCard({ account, selected, onSelect, isCurrent, isRefreshing, isS
                     </button>
                 </div>
             </div>
+<<<<<<< HEAD
         </div >
+=======
+        </div>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     );
 }
 

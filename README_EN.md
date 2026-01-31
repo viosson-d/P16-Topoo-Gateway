@@ -1,6 +1,10 @@
 # Antigravity Tools 🚀
 # Antigravity Tools 🚀
+<<<<<<< HEAD
 > Professional AI Account Management & Protocol Proxy System (v4.0.10)
+=======
+> Professional AI Account Management & Proxy System (v3.3.49)
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 <div align="center">
   <img src="public/icon.png" alt="Antigravity Logo" width="120" height="120" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
@@ -10,7 +14,11 @@
   
   <p>
     <a href="https://github.com/lbjlaq/Antigravity-Manager">
+<<<<<<< HEAD
       <img src="https://img.shields.io/badge/Version-4.0.10-blue?style=flat-square" alt="Version">
+=======
+      <img src="https://img.shields.io/badge/Version-3.3.49-blue?style=flat-square" alt="Version">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     </a>
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Backend-Rust-red?style=flat-square" alt="Rust">
@@ -80,7 +88,11 @@ If you find this project helpful, feel free to buy me a coffee!
 
 ### 5. 🎨 Multimodal & Imagen 3 Support
 *   **Advanced Image Control**: Supports precise control over image generation tasks via OpenAI `size` (e.g., `1024x1024`, `16:9`) parameters or model name suffixes.
+<<<<<<< HEAD
 *   **Enhanced Payload Support**: The backend supports payloads up to **100MB** (configurable), more than enough for 4K HD image recognition and processing.
+=======
+*   **Enhanced Payload Support**: The backend supports payloads up to **100MB**, more than enough for 4K HD image recognition and processing.
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 ##  GUI Overview
 
@@ -114,8 +126,11 @@ graph TD
 ## 📥 Installation
 
 ### Option A: Terminal Installation (macOS & Linux Recommended)
+<<<<<<< HEAD
 
 #### macOS
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 If you have [Homebrew](https://brew.sh/) installed, run:
 
 ```bash
@@ -125,6 +140,7 @@ brew tap lbjlaq/antigravity-manager https://github.com/lbjlaq/Antigravity-Manage
 # 2. Install the app
 brew install --cask antigravity-tools
 ```
+<<<<<<< HEAD
 > **Tip**: If you encounter permission issues, add the `--no-quarantine` flag.
 
 #### Arch Linux
@@ -143,6 +159,11 @@ brew install --cask antigravity-tools
 
 #### Other Linux Distributions
 The AppImage will be automatically symlinked to your binary path with executable permissions.
+=======
+> **Tip**: 
+> - **macOS**: If you encounter permission issues, add the `--no-quarantine` flag.
+> - **Linux**: The AppImage will be automatically symlinked to your binary path with executable permissions.
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 ### Option B: Manual Download
 Download from [GitHub Releases](https://github.com/lbjlaq/Antigravity-Manager/releases):
@@ -150,6 +171,7 @@ Download from [GitHub Releases](https://github.com/lbjlaq/Antigravity-Manager/re
 *   **Windows**: `.msi` or portable `.zip`
 *   **Linux**: `.deb` or `AppImage`
 
+<<<<<<< HEAD
 ### Option C: Docker Deployment (Recommended for NAS/Servers)
 If you prefer running in a containerized environment, we provide a native Docker image. This image supports the v4.0.3 Native Headless architecture, automatically hosts frontend static resources, and allows for direct browser-based management.
 
@@ -200,6 +222,40 @@ docker compose up -d
 > - **Persistence**: Mount `/root/.antigravity_tools` to persist your data.
 > - **Architecture**: Supports x86_64 and ARM64.
 > **See**: [Docker Deployment Guide (docker)](./docker/README.md)
+=======
+### Option C: Arch Linux (Official Script)
+We provide an official one-liner installation script for Arch Linux users. It automatically fetches the latest release from GitHub and installs it:
+```bash
+curl -sSL https://raw.githubusercontent.com/lbjlaq/Antigravity-Manager/main/deploy/arch/install.sh | bash
+```
+> **Tip**: This script will automatically download the latest `.deb` assets and install them using `makepkg`.
+
+### Option C: Remote Server Deployment (Headless Linux)
+If you need to run on a headless remote Linux server (Ubuntu/Debian/CentOS), use our **Headless (Xvfb)** one-click deployment solution:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lbjlaq/Antigravity-Manager/main/deploy/headless-xvfb/install.sh | sudo bash
+```
+> **Note**: This solution uses Xvfb to simulate a GUI environment. Resource consumption (RAM/CPU) will be higher than a native backend service.
+> **See**: [Server Deployment Guide (deploy/headless-xvfb)](./deploy/headless-xvfb/README.md)
+
+### Option D: Docker Deployment (Recommended for NAS/Servers)
+If you prefer running in a containerized environment, we provide a full Docker image and configuration with built-in noVNC support for direct browser-based GUI access.
+
+```bash
+# 1. Enter the deployment directory
+cd deploy/docker
+
+# 2. Start the service
+docker compose up -d
+```
+> **Access URL**: `http://localhost:6080/vnc_lite.html` (Default VNC password: `password`)
+> **System Requirements**:
+> - **RAM**: **2GB** recommended (minimum 512MB).
+> - **Shared Memory**: Requires `shm_size: 2gb` (pre-configured in compose) to prevent browser crashes.
+> - **Architecture**: Supports x86_64 and ARM64.
+> **See**: [Docker Deployment Guide (deploy/docker)](./deploy/docker/README.md)
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 ### 🛠️ Troubleshooting
 
@@ -247,6 +303,7 @@ print(response.choices[0].message.content)
 ## 📝 Developer & Community
 
 *   **Changelog**:
+<<<<<<< HEAD
     *   **v4.0.10 (2026-01-30)**:
         -   **[Core Fix] Account Hot-Reloading**:
             -   **Unified Architecture**: Eliminated duplicate `TokenManager` instances, ensuring the Admin Dashboard and Proxy Service share a single account manager.
@@ -524,6 +581,9 @@ print(response.choices[0].message.content)
             -   **Issue**: Observed that `gemini-2.5-flash-lite` is frequently returning 429 errors today due to **Upstream Google Container Capacity Exhausted** (MODEL_CAPACITY_EXHAUSTED), rather than standard account quota limits.
             -   **Urgent Fix**: Replaced all internal `gemini-2.5-flash-lite` calls (e.g., background title generation, L3 summary compression) and preset mappings with the more stable `gemini-2.5-flash`.
             -   **User Notice**: If you explicitly used `gemini-2.5-flash-lite` in "Custom Mappings" or "Presets", please update it to another model immediately, or you may continue to experience 429 errors.
+=======
+    *   **v3.3.49 (2026-01-22)**:
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         -   **[UX Optimization] Immediate Effect of Settings (Fix PR #949)**:
             -   **Instant Apply**: Fixed an issue where language changes required manual saving. Adjustments now apply immediately across the UI.
         -   **[Code Cleanup] Backend Architecture Refactoring & Optimization (PR #950)**:
@@ -548,6 +608,13 @@ print(response.choices[0].message.content)
             -   **Security Hardening**: Removed automatic deletion logic on load failure, preventing accidental loss of account indexes during environment anomalies or upgrades.
         -   **[Feature] Deep Optimization of Router & Model Mapping (PR #954)**:
             -   **Deterministic Router Priority**: Resolved non-deterministic matching issues for multi-wildcard patterns by implementing a priority system based on pattern specificity.
+<<<<<<< HEAD
+=======
+            -   **Claude/OpenAI Mapper Enhancements**: Refactored the Streaming Processor and Collector to address Thinking signature loss during context compression.
+            -   **Context Estimation Calibration**: Optimized the `EstimationCalibrator` algorithm for improved token estimation accuracy in long-context scenarios.
+            -   **JSON Schema Purifier Upgrade**: Enhanced deep cleaning for complex JSON Schemas to ensure 100% compatibility with upstream APIs.
+            -   **i18n Synchronization**: Updated localization resources across 8 languages (ZH, EN, JA, PT, RU, TR, VI, ZH-TW).
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         -   **[Stability] OAuth Callback & Parsing Enhancement (Fix #931, #850, #778)**:
             -   **Robust Parsing**: Optimized the local callback server's URL parsing logic to improve compatibility across different browsers.
@@ -555,11 +622,18 @@ print(response.choices[0].message.content)
         -   **[Optimization] OAuth Communication Quality (Issue #948, #887)**:
             -   **Timeout Extension**: Increased auth request timeouts to 60 seconds to significantly improve token exchange success rates in proxy environments.
             -   **Error Guidance**: Provided clear guidance for Google API connectivity issues, helping users troubleshoot proxy settings.
+<<<<<<< HEAD
         -   **[UX Enhancement] Upstream Proxy Validation & Restart Hint (Contributed by @zhiqianzheng)**:
             -   **Config Validation**: When the user enables upstream proxy but leaves the URL empty, the save operation is blocked with a clear error message, preventing connection failures due to invalid configuration.
             -   **Restart Reminder**: After successfully saving proxy settings, users are reminded to restart the app for changes to take effect, reducing troubleshooting time.
             -   **i18n Support**: Added translations for Simplified Chinese, Traditional Chinese, English, and Japanese.
 
+=======
+            -   **[Core Fix] Removed Flash Lite Model to Fix 429 Errors**:
+                -   **Issue**: Observed that `gemini-2.5-flash-lite` is frequently returning 429 errors today due to **Upstream Google Container Capacity Exhausted** (MODEL_CAPACITY_EXHAUSTED), rather than standard account quota limits.
+                -   **Urgent Fix**: Replaced all internal `gemini-2.5-flash-lite` calls (e.g., background title generation, L3 summary compression) and preset mappings with the more stable `gemini-2.5-flash`.
+                -   **User Notice**: If you explicitly used `gemini-2.5-flash-lite` in "Custom Mappings" or "Presets", please update it to another model immediately, or you may continue to experience 429 errors.
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     *   **v3.3.48 (2026-01-21)**:
         -   **[Core Fix] Windows Console Flashing Fix (Fix PR #933)**:
             -   **Problem**: On Windows, launching the application or executing background CLI commands would sometimes cause a command prompt window to briefly flash, disrupting the user experience.

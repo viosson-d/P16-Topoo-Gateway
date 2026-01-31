@@ -13,6 +13,7 @@ pub mod proxy_db;
 pub mod device;
 pub mod update_checker;
 pub mod scheduler;
+<<<<<<< HEAD
 pub mod token_stats;
 pub mod cloudflared;
 pub mod integration;
@@ -20,6 +21,11 @@ pub mod account_service;
 pub mod http_api;
 pub mod cache;
 pub mod security_db;
+=======
+pub mod http_api;
+pub mod token_stats;
+pub mod cloudflared;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 use crate::models;
 
@@ -32,6 +38,11 @@ pub use config::*;
 pub use logger::*;
 // pub use device::*;
 
+<<<<<<< HEAD
 pub async fn fetch_quota(access_token: &str, email: &str) -> crate::error::AppResult<(models::QuotaData, Option<String>)> {
     quota::fetch_quota(access_token, email).await
+=======
+pub async fn fetch_quota(access_token: &str, email: &str, existing_quota: Option<models::QuotaData>) -> crate::error::AppResult<(models::QuotaData, Option<String>)> {
+    quota::fetch_quota(access_token, email, existing_quota).await
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

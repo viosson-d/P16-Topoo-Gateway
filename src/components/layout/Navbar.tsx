@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 import { useState, useRef, useEffect } from 'react';
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { Link, useLocation } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useConfigStore } from '../../stores/useConfigStore';
 
+<<<<<<< HEAD
 import { isTauri, isLinux } from '../../utils/env';
 
 function Navbar() {
     const location = useLocation();
     const { t } = useTranslation();
+=======
+// Detect if running on Linux platform
+// const isLinux = navigator.userAgent.toLowerCase().includes('linux');
+
+function Navbar() {
+    const location = useLocation();
+    const { t, i18n } = useTranslation();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     const { config, saveConfig } = useConfigStore();
 
     const navItems = [
@@ -17,7 +29,10 @@ function Navbar() {
         { path: '/api-proxy', label: t('nav.proxy') },
         { path: '/monitor', label: t('nav.call_records') },
         { path: '/token-stats', label: t('nav.token_stats', 'Token 统计') },
+<<<<<<< HEAD
         { path: '/security', label: t('nav.security') },
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         { path: '/settings', label: t('nav.settings') },
     ];
 
@@ -28,11 +43,16 @@ function Navbar() {
         return location.pathname.startsWith(path);
     };
 
+<<<<<<< HEAD
     const toggleTheme = async (event: React.MouseEvent<HTMLButtonElement>) => {
+=======
+    const toggleTheme = async (_event: React.MouseEvent<HTMLButtonElement>) => {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if (!config) return;
 
         const newTheme = config.theme === 'light' ? 'dark' : 'light';
 
+<<<<<<< HEAD
         // Use View Transition API if supported, but skip on Linux (may cause crash)
         if ('startViewTransition' in document && !isLinux()) {
             const x = event.clientX;
@@ -121,6 +141,28 @@ function Navbar() {
             theme: config.theme
         }, true);
         setIsLangOpen(false);
+=======
+        // DISABLING View Transition API to avoid UI locking issues on macOS/WebKit
+        await saveConfig({
+            ...config,
+            theme: newTheme,
+            language: config.language
+        });
+    };
+
+    const toggleLanguage = async () => {
+        if (!config) return;
+        const langs = ['zh', 'zh-TW', 'en', 'ja', 'tr', 'vi', 'pt', 'ru'] as const;
+        const currentIndex = langs.indexOf(config.language as any);
+        const nextLang = langs[(currentIndex + 1) % langs.length];
+
+        await saveConfig({
+            ...config,
+            language: nextLang,
+            theme: config.theme
+        });
+        i18n.changeLanguage(nextLang);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     };
 
     return (
@@ -128,6 +170,7 @@ function Navbar() {
             style={{ position: 'sticky', top: 0, zIndex: 50 }}
             className="pt-9 transition-all duration-200 bg-[#FAFBFC] dark:bg-base-300"
         >
+<<<<<<< HEAD
             {/* 窗口拖拽区域 2 - 覆盖导航栏内容区域（在交互元素下方） */}
             {isTauri() && (
                 <div
@@ -136,13 +179,20 @@ function Navbar() {
                     data-tauri-drag-region
                 />
             )}
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             <div className="max-w-7xl mx-auto px-8 relative" style={{ zIndex: 10 }}>
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - 左侧 */}
                     <div className="flex items-center">
+<<<<<<< HEAD
                         <Link to="/" className="text-xl font-semibold text-gray-900 dark:text-base-content flex items-center gap-2">
                             Topoo Gateway
+=======
+                        <Link to="/" className="text-xl font-medium text-gray-900 dark:text-base-content flex items-center gap-2">
+                            Antigravity Tools
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         </Link>
                     </div>
 
@@ -177,6 +227,7 @@ function Navbar() {
                             )}
                         </button>
 
+<<<<<<< HEAD
                         {/* 语言切换下拉菜单 */}
                         <div className="relative" ref={langMenuRef}>
                             <button
@@ -213,6 +264,18 @@ function Navbar() {
                                 </div>
                             )}
                         </div>
+=======
+                        {/* 语言切换按钮 */}
+                        <button
+                            onClick={toggleLanguage}
+                            className="w-10 h-10 rounded-full bg-gray-100 dark:bg-base-200 hover:bg-gray-200 dark:hover:bg-base-100 flex items-center justify-center transition-colors"
+                            title={t('nav.switch_to_' + (config?.language === 'zh' ? 'traditional_chinese' : config?.language === 'zh-TW' ? 'english' : config?.language === 'en' ? 'japanese' : config?.language === 'ja' ? 'turkish' : config?.language === 'tr' ? 'vietnamese' : config?.language === 'vi' ? 'portuguese' : config?.language === 'pt' ? 'russian' : 'chinese'))}
+                        >
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {t('nav.switch_to_' + (config?.language === 'zh' ? 'traditional_chinese_short' : config?.language === 'zh-TW' ? 'english_short' : config?.language === 'en' ? 'japanese_short' : config?.language === 'ja' ? 'turkish_short' : config?.language === 'tr' ? 'vietnamese_short' : config?.language === 'vi' ? 'portuguese_short' : config?.language === 'pt' ? 'russian_short' : 'chinese_short'))}
+                            </span>
+                        </button>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     </div>
                 </div>
             </div>

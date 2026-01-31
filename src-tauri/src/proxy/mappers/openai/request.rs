@@ -22,6 +22,7 @@ pub fn transform_openai_request(
         &mapped_model_lower,
         &tools_val,
         request.size.as_deref(),    // [NEW] Pass size parameter
+<<<<<<< HEAD
         request.quality.as_deref()  // [NEW] Pass quality parameter
     );
 
@@ -40,6 +41,19 @@ pub fn transform_openai_request(
     let user_thinking_budget = request.thinking.as_ref()
         .and_then(|t| t.budget_tokens);
 
+=======
+        request.quality.as_deref(), // [NEW] Pass quality parameter
+    );
+
+    // 检测 Gemini 3 Pro thinking 模型
+    let is_gemini_3_thinking = mapped_model_lower.contains("gemini-3")
+        && (mapped_model_lower.ends_with("-high")
+            || mapped_model_lower.ends_with("-low")
+            || mapped_model_lower.contains("-pro"));
+    let is_claude_thinking = mapped_model_lower.ends_with("-thinking");
+    let is_thinking_model = is_gemini_3_thinking || is_claude_thinking;
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // [NEW] 检查历史消息是否兼容思维模型 (是否有 Assistant 消息缺失 reasoning_content)
     let has_incompatible_assistant_history = request.messages.iter().any(|msg| {
         msg.role == "assistant"
@@ -54,14 +68,20 @@ pub fn transform_openai_request(
     let global_thought_sig = get_thought_signature();
 
     // [NEW] 决定是否开启 Thinking 功能:
+<<<<<<< HEAD
     // 1. 模型名包含 -thinking 时自动开启
     // 2. 用户在请求中显式设置 thinking.type = "enabled" 时开启
     // 如果是 Claude 思考模型且历史不兼容且没有可用签名来占位, 则禁用 Thinking 以防 400
     let mut actual_include_thinking = is_thinking_model || user_enabled_thinking;
+=======
+    // 如果是 Claude 思考模型且历史不兼容且没有可用签名来占位, 则禁用 Thinking 以防 400
+    let mut actual_include_thinking = is_thinking_model;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     if is_claude_thinking && has_incompatible_assistant_history && global_thought_sig.is_none() {
         tracing::warn!("[OpenAI-Thinking] Incompatible assistant history detected for Claude thinking model without global signature. Disabling thinking for this request to avoid 400 error.");
         actual_include_thinking = false;
     }
+<<<<<<< HEAD
     
     // [NEW] 日志：用户显式设置 thinking
     if user_enabled_thinking {
@@ -70,6 +90,8 @@ pub fn transform_openai_request(
             user_thinking_budget
         );
     }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     tracing::debug!(
         "[Debug] OpenAI Request: original='{}', mapped='{}', type='{}', has_image_config={}",
@@ -376,6 +398,7 @@ pub fn transform_openai_request(
     // 3. 构建请求体
 
     let mut gen_config = json!({
+<<<<<<< HEAD
         "temperature": request.temperature.unwrap_or(1.0),
         "topP": request.top_p.unwrap_or(0.95), // Gemini default is usually 0.95
     });
@@ -386,6 +409,13 @@ pub fn transform_openai_request(
          gen_config["maxOutputTokens"] = json!(max_tokens);
     }
 
+=======
+        "maxOutputTokens": request.max_tokens.unwrap_or(16384),
+        "temperature": request.temperature.unwrap_or(1.0),
+        "topP": request.top_p.unwrap_or(1.0),
+    });
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // [NEW] 支持多候选结果数量 (n -> candidateCount)
     if let Some(n) = request.n {
         gen_config["candidateCount"] = json!(n);
@@ -393,6 +423,7 @@ pub fn transform_openai_request(
 
     // 为 thinking 模型注入 thinkingConfig (使用 thinkingBudget 而非 thinkingLevel)
     if actual_include_thinking {
+<<<<<<< HEAD
         // [NEW] 优先使用用户指定的 budget，否则使用默认值
         // [FIX #1355] Detect Gemini Flash models and cap thinking budget to 24576
         // Flash thinking models strictly enforce range [1, 24576]
@@ -427,6 +458,15 @@ pub fn transform_openai_request(
         tracing::debug!(
             "[OpenAI-Request] Injected thinkingConfig for model {}: thinkingBudget={} (user_specified={})",
             mapped_model, budget, user_thinking_budget.is_some()
+=======
+        gen_config["thinkingConfig"] = json!({
+            "includeThoughts": true,
+            "thinkingBudget": 16000
+        });
+        tracing::debug!(
+            "[OpenAI-Request] Injected thinkingConfig for model {}: thinkingBudget=16000",
+            mapped_model
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
     }
 
@@ -475,9 +515,13 @@ pub fn transform_openai_request(
                 func
             };
 
+<<<<<<< HEAD
             let name_opt = gemini_func.get("name").and_then(|v| v.as_str()).map(|s| s.to_string());
 
             if let Some(name) = &name_opt {
+=======
+            if let Some(name) = gemini_func.get("name").and_then(|v| v.as_str()) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 // 跳过内置联网工具名称，避免重复定义
                 if name == "web_search" || name == "google_search" || name == "web_search_20250305"
                 {
@@ -489,10 +533,13 @@ pub fn transform_openai_request(
                         obj.insert("name".to_string(), json!("shell"));
                     }
                 }
+<<<<<<< HEAD
             } else {
                  // [FIX] 如果工具没有名称，视为无效工具直接跳过 (防止 REQUIRED_FIELD_MISSING)
                  tracing::warn!("[OpenAI-Request] Skipping tool without name: {:?}", gemini_func);
                  continue;
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             // [NEW CRITICAL FIX] 清除函数定义根层级的非法字段 (解决报错持久化)
@@ -501,7 +548,10 @@ pub fn transform_openai_request(
                 obj.remove("strict");
                 obj.remove("additionalProperties");
                 obj.remove("type"); // [NEW] Gemini 不支持在 FunctionDeclaration 根层级出现 type: "function"
+<<<<<<< HEAD
                 obj.remove("external_web_access"); // [FIX #1278] Remove invalid field injected by OpenAI Codex
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             if let Some(params) = gemini_func.get_mut("parameters") {
@@ -552,6 +602,7 @@ pub fn transform_openai_request(
         }
     }
 
+<<<<<<< HEAD
     // [NEW] Antigravity 身份指令 (原始简化版)
     let antigravity_identity = "You are Antigravity, a powerful agentic AI coding assistant designed by the Google Deepmind team working on Advanced Agentic Coding.\n\
     You are pair programming with a USER to solve their coding task. The task may require creating a new codebase, modifying or debugging an existing codebase, or simply answering a question.\n\
@@ -571,6 +622,14 @@ pub fn transform_openai_request(
     }
 
     // 2. 追加用户指令 (作为独立 Parts)
+=======
+    // [HYBRID] Check if valid system instructions exist
+    // If specific Antigravity identity is needed, the client should provide it in the system prompt.
+    // We do NOT inject it forcibly here to avoid breaking other use cases (e.g. Translation, General Chat).
+    
+    // 2. Append User/System instructions (as independent Parts)
+    let mut parts = Vec::new();
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     for inst in system_instructions {
         parts.push(json!({"text": inst}));
     }
@@ -669,8 +728,11 @@ mod tests {
             prompt: None,
             size: None,
             quality: None,
+<<<<<<< HEAD
             person_generation: None,
             thinking: None,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         };
 
         let result = transform_openai_request(&req, "test-v", "gemini-1.5-flash");
@@ -682,6 +744,7 @@ mod tests {
             "image/png"
         );
     }
+<<<<<<< HEAD
     #[test]
     fn test_default_max_tokens_openai() {
         let req = OpenAIRequest {
@@ -771,4 +834,6 @@ mod tests {
         let max_output = gen_config["maxOutputTokens"].as_i64().unwrap();
         assert_eq!(max_output, 32768);
     }
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

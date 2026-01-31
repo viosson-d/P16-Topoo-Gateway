@@ -51,10 +51,13 @@ static CLAUDE_TO_GEMINI: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|
     m.insert("gemini-3-flash", "gemini-3-flash");
     m.insert("gemini-3-pro-image", "gemini-3-pro-image");
 
+<<<<<<< HEAD
     // [New] Unified Virtual ID for Background Tasks (Title, Summary, etc.)
     // Allows users to override all background tasks via custom_mapping
     m.insert("internal-background-task", "gemini-2.5-flash");
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     m
 });
@@ -251,7 +254,18 @@ pub fn normalize_to_standard_id(model_name: &str) -> Option<String> {
         "gemini-3-pro-high" | "gemini-3-pro-low" => Some("gemini-3-pro-high".to_string()),
 
         // Claude 4.5 Sonnet Group
+<<<<<<< HEAD
         "claude-sonnet-4-5" | "claude-sonnet-4-5-thinking" | "claude-opus-4-5-thinking" => Some("claude-sonnet-4-5".to_string()),
+=======
+        "claude-sonnet-4-5" | 
+        "claude-sonnet-4-5-thinking" | 
+        "claude-opus-4-5-thinking" | 
+        "claude-3-5-sonnet-20241022" | 
+        "claude-3-5-sonnet-20240620" |
+        "claude-3-5-sonnet" |
+        "claude-3-7-sonnet" |
+        "claude-sonnet" => Some("claude-sonnet-4-5".to_string()),
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         _ => None
     }

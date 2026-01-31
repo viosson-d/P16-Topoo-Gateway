@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 
+<<<<<<< HEAD
 // 探测环境
 const isTauri = typeof window !== 'undefined' && (!!(window as any).__TAURI_INTERNALS__ || !!(window as any).__TAURI__);
 
@@ -198,6 +199,13 @@ export async function request<T>(cmd: string, args?: any): Promise<T> {
     }
   } catch (error) {
     console.error(`Web Fetch Error [${cmd}]:`, error);
+=======
+export async function request<T>(cmd: string, args?: any): Promise<T> {
+  try {
+    return await invoke<T>(cmd, args);
+  } catch (error) {
+    console.error(`API Error [${cmd}]:`, error);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     throw error;
   }
 }

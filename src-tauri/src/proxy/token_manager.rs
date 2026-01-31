@@ -2,13 +2,26 @@
 use dashmap::DashMap;
 use std::collections::HashSet;
 use std::path::PathBuf;
+<<<<<<< HEAD
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
+=======
+use std::sync::Arc; // [ADDED]
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use arc_swap::ArcSwap;
+
+// ... (existing imports)
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 use crate::proxy::rate_limit::RateLimitTracker;
 use crate::proxy::sticky_config::StickySessionConfig;
 
+<<<<<<< HEAD
 #[derive(Debug, Clone)]
+=======
+// [RESTORED] ProxyToken strcut definition
+#[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 pub struct ProxyToken {
     pub account_id: String,
     pub access_token: String,
@@ -16,6 +29,7 @@ pub struct ProxyToken {
     pub expires_in: i64,
     pub timestamp: i64,
     pub email: String,
+<<<<<<< HEAD
     pub account_path: PathBuf,  // 账号文件路径，用于更新
     pub project_id: Option<String>,
     pub subscription_tier: Option<String>, // "FREE" | "PRO" | "ULTRA"
@@ -25,28 +39,54 @@ pub struct ProxyToken {
 }
 
 
+=======
+    pub account_path: PathBuf,
+    pub project_id: Option<String>,
+    pub subscription_tier: Option<String>,
+    pub remaining_quota: Option<i32>,
+    pub protected_models: HashSet<String>,
+    pub account_name: Option<String>,
+}
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 pub struct TokenManager {
     tokens: Arc<DashMap<String, ProxyToken>>,  // account_id -> ProxyToken
     current_index: Arc<AtomicUsize>,
     last_used_account: Arc<tokio::sync::Mutex<Option<(String, std::time::Instant)>>>,
     data_dir: PathBuf,
     rate_limit_tracker: Arc<RateLimitTracker>,  // 新增: 限流跟踪器
+<<<<<<< HEAD
     sticky_config: Arc<tokio::sync::RwLock<StickySessionConfig>>, // 新增：调度配置
     session_accounts: Arc<DashMap<String, String>>, // 新增：会话与账号映射 (SessionID -> AccountID)
     preferred_account_id: Arc<tokio::sync::RwLock<Option<String>>>, // [FIX #820] 优先使用的账号ID（固定账号模式）
     health_scores: Arc<DashMap<String, f32>>, // account_id -> health_score
     circuit_breaker_config: Arc<tokio::sync::RwLock<crate::models::CircuitBreakerConfig>>, // [NEW] 熔断配置缓存
+=======
+    sticky_config: ArcSwap<StickySessionConfig>, // [OPTIMIZED] ArcSwap for lock-free reads
+    session_accounts: Arc<DashMap<String, String>>, // 新增：会话与账号映射 (SessionID -> AccountID)
+    preferred_account_id: ArcSwap<Option<String>>, // [OPTIMIZED] ArcSwap for lock-free reads
+    quota_protection_enabled: Arc<AtomicBool>, // [OPTIMIZATION] Cache config to avoid file I/O
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 impl TokenManager {
     /// 创建新的 TokenManager
     pub fn new(data_dir: PathBuf) -> Self {
+<<<<<<< HEAD
+=======
+        // Initial load of config state
+        let quota_enabled = crate::modules::config::load_app_config()
+            .map(|c| c.quota_protection.enabled)
+            .unwrap_or(false);
+
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         Self {
             tokens: Arc::new(DashMap::new()),
             current_index: Arc::new(AtomicUsize::new(0)),
             last_used_account: Arc::new(tokio::sync::Mutex::new(None)),
             data_dir,
             rate_limit_tracker: Arc::new(RateLimitTracker::new()),
+<<<<<<< HEAD
             sticky_config: Arc::new(tokio::sync::RwLock::new(StickySessionConfig::default())),
             session_accounts: Arc::new(DashMap::new()),
             preferred_account_id: Arc::new(tokio::sync::RwLock::new(None)), // [FIX #820]
@@ -60,6 +100,25 @@ impl TokenManager {
         let tracker = self.rate_limit_tracker.clone();
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(std::time::Duration::from_secs(15));
+=======
+            sticky_config: ArcSwap::from(Arc::new(StickySessionConfig::default())),
+            session_accounts: Arc::new(DashMap::new()),
+            preferred_account_id: ArcSwap::from(Arc::new(None)),
+            quota_protection_enabled: Arc::new(AtomicBool::new(false)),
+        }
+    }
+
+    /// Update configuration state (called on save)
+    pub fn update_config(&self, config: &crate::models::AppConfig) {
+        self.quota_protection_enabled.store(config.quota_protection.enabled, Ordering::Relaxed);
+    }
+
+    /// 启动限流记录自动清理后台任务（每60秒检查并清除过期记录）
+    pub fn start_auto_cleanup(&self) {
+        let tracker = self.rate_limit_tracker.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(60));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             loop {
                 interval.tick().await;
                 let cleaned = tracker.cleanup_expired();
@@ -68,11 +127,16 @@ impl TokenManager {
                 }
             }
         });
+<<<<<<< HEAD
         tracing::info!("✅ Rate limit auto-cleanup task started (interval: 15s)");
+=======
+        tracing::info!("✅ Rate limit auto-cleanup task started (interval: 60s)");
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     /// 从主应用账号目录加载所有账号
     pub async fn load_accounts(&self) -> Result<usize, String> {
+<<<<<<< HEAD
         let accounts_dir = self.data_dir.join("accounts");
         
         if !accounts_dir.exists() {
@@ -117,6 +181,51 @@ impl TokenManager {
         }
         
         Ok(count)
+=======
+        // let this = Arc::new(self.clone_weak()); // Assume we have a way to get Arc<Self> or just use self for now if in Task
+        let data_dir = self.data_dir.clone();
+        
+        // Use spawn_blocking for entire directory scanning and file reading
+        let tokens = Arc::new(DashMap::new());
+        let tokens_clone = tokens.clone();
+        
+        tokio::task::spawn_blocking(move || {
+            let accounts_dir = data_dir.join("accounts");
+            if !accounts_dir.exists() {
+                return Err(format!("账号目录不存在: {:?}", accounts_dir));
+            }
+
+            let entries = std::fs::read_dir(&accounts_dir)
+                .map_err(|e| format!("读取账号目录失败: {}", e))?;
+            
+            let mut count = 0;
+            for entry in entries {
+                let entry = entry.map_err(|e| format!("读取目录项失败: {}", e))?;
+                let path = entry.path();
+                if path.extension().and_then(|s| s.to_str()) != Some("json") {
+                    continue;
+                }
+                
+                // Note: since load_single_account is async, we can't easily call it directly here.
+                // We'll move the core logic of load_single_account to a sync sibling.
+                if let Ok(Some(token)) = Self::load_single_account_sync(&path) {
+                    tokens_clone.insert(token.account_id.clone(), token);
+                    count += 1;
+                }
+            }
+            Ok(count)
+        })
+        .await
+        .map_err(|e| format!("Task join error: {}", e))?
+        .map(|count| {
+            self.tokens.clear();
+            for entry in tokens.iter() {
+                self.tokens.insert(entry.key().clone(), entry.value().clone());
+            }
+            self.current_index.store(0, Ordering::SeqCst);
+            count
+        })
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     /// 重新加载指定账号（用于配额更新后的实时同步）
@@ -129,8 +238,11 @@ impl TokenManager {
         match self.load_single_account(&path).await {
             Ok(Some(token)) => {
                 self.tokens.insert(account_id.to_string(), token);
+<<<<<<< HEAD
                 // [NEW] 重新加载账号时自动清除该账号的限流记录
                 self.clear_rate_limit(account_id);
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 Ok(())
             }
             Ok(None) => Err("账号加载失败".to_string()),
@@ -140,6 +252,7 @@ impl TokenManager {
 
     /// 重新加载所有账号
     pub async fn reload_all_accounts(&self) -> Result<usize, String> {
+<<<<<<< HEAD
         let count = self.load_accounts().await?;
         // [NEW] 重新加载所有账号时自动清除所有限流记录
         self.clear_all_rate_limits();
@@ -152,6 +265,17 @@ impl TokenManager {
             .map_err(|e| format!("读取文件失败: {}", e))?;
         
         let mut account: serde_json::Value = serde_json::from_str(&content)
+=======
+        self.load_accounts().await
+    }
+    
+    /// 仅内部使用的同步账号加载，适配 spawn_blocking
+    fn load_single_account_sync(path: &PathBuf) -> Result<Option<ProxyToken>, String> {
+        let content = std::fs::read_to_string(path)
+            .map_err(|e| format!("读取文件失败: {}", e))?;
+        
+        let account: serde_json::Value = serde_json::from_str(&content)
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             .map_err(|e| format!("解析 JSON 失败: {}", e))?;
 
         if account
@@ -167,6 +291,7 @@ impl TokenManager {
             return Ok(None);
         }
 
+<<<<<<< HEAD
 
         // [修复 #1344] 先检查账号是否被手动禁用(非配额保护原因)
         let is_proxy_disabled = account.get("proxy_disabled")
@@ -202,6 +327,21 @@ impl TokenManager {
         // [兼容性] 检查旧版 proxy_disabled 标记(已被配额保护恢复的情况)
         // 如果账号被旧版配额保护禁用,但配额已恢复,上面的检查会自动清除 proxy_disabled
         // 这里再次检查,确保不会加载仍然被禁用的账号
+=======
+        // 【新增】配额保护检查 - 在检查 proxy_disabled 之前执行
+        // 这样可以在加载时自动恢复配额已恢复的账号
+        // Note: This part needs `self` to call `check_and_protect_quota`, which is not available in a static method.
+        // For now, we'll skip the quota protection check in the sync version and rely on the async `load_single_account`
+        // to handle it if it were to be called directly. However, the current design calls `load_single_account_sync`
+        // from `load_accounts` (which is for initial loading) and `reload_account`.
+        // The `check_and_protect_quota` logic is primarily for deciding if an account should be loaded at all,
+        // or if its `protected_models` field should be updated.
+        // Given the instruction, we'll keep the `check_and_protect_quota` in the async `load_single_account`
+        // and remove it from this sync version, as it's not directly callable here.
+        // The `load_accounts` method will load all accounts, and then `get_token` will filter based on `protected_models`.
+
+        // 检查主动禁用状态
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if account
             .get("proxy_disabled")
             .and_then(|v| v.as_bool())
@@ -215,7 +355,10 @@ impl TokenManager {
             return Ok(None);
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let account_id = account["id"].as_str()
             .ok_or("缺少 id 字段")?
             .to_string();
@@ -254,9 +397,35 @@ impl TokenManager {
             .map(|s| s.to_string());
         
         // [FIX #563] 提取最大剩余配额百分比用于优先级排序 (Option<i32> now)
+<<<<<<< HEAD
         let remaining_quota = account.get("quota")
             .and_then(|q| self.calculate_quota_stats(q));
             // .filter(|&r| r > 0); // 移除 >0 过滤，因为 0% 也是有效数据，只是优先级低
+=======
+        // This part needs `self` to call `calculate_quota_stats`, so it's moved to the async wrapper if needed.
+        // For now, we'll inline the logic or simplify.
+        let remaining_quota = {
+            let models = account.get("quota")
+                .and_then(|q| q.get("models"))
+                .and_then(|m| m.as_array());
+            
+            let mut max_percentage = 0;
+            let mut has_data = false;
+            
+            if let Some(models_arr) = models {
+                for model in models_arr {
+                    if let Some(pct) = model.get("percentage").and_then(|v| v.as_i64()) {
+                        let pct_i32 = pct as i32;
+                        if pct_i32 > max_percentage {
+                            max_percentage = pct_i32;
+                        }
+                        has_data = true;
+                    }
+                }
+            }
+            if has_data { Some(max_percentage) } else { None }
+        };
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         // 【新增 #621】提取受限模型列表
         let protected_models: HashSet<String> = account.get("protected_models")
@@ -269,7 +438,13 @@ impl TokenManager {
             })
             .unwrap_or_default();
         
+<<<<<<< HEAD
         let health_score = self.health_scores.get(&account_id).map(|v| *v).unwrap_or(1.0);
+=======
+        let account_name = account.get("name")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         Ok(Some(ProxyToken {
             account_id,
@@ -283,10 +458,38 @@ impl TokenManager {
             subscription_tier,
             remaining_quota,
             protected_models,
+<<<<<<< HEAD
             health_score,
         }))
     }
 
+=======
+            account_name,
+        }))
+    }
+
+    /// 异步获取并加载单个账号（由外部调用，如重载）
+    /// 此方法将同步文件读取和 JSON 解析操作封装在 `spawn_blocking` 中。
+    async fn load_single_account(&self, path: &PathBuf) -> Result<Option<ProxyToken>, String> {
+        let path_clone = path.clone();
+        // let manager_arc = Arc::new(self.clone_weak()); // Clone a weak reference if needed for quota protection logic
+
+        tokio::task::spawn_blocking(move || {
+            let mut token_option = Self::load_single_account_sync(&path_clone)?;
+
+            // If the token was loaded, perform async-dependent checks like quota protection
+            // Note: `check_and_protect_quota` is async and requires `&self`, so it cannot be directly called here.
+            // The current design loads all accounts and then filters in `get_token`.
+            // If `check_and_protect_quota` needs to modify the `ProxyToken` *before* it's inserted into `tokens`,
+            // this logic would need to be re-evaluated. For now, we assume `protected_models` is loaded correctly
+            // by `load_single_account_sync` and `get_token` handles the filtering.
+
+            Ok(token_option)
+        })
+        .await
+        .map_err(|e| format!("Task join error: {}", e))?
+    }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     /// 检查账号是否应该被配额保护
     /// 如果配额低于阈值，自动禁用账号并返回 true
@@ -308,7 +511,11 @@ impl TokenManager {
             None => return false, // 无配额信息，跳过
         };
 
+<<<<<<< HEAD
         // 3. [兼容性 #621] 检查是否被旧版账号级配额保护禁用,尝试恢复并转为模型级
+=======
+        // 3. 检查是否已经被账号级或模型级配额保护禁用
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let is_proxy_disabled = account_json.get("proxy_disabled")
             .and_then(|v| v.as_bool())
             .unwrap_or(false);
@@ -317,6 +524,7 @@ impl TokenManager {
             .and_then(|v| v.as_str())
             .unwrap_or("");
         
+<<<<<<< HEAD
         if is_proxy_disabled && reason == "quota_protection" {
             // 如果是被旧版账号级保护禁用的,尝试恢复并转为模型级
             return self.check_and_restore_quota(account_json, account_path, &quota, &config).await;
@@ -324,6 +532,16 @@ impl TokenManager {
         
         // [修复 #1344] 不再处理其他禁用原因,让调用方负责检查手动禁用
         
+=======
+        if is_proxy_disabled {
+            if reason == "quota_protection" {
+                // [兼容性 #621] 如果是被旧版账号级保护禁用的，尝试恢复并转为模型级
+                return self.check_and_restore_quota(account_json, account_path, &quota, &config).await;
+            }
+            return true; // 其他原因禁用，跳过加载
+        }
+        
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 4. 获取模型列表
         let models = match quota.get("models").and_then(|m| m.as_array()) {
             Some(m) => m,
@@ -514,7 +732,11 @@ impl TokenManager {
         force_rotate: bool, 
         session_id: Option<&str>,
         target_model: &str,
+<<<<<<< HEAD
     ) -> Result<(String, String, String, u64), String> {
+=======
+    ) -> Result<(String, String, String, Option<String>), String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 【优化 Issue #284】添加 5 秒超时，防止死锁
         let timeout_duration = std::time::Duration::from_secs(5);
         match tokio::time::timeout(timeout_duration, self.get_token_internal(quota_group, force_rotate, session_id, target_model)).await {
@@ -530,7 +752,11 @@ impl TokenManager {
         force_rotate: bool, 
         session_id: Option<&str>,
         target_model: &str,
+<<<<<<< HEAD
     ) -> Result<(String, String, String, u64), String> {
+=======
+    ) -> Result<(String, String, String, Option<String>), String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let mut tokens_snapshot: Vec<ProxyToken> = self.tokens.iter().map(|e| e.value().clone()).collect();
         let total = tokens_snapshot.len();
         if total == 0 {
@@ -561,6 +787,7 @@ impl TokenManager {
             // Accounts with unknown/zero percentage go last within their tier
             let quota_a = a.remaining_quota.unwrap_or(0);
             let quota_b = b.remaining_quota.unwrap_or(0);
+<<<<<<< HEAD
             let quota_cmp = quota_b.cmp(&quota_a);
             
             if quota_cmp != std::cmp::Ordering::Equal {
@@ -592,19 +819,48 @@ impl TokenManager {
         // ===== [FIX #820] 固定账号模式：优先使用指定账号 =====
         let preferred_id = self.preferred_account_id.read().await.clone();
         if let Some(ref pref_id) = preferred_id {
+=======
+            quota_b.cmp(&quota_a)  // Descending: higher percentage first
+        });
+        
+        // [OPTIMIZATION] Removed heavy "Token Rotation" log loop that caused I/O storms and deadlocks.
+        // tracing::info!("🔄 [Token Rotation] Accounts: ..."); 
+
+        // 0. 读取当前调度配置
+        let scheduling = self.sticky_config.load().as_ref().clone();
+        use crate::proxy::sticky_config::SchedulingMode;
+        
+        // [OPTIMIZATION] Read cached atomic bool instead of loading config file
+        let quota_protection_enabled = self.quota_protection_enabled.load(Ordering::Relaxed);
+
+        // ===== [FIX #820] 固定账号模式：优先使用指定账号 =====
+        let preferred_id = self.preferred_account_id.load().as_ref().clone();
+        if let Some(ref pref_id) = preferred_id {
+            tracing::info!("🎯 [Selection] Checking preferred account: {}", pref_id);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 查找优先账号
             if let Some(preferred_token) = tokens_snapshot.iter().find(|t| &t.account_id == pref_id) {
                 // 检查账号是否可用（未限流、未被配额保护）
                 let normalized_target = crate::proxy::common::model_mapping::normalize_to_standard_id(target_model)
                     .unwrap_or_else(|| target_model.to_string());
+<<<<<<< HEAD
 
                 let is_rate_limited = self.is_rate_limited(&preferred_token.account_id, Some(&normalized_target)).await;
+=======
+                
+                let is_rate_limited = self.is_rate_limited_by_account_id(&preferred_token.account_id);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 let is_quota_protected = quota_protection_enabled && preferred_token.protected_models.contains(&normalized_target);
 
                 if !is_rate_limited && !is_quota_protected {
                     tracing::info!(
+<<<<<<< HEAD
                         "🔒 [FIX #820] Using preferred account: {} (fixed mode)",
                         preferred_token.email
+=======
+                        "🎯 [Selection] Preferred account selected: {} ({}) for {}",
+                        preferred_token.email, preferred_token.account_id, normalized_target
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     );
 
                     // 直接使用优先账号，跳过轮询逻辑
@@ -650,6 +906,7 @@ impl TokenManager {
                         }
                     };
 
+<<<<<<< HEAD
                     return Ok((token.access_token, project_id, token.email, 0));
                 } else {
                     if is_rate_limited {
@@ -660,6 +917,21 @@ impl TokenManager {
                 }
             } else {
                 tracing::warn!("🔒 [FIX #820] Preferred account {} not found in pool, falling back to round-robin", pref_id);
+=======
+                    return Ok((token.access_token, project_id, token.email, token.account_name));
+                } else {
+                    if is_rate_limited {
+                        tracing::warn!("⚠️ [Selection] Preferred account {} is skiped: rate-limited", preferred_token.email);
+                    } else {
+                        tracing::warn!(
+                            "⚠️ [Selection] Preferred account {} is skiped: quota-protected for model '{}' (normalized: '{}')", 
+                            preferred_token.email, target_model, normalized_target
+                        );
+                    }
+                }
+            } else {
+                tracing::warn!("⚠️ [Selection] Preferred account {} not found in active pool, falling back to rotation pool", pref_id);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }
         // ===== [END FIX #820] =====
@@ -697,8 +969,12 @@ impl TokenManager {
                     // 2. 转换 email -> account_id 检查绑定的账号是否限流
                     if let Some(bound_token) = tokens_snapshot.iter().find(|t| t.account_id == bound_id) {
                         let key = self.email_to_account_id(&bound_token.email).unwrap_or_else(|| bound_token.account_id.clone());
+<<<<<<< HEAD
                         // [FIX] Pass None for specific model wait time if not applicable
                         let reset_sec = self.rate_limit_tracker.get_remaining_wait(&key, None);
+=======
+                        let reset_sec = self.rate_limit_tracker.get_remaining_wait(&key);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         if reset_sec > 0 {
                             // 【修复 Issue #284】立即解绑并切换账号，不再阻塞等待
                             // 原因：阻塞等待会导致并发请求时客户端 socket 超时 (UND_ERR_SOCKET)
@@ -732,11 +1008,19 @@ impl TokenManager {
                     if last_time.elapsed().as_secs() < 60 && !attempted.contains(account_id) {
                         if let Some(found) = tokens_snapshot.iter().find(|t| &t.account_id == account_id) {
                             // 【修复】检查限流状态和配额保护，避免复用已被锁定的账号
+<<<<<<< HEAD
                             if !self.is_rate_limited(&found.account_id, Some(&normalized_target)).await && !(quota_protection_enabled && found.protected_models.contains(&normalized_target)) {
                                 tracing::debug!("60s Window: Force reusing last account: {}", found.email);
                                 target_token = Some(found.clone());
                             } else {
                                 if self.is_rate_limited(&found.account_id, Some(&normalized_target)).await {
+=======
+                            if !self.is_rate_limited_by_account_id(&found.account_id) && !(quota_protection_enabled && found.protected_models.contains(&normalized_target)) {
+                                tracing::debug!("60s Window: Force reusing last account: {}", found.email);
+                                target_token = Some(found.clone());
+                            } else {
+                                if self.is_rate_limited_by_account_id(&found.account_id) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     tracing::debug!("60s Window: Last account {} is rate-limited, skipping", found.email);
                                 } else {
                                     tracing::debug!("60s Window: Last account {} is quota-protected for model {} [{}], skipping", found.email, normalized_target, target_model);
@@ -763,7 +1047,11 @@ impl TokenManager {
                         }
 
                         // 【新增】主动避开限流或 5xx 锁定的账号 (高可用优化)
+<<<<<<< HEAD
                         if self.is_rate_limited(&candidate.account_id, Some(&normalized_target)).await { // Changed to account_id
+=======
+                        if self.is_rate_limited_by_account_id(&candidate.account_id) { // Changed to account_id
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             continue;
                         }
 
@@ -784,7 +1072,11 @@ impl TokenManager {
             } else if target_token.is_none() {
                 // 模式 C: 纯轮询模式 (Round-robin) 或强制轮换
                 let start_idx = self.current_index.fetch_add(1, Ordering::SeqCst) % total;
+<<<<<<< HEAD
                 tracing::debug!("🔄 [Mode C] Round-robin from idx {}, total: {}", start_idx, total);
+=======
+                tracing::info!("🔄 [Mode C] Round-robin from idx {}, total: {}", start_idx, total);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 for offset in 0..total {
                     let idx = (start_idx + offset) % total;
                     let candidate = &tokens_snapshot[idx];
@@ -796,13 +1088,22 @@ impl TokenManager {
 
                     // 【新增 #621】模型级限流检查
                     if quota_protection_enabled && candidate.protected_models.contains(&normalized_target) {
+<<<<<<< HEAD
                         tracing::debug!("  ⛔ {} - SKIP: quota-protected for {} [{}]", candidate.email, normalized_target, target_model);
+=======
+                        tracing::info!("  ⛔ {} - SKIP: quota-protected for {} [{}]", candidate.email, normalized_target, target_model);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         continue;
                     }
 
                     // 【新增】主动避开限流或 5xx 锁定的账号
+<<<<<<< HEAD
                     if self.is_rate_limited(&candidate.account_id, Some(&normalized_target)).await { // Changed to account_id
                         tracing::debug!("  ⏳ {} - SKIP: rate-limited", candidate.email);
+=======
+                    if self.is_rate_limited_by_account_id(&candidate.account_id) { // Changed to account_id
+                        tracing::info!("  ⏳ {} - SKIP: rate-limited", candidate.email);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         continue;
                     }
 
@@ -819,8 +1120,14 @@ impl TokenManager {
             let mut token = match target_token {
                 Some(t) => t,
                 None => {
+<<<<<<< HEAD
                     let mut wait_ms = 0;
                     // 乐观重置策略: 双层防护机制
+=======
+                    // 乐观重置策略: 双层防护机制
+                    // 当所有账号都无法选择时,可能是时序竞争导致的状态不同步
+                    
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     // 计算最短等待时间
                     let min_wait = tokens_snapshot.iter()
                         .filter_map(|t| self.rate_limit_tracker.get_reset_seconds(&t.account_id))
@@ -829,6 +1136,7 @@ impl TokenManager {
                     // Layer 1: 如果最短等待时间 <= 2秒,执行缓冲延迟
                     if let Some(wait_sec) = min_wait {
                         if wait_sec <= 2 {
+<<<<<<< HEAD
                             wait_ms = (wait_sec as f64 * 1000.0) as u64;
                             tracing::warn!(
                                 "All accounts rate-limited but shortest wait is {}s. Applying {}ms buffer for state sync...",
@@ -841,6 +1149,19 @@ impl TokenManager {
                             // 重新尝试选择账号
                             let retry_token = tokens_snapshot.iter()
                                 .find(|t| !attempted.contains(&t.account_id) && !self.is_rate_limited_sync(&t.account_id, None));
+=======
+                            tracing::warn!(
+                                "All accounts rate-limited but shortest wait is {}s. Applying 500ms buffer for state sync...",
+                                wait_sec
+                            );
+                            
+                            // 缓冲延迟 500ms
+                            tokio::time::sleep(tokio::time::Duration::from_millis(500)).await;
+                            
+                            // 重新尝试选择账号
+                            let retry_token = tokens_snapshot.iter()
+                                .find(|t| !attempted.contains(&t.account_id) && !self.is_rate_limited_by_account_id(&t.account_id)); // Changed to account_id
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             
                             if let Some(t) = retry_token {
                                 tracing::info!("✅ Buffer delay successful! Found available account: {}", t.email);
@@ -863,6 +1184,7 @@ impl TokenManager {
                                     tracing::info!("✅ Optimistic reset successful! Using account: {}", t.email);
                                     t.clone()
                                 } else {
+<<<<<<< HEAD
                                     return Err("All accounts failed after optimistic reset.".to_string());
                                 }
                             }
@@ -870,6 +1192,20 @@ impl TokenManager {
                             return Err(format!("All accounts limited. Wait {}s.", wait_sec));
                         }
                     } else {
+=======
+                                    // 所有策略都失败,返回错误
+                                    return Err(
+                                        "All accounts failed after optimistic reset. Please check account health.".to_string()
+                                    );
+                                }
+                            }
+                        } else {
+                            // 等待时间 > 2秒,正常返回错误
+                            return Err(format!("All accounts are currently limited. Please wait {}s.", wait_sec));
+                        }
+                    } else {
+                        // 无限流记录但仍无可用账号,可能是其他问题
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         return Err("All accounts failed or unhealthy.".to_string());
                     }
                 }
@@ -972,7 +1308,11 @@ impl TokenManager {
                 }
             }
 
+<<<<<<< HEAD
             return Ok((token.access_token, project_id, token.email, 0));
+=======
+            return Ok((token.access_token, project_id, token.email, token.account_name));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         Err(last_error.unwrap_or_else(|| "All accounts failed".to_string()))
@@ -1007,6 +1347,7 @@ impl TokenManager {
         Ok(())
     }
 
+<<<<<<< HEAD
     /// 保存 project_id 到账号文件
     async fn save_project_id(&self, account_id: &str, project_id: &str) -> Result<(), String> {
         let entry = self.tokens.get(account_id)
@@ -1025,6 +1366,35 @@ impl TokenManager {
         
         tracing::debug!("已保存 project_id 到账号 {}", account_id);
         Ok(())
+=======
+    /// 保存 Project ID 到磁盘
+    async fn save_project_id(&self, account_id: &str, project_id: &str) -> Result<(), String> {
+        let account = match self.tokens.get(account_id) {
+            Some(a) => a.clone(),
+            None => return Err(format!("Account not found: {}", account_id)),
+        };
+
+        let pid = project_id.to_string();
+        tokio::task::spawn_blocking(move || {
+            let content = std::fs::read_to_string(&account.account_path)
+                .map_err(|e| format!("Failed to read account file: {}", e))?;
+            
+            let mut json: serde_json::Value = serde_json::from_str(&content)
+                .map_err(|e| format!("Failed to parse account JSON: {}", e))?;
+            
+            json["token"]["project_id"] = serde_json::Value::String(pid);
+            
+            let new_content = serde_json::to_string_pretty(&json)
+                .map_err(|e| format!("Failed to serialize account JSON: {}", e))?;
+            
+            std::fs::write(&account.account_path, new_content)
+                .map_err(|e| format!("Failed to write account file: {}", e))?;
+            
+            Ok(())
+        })
+        .await
+        .map_err(|e| format!("Task join error: {}", e))?
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     /// 保存刷新后的 token 到账号文件
@@ -1057,7 +1427,11 @@ impl TokenManager {
 
     /// 通过 email 获取指定账号的 Token（用于预热等需要指定账号的场景）
     /// 此方法会自动刷新过期的 token
+<<<<<<< HEAD
     pub async fn get_token_by_email(&self, email: &str) -> Result<(String, String, String, u64), String> {
+=======
+    pub async fn get_token_by_email(&self, email: &str) -> Result<(String, String, String), String> {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 查找账号信息
         let token_info = {
             let mut found = None;
@@ -1096,7 +1470,11 @@ impl TokenManager {
         
         // 检查是否过期 (提前5分钟)
         if now < timestamp + expires_in - 300 {
+<<<<<<< HEAD
             return Ok((current_access_token, project_id, email.to_string(), 0));
+=======
+            return Ok((current_access_token, project_id, email.to_string()));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         tracing::info!("[Warmup] Token for {} is expiring, refreshing...", email);
@@ -1117,7 +1495,11 @@ impl TokenManager {
                 // 保存到磁盘
                 let _ = self.save_refreshed_token(&account_id, &token_response).await;
 
+<<<<<<< HEAD
                 Ok((token_response.access_token, project_id, email.to_string(), 0))
+=======
+                Ok((token_response.access_token, project_id, email.to_string()))
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
             Err(e) => Err(format!("[Warmup] Token refresh failed for {}: {}", email, e)),
         }
@@ -1127,13 +1509,18 @@ impl TokenManager {
     
     /// 标记账号限流(从外部调用,通常在 handler 中)
     /// 参数为 email，内部会自动转换为 account_id
+<<<<<<< HEAD
     pub async fn mark_rate_limited(
+=======
+    pub fn mark_rate_limited(
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         &self,
         email: &str,
         status: u16,
         retry_after_header: Option<&str>,
         error_body: &str,
     ) {
+<<<<<<< HEAD
         // [NEW] 检查熔断是否启用 (使用内存缓存，极快)
         let config = self.circuit_breaker_config.read().await.clone();
         if !config.enabled {
@@ -1143,17 +1530,25 @@ impl TokenManager {
         // 【替代方案】转换 email -> account_id
         let key = self.email_to_account_id(email).unwrap_or_else(|| email.to_string());
         
+=======
+        // 【替代方案】转换 email -> account_id
+        let key = self.email_to_account_id(email).unwrap_or_else(|| email.to_string());
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         self.rate_limit_tracker.parse_from_error(
             &key,
             status,
             retry_after_header,
             error_body,
             None,
+<<<<<<< HEAD
             &config.backoff_steps, // [NEW] 传入配置
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
     }
     
 
+<<<<<<< HEAD
     /// 检查账号是否在限流中 (支持模型级)
     pub async fn is_rate_limited(&self, account_id: &str, model: Option<&str>) -> bool {
         // [NEW] 检查熔断是否启用
@@ -1172,6 +1567,11 @@ impl TokenManager {
             return false;
         }
         self.rate_limit_tracker.is_rate_limited(account_id, model)
+=======
+    /// 检查账号是否在限流中 (直接使用 account_id)
+    pub fn is_rate_limited_by_account_id(&self, account_id: &str) -> bool {
+        self.rate_limit_tracker.is_rate_limited(account_id)
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     /// 获取距离限流重置还有多少秒
@@ -1195,6 +1595,7 @@ impl TokenManager {
     }
     
     /// 清除指定账号的限流记录
+<<<<<<< HEAD
     pub fn clear_rate_limit(&self, account_id: &str) -> bool {
         self.rate_limit_tracker.clear(account_id)
     }
@@ -1203,6 +1604,12 @@ impl TokenManager {
     pub fn clear_all_rate_limits(&self) {
         self.rate_limit_tracker.clear_all();
     }
+=======
+    #[allow(dead_code)]
+    pub fn clear_rate_limit(&self, account_id: &str) -> bool {
+        self.rate_limit_tracker.clear(account_id)
+    }
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     /// 标记账号请求成功，重置连续失败计数
     /// 
@@ -1243,7 +1650,11 @@ impl TokenManager {
             let token = entry.value();
             
             // 1. 检查是否被限流
+<<<<<<< HEAD
             if self.is_rate_limited(&token.account_id, None).await {
+=======
+            if self.is_rate_limited_by_account_id(&token.account_id) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 tracing::debug!(
                     "[Fallback Check] Account {} is rate-limited, skipping",
                     token.email
@@ -1252,11 +1663,21 @@ impl TokenManager {
             }
             
             // 2. 检查是否被配额保护(如果启用)
+<<<<<<< HEAD
             if quota_protection_enabled && token.protected_models.contains(target_model) {
                 tracing::debug!(
                     "[Fallback Check] Account {} is quota-protected for model {}, skipping",
                     token.email,
                     target_model
+=======
+            let normalized_target = crate::proxy::common::model_mapping::normalize_to_standard_id(target_model)
+                .unwrap_or_else(|| target_model.to_string());
+                
+            if quota_protection_enabled && token.protected_models.contains(&normalized_target) {
+                tracing::debug!(
+                    "[Fallback Check] Account {} is quota-protected for model {} (normalized: {}), skipping",
+                    token.email, target_model, normalized_target
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 );
                 continue;
             }
@@ -1374,7 +1795,11 @@ impl TokenManager {
         
         // 2. 调用配额刷新 API
         tracing::info!("账号 {} 正在实时刷新配额...", email);
+<<<<<<< HEAD
         match crate::modules::quota::fetch_quota(&access_token, email).await {
+=======
+        match crate::modules::quota::fetch_quota(&access_token, email, None).await {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Ok((quota_data, _project_id)) => {
                 // 3. 从最新配额中提取 reset_time
                 let earliest_reset = quota_data.models.iter()
@@ -1417,12 +1842,17 @@ impl TokenManager {
     /// - `model`: 可选的模型名称,用于模型级别限流。传入实际使用的模型可以避免不同模型配额互相影响
     pub async fn mark_rate_limited_async(
         &self,
+<<<<<<< HEAD
         email: &str,
+=======
+        account_id: &str,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         status: u16,
         retry_after_header: Option<&str>,
         error_body: &str,
         model: Option<&str>,  // 🆕 新增模型参数
     ) {
+<<<<<<< HEAD
         // [NEW] 检查熔断是否启用
         let config = self.circuit_breaker_config.read().await.clone();
         if !config.enabled {
@@ -1439,17 +1869,37 @@ impl TokenManager {
         if has_explicit_retry_time {
             // API 返回了精确时间(quotaResetDelay),直接使用,无需实时刷新
             if let Some(m) = model {
+=======
+        // 检查 API 是否返回了精确的重试时间，及处理 401/403 授权故障
+        let has_explicit_retry_time = retry_after_header.is_some() || 
+            error_body.contains("quotaResetDelay") ||
+            status == 401 || status == 403;
+        
+        if has_explicit_retry_time {
+            // 对于 401/403 或包含明确延迟的情况，直接调用 parse_from_error
+            // 授权故障直接锁定 1 小时，无需尝试实时刷新配额
+            if status == 401 || status == 403 {
+                tracing::error!("账号 {} 遇到授权故障 ({}), 正在锁定...", account_id, status);
+            } else if let Some(m) = model {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 tracing::debug!("账号 {} 的模型 {} 的 429 响应包含 quotaResetDelay,直接使用 API 返回的时间", account_id, m);
             } else {
                 tracing::debug!("账号 {} 的 429 响应包含 quotaResetDelay,直接使用 API 返回的时间", account_id);
             }
             self.rate_limit_tracker.parse_from_error(
+<<<<<<< HEAD
                 &account_id,
+=======
+                account_id,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 status,
                 retry_after_header,
                 error_body,
                 model.map(|s| s.to_string()),
+<<<<<<< HEAD
                 &config.backoff_steps, // [NEW] 传入配置
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             );
             return;
         }
@@ -1470,13 +1920,21 @@ impl TokenManager {
             tracing::info!("账号 {} 的 429 响应未包含 quotaResetDelay,尝试实时刷新配额...", account_id);
         }
         
+<<<<<<< HEAD
         if self.fetch_and_lock_with_realtime_quota(&account_id, reason, model.map(|s| s.to_string())).await {
+=======
+        if self.fetch_and_lock_with_realtime_quota(account_id, reason, model.map(|s| s.to_string())).await {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             tracing::info!("账号 {} 已使用实时配额精确锁定", account_id);
             return;
         }
         
         // 实时刷新失败,尝试使用本地缓存的配额刷新时间
+<<<<<<< HEAD
         if self.set_precise_lockout(&account_id, reason, model.map(|s| s.to_string())) {
+=======
+        if self.set_precise_lockout(account_id, reason, model.map(|s| s.to_string())) {
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             tracing::info!("账号 {} 已使用本地缓存配额锁定", account_id);
             return;
         }
@@ -1484,12 +1942,19 @@ impl TokenManager {
         // 都失败了,回退到指数退避策略
         tracing::warn!("账号 {} 无法获取配额刷新时间,使用指数退避策略", account_id);
         self.rate_limit_tracker.parse_from_error(
+<<<<<<< HEAD
             &account_id,
+=======
+            account_id,
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             status,
             retry_after_header,
             error_body,
             model.map(|s| s.to_string()),
+<<<<<<< HEAD
             &config.backoff_steps, // [NEW] 传入配置
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
     }
 
@@ -1497,11 +1962,16 @@ impl TokenManager {
 
     /// 获取当前调度配置
     pub async fn get_sticky_config(&self) -> StickySessionConfig {
+<<<<<<< HEAD
         self.sticky_config.read().await.clone()
+=======
+        self.sticky_config.load().as_ref().clone()
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     /// 更新调度配置
     pub async fn update_sticky_config(&self, new_config: StickySessionConfig) {
+<<<<<<< HEAD
         let mut config = self.sticky_config.write().await;
         *config = new_config;
         tracing::debug!("Scheduling configuration updated: {:?}", *config);
@@ -1517,6 +1987,12 @@ impl TokenManager {
     /// [NEW] 获取熔断器配置
     pub async fn get_circuit_breaker_config(&self) -> crate::models::CircuitBreakerConfig {
         self.circuit_breaker_config.read().await.clone()
+=======
+        self.sticky_config.store(Arc::new(new_config.clone()));
+        // Note: tracing referencing *config is no longer valid directly since we just stored it.
+        // We can just log the new_config.
+        tracing::debug!("Scheduling configuration updated: {:?}", new_config);
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     /// 清除特定会话的粘性映射
@@ -1526,8 +2002,28 @@ impl TokenManager {
     }
 
     /// 清除所有会话的粘性映射
+<<<<<<< HEAD
     pub fn clear_all_sessions(&self) {
         self.session_accounts.clear();
+=======
+    /// 清除所有会话的粘性映射与优先账号设置
+    pub fn clear_all_sessions(&self) {
+        // 1. 清除客户端会话绑定 (Session Affinity)
+        self.session_accounts.clear();
+        
+        // 2. [FIX #Sticky] 清除固定账号模式设置 (Preferred Account)
+        self.preferred_account_id.store(Arc::new(None));
+        
+        // 3. [FIX #Sticky] 重置最后使用的账号，确保下次请求重新进行负载均衡选择
+        // 注意：这里需要 spawn 一个异步任务来获取锁进行清除，或者如果接受短暂的不一致，可以忽略 last_used
+        // 由于 last_used 只是为了 60s 窗口优化，不清除它通常只有轻微影响。
+        // 但为了彻底解决 "假切换" 感觉，我们通过内部的可变性清除它（需要 dashmap 或 atomic 方式）
+        // 由于 last_used_account 是 Mutex 保护的，在同步函数中无法 await。
+        // 将采用 "尽力而为" 策略：在 set_preferred_account 中已经有类似逻辑，
+        // 这里主要依靠 update_current_account 来驱动。
+        
+        tracing::info!("🧹 [TokenManager] Cleared all session bindings and preferred accounts.");
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     // ===== [FIX #820] 固定账号模式相关方法 =====
@@ -1535,6 +2031,7 @@ impl TokenManager {
     /// 设置优先使用的账号ID（固定账号模式）
     /// 传入 Some(account_id) 启用固定账号模式，传入 None 恢复轮询模式
     pub async fn set_preferred_account(&self, account_id: Option<String>) {
+<<<<<<< HEAD
         let mut preferred = self.preferred_account_id.write().await;
         if let Some(ref id) = account_id {
             tracing::info!("🔒 [FIX #820] Fixed account mode enabled: {}", id);
@@ -1542,10 +2039,22 @@ impl TokenManager {
             tracing::info!("🔄 [FIX #820] Round-robin mode enabled (no preferred account)");
         }
         *preferred = account_id;
+=======
+        if let Some(ref id) = account_id {
+            let email = self.tokens.get(id).map(|t| t.email.clone()).unwrap_or_else(|| "unknown".to_string());
+            tracing::info!("🔒 [AccountSwitch] Fixed account mode enabled: {} ({})", id, email);
+            // [FIX] Clear any existing rate limit for this account when manually switched to it
+            self.rate_limit_tracker.mark_success(id);
+        } else {
+            tracing::info!("🔄 [AccountSwitch] Round-robin mode enabled (no preferred account)");
+        }
+        self.preferred_account_id.store(Arc::new(account_id));
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     /// 获取当前优先使用的账号ID
     pub async fn get_preferred_account(&self) -> Option<String> {
+<<<<<<< HEAD
         self.preferred_account_id.read().await.clone()
     }
 
@@ -1628,4 +2137,17 @@ fn truncate_reason(reason: &str, max_len: usize) -> String {
     } else {
         format!("{}...", &reason[..max_len - 3])
     }
+=======
+        self.preferred_account_id.load().as_ref().clone()
+    }
+}
+
+fn truncate_reason(reason: &str, max_len: usize) -> String {
+    if reason.chars().count() <= max_len {
+        return reason.to_string();
+    }
+    let mut s: String = reason.chars().take(max_len).collect();
+    s.push('…');
+    s
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

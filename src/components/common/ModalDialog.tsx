@@ -7,8 +7,12 @@ export type ModalType = 'confirm' | 'success' | 'error' | 'info';
 interface ModalDialogProps {
     isOpen: boolean;
     title: string;
+<<<<<<< HEAD
     message?: string;
     children?: React.ReactNode;
+=======
+    message: string;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     type?: ModalType;
     onConfirm: () => void;
     onCancel?: () => void;
@@ -21,7 +25,10 @@ export default function ModalDialog({
     isOpen,
     title,
     message,
+<<<<<<< HEAD
     children,
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     type = 'confirm',
     onConfirm,
     onCancel,
@@ -63,7 +70,11 @@ export default function ModalDialog({
     return createPortal(
         <div className="modal modal-open z-[100]">
             {/* Draggable Top Region */}
+<<<<<<< HEAD
             <div data-tauri-drag-region className="fixed top-0 left-0 right-0 h-8 z-[110]" />
+=======
+            <div  className="fixed top-0 left-0 right-0 h-8 z-[110]" />
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             <div className="modal-box relative max-w-sm bg-white dark:bg-base-100 shadow-2xl rounded-2xl p-0 overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex flex-col items-center text-center p-6 pt-8">
@@ -72,6 +83,7 @@ export default function ModalDialog({
                     </div>
 
                     <h3 className="text-xl font-bold text-gray-900 dark:text-base-content mb-2">{title}</h3>
+<<<<<<< HEAD
 
                     {children ? (
                         <div className="w-full text-left mb-8 px-1">
@@ -80,6 +92,9 @@ export default function ModalDialog({
                     ) : (
                         <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed px-4">{message}</p>
                     )}
+=======
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-8 leading-relaxed px-4">{message}</p>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
                     <div className="flex gap-3 w-full">
                         {showCancel && (

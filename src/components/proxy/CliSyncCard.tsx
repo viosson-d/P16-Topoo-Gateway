@@ -14,7 +14,10 @@ import {
     Copy,
     X
 } from 'lucide-react';
+<<<<<<< HEAD
 import { copyToClipboard } from '../../utils/clipboard';
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { request as invoke } from '../../utils/request';
 import { showToast } from '../common/ToastContainer';
 import ModalDialog from '../common/ModalDialog';
@@ -176,6 +179,7 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
         const isAppSyncing = syncing[app];
 
         return (
+<<<<<<< HEAD
             <div className="flex flex-col bg-white/50 dark:bg-gray-800/40 rounded-xl border border-gray-100 dark:border-white/5 p-4 shadow-sm hover:shadow-lg hover:border-blue-200/50 dark:hover:border-blue-500/30 transition-all duration-300 group">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-y-3 gap-x-2 mb-4">
                     <div className="flex items-center gap-3 min-w-0">
@@ -184,6 +188,18 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
                         </div>
                         <div className="min-w-0">
                             <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-tight truncate">
+=======
+            <div className="relative flex flex-col bg-white/50 dark:bg-gray-800/40 rounded-xl border border-gray-100 dark:border-white/5 p-4 shadow-sm hover:shadow-lg hover:border-blue-200/50 dark:hover:border-blue-500/30 transition-all duration-300 group">
+                {/* Tool Icon in Top Right */}
+                <div className="absolute top-3 right-3 p-1.5 bg-gray-50 dark:bg-base-300 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                    {icon}
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-y-3 gap-x-2 mb-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="min-w-0">
+                            <h4 className="text-[12px] font-medium text-gray-900 dark:text-gray-100 leading-tight truncate">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 {t('proxy.cli_sync.card_title', { name })}
                             </h4>
                             <div className="mt-1 flex items-center gap-1.5 overflow-hidden">
@@ -193,7 +209,11 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
                                         {t('proxy.cli_sync.status.detecting')}
                                     </div>
                                 ) : status?.installed ? (
+<<<<<<< HEAD
                                     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">
+=======
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         {t('proxy.cli_sync.status.installed', { version: status.version })}
                                     </span>
                                 ) : (
@@ -207,7 +227,11 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
 
                     {!isAppLoading && status?.installed && (
                         <div className={cn(
+<<<<<<< HEAD
                             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all h-6 shrink-0 whitespace-nowrap shadow-sm",
+=======
+                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium tracking-wide transition-all h-6 shrink-0 whitespace-nowrap shadow-sm",
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             status.is_synced
                                 ? "bg-gradient-to-r from-green-500 to-emerald-600 text-white"
                                 : "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 border border-amber-200/50 dark:border-amber-800/30"
@@ -224,7 +248,11 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
                 <div className="mt-auto space-y-3">
                     <div className="p-2.5 bg-gray-50/80 dark:bg-gray-900/40 rounded-lg border border-dashed border-gray-200 dark:border-white/10">
                         <div className="flex justify-between items-start mb-1">
+<<<<<<< HEAD
                             <div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider">{t('proxy.cli_sync.status.current_base_url')}</div>
+=======
+                            <div className="text-[9px] text-gray-400 dark:text-gray-500 font-medium tracking-wider">{t('proxy.cli_sync.status.current_base_url')}</div>
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         </div>
                         <div className="text-[10px] font-mono truncate text-gray-500 dark:text-gray-400 italic">
                             {status?.current_base_url || '---'}
@@ -278,7 +306,11 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
             <div className="px-1 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-gray-400">
                     <Terminal size={14} />
+<<<<<<< HEAD
                     <span className="text-[10px] font-bold uppercase tracking-widest">
+=======
+                    <span className="text-[10px] font-bold tracking-widest">
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         {t('proxy.cli_sync.title')}
                     </span>
                 </div>
@@ -322,11 +354,17 @@ export const CliSyncCard = ({ proxyUrl, apiKey, className }: CliSyncCardProps) =
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
+<<<<<<< HEAD
                                     onClick={async () => {
                                         const success = await copyToClipboard(viewingConfig.content);
                                         if (success) {
                                             showToast(t('proxy.cli_sync.modal.copy_success'), 'success');
                                         }
+=======
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(viewingConfig.content);
+                                        showToast(t('proxy.cli_sync.modal.copy_success'), 'success');
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     }}
                                     className="btn btn-ghost btn-sm hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                                 >

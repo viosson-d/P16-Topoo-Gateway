@@ -83,6 +83,19 @@ pub fn save_app_config(config: &AppConfig) -> Result<(), String> {
     let content = serde_json::to_string_pretty(config)
         .map_err(|e| format!("failed_to_serialize_config: {}", e))?;
     
+<<<<<<< HEAD
     fs::write(&config_path, content)
         .map_err(|e| format!("failed_to_save_config: {}", e))
+=======
+    // Ensure parent directory exists
+    if let Some(parent) = config_path.parent() {
+        if !parent.exists() {
+             fs::create_dir_all(parent)
+                .map_err(|e| format!("failed_to_create_config_dir: {:?} (os error {})", parent, e))?;
+        }
+    }
+
+    fs::write(&config_path, content)
+        .map_err(|e| format!("failed_to_save_config: {} (path: {:?})", e, config_path))
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

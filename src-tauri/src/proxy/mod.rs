@@ -6,6 +6,10 @@ pub mod token_manager;
 pub mod project_resolver;
 pub mod server;
 pub mod security;
+<<<<<<< HEAD
+=======
+pub mod utils;
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 // 新架构模块
 pub mod mappers;           // 协议转换器
@@ -23,7 +27,10 @@ pub mod session_manager;   // 会话指纹管理
 pub mod audio;             // 音频处理模块
 pub mod signature_cache;   // Signature Cache (v3.3.16)
 pub mod cli_sync;          // CLI 配置同步 (v3.3.35)
+<<<<<<< HEAD
 pub mod debug_logger;      // 调试日志
+=======
+>>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 
 pub use config::ProxyConfig;
