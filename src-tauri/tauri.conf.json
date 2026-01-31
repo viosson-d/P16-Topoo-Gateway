@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Antigravity Tools",
-  "version": "4.0.10",
-  "identifier": "com.lbjlaq.antigravity-tools",
+  "productName": "Topoo Gateway",
+  "version": "0.0.11",
+  "identifier": "com.topoo.gateway",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "withGlobalTauri": false,
     "windows": [
       {
-        "title": "Antigravity Tools",
+        "title": "Topoo Gateway",
         "width": 1024,
         "height": 700,
         "titleBarStyle": "Overlay",
@@ -44,10 +44,10 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/lbjlaq/Antigravity-Manager/releases/latest/download/updater.json"
+        "https://github.com/viosson-d/P16-Topoo-Gateway/releases/latest/download/updater.json"
       ],
       "dialog": true,
-      "pubkey": "RWSQvAJOE+udAGSUoZB7Y7EhAGOyZkB1zHaKwRYfldgig5rIF+PVUDbo"
+      "pubkey": "RWS1ja9JztNZJ51egPwPYp0gKb+bnuZ8tdWkKK9OpGJ/kQCkWBQEH2nl"
     },
     "process": null,
     "fs": null,
