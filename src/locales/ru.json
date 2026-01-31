@@ -292,7 +292,7 @@
             "auto_launch": "Запуск при старте системы",
             "auto_launch_enabled": "Включено",
             "auto_launch_disabled": "Отключено",
-            "auto_launch_desc": "Автоматически запускать Antigravity Tools при старте системы",
+            "auto_launch_desc": "Автоматически запускать Topoo Gateway при старте системы",
             "auto_check_update": "Автоматическая проверка обновлений",
             "auto_check_update_desc": "Автоматически проверять наличие новой версии при запуске",
             "auto_check_update_enabled": "Автопроверка включена",

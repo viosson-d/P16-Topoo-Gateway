@@ -106,7 +106,7 @@
             "export_error": "エクスポートに失敗しました"
         },
         "branding": {
-            "title": "Antigravity Tools",
+            "title": "Topoo Gateway",
             "subtitle": "プロフェッショナルなアカウント管理"
         }
     },
@@ -307,7 +307,7 @@
             "auto_launch": "起動時に実行",
             "auto_launch_enabled": "有効",
             "auto_launch_disabled": "無効",
-            "auto_launch_desc": "システム起動時にAntigravity Toolsを自動的に起動する",
+            "auto_launch_desc": "システム起動時にTopoo Gatewayを自動的に起動する",
             "auto_check_update": "更新を自動確認",
             "auto_check_update_desc": "起動時に新しいバージョンを自動的に確認します",
             "auto_check_update_disabled": "自動確認は無効です",
@@ -420,7 +420,7 @@
             "title": "スマートウォームアップ"
         },
         "branding": {
-            "title": "Antigravity Tools",
+            "title": "Topoo Gateway",
             "subtitle": "プロフェッショナルなアカウント管理"
         }
     },

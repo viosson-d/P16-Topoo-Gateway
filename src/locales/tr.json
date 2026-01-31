@@ -281,7 +281,7 @@
             "auto_launch": "Başlangıçta Çalıştır",
             "auto_launch_enabled": "Etkin",
             "auto_launch_disabled": "Devre Dışı",
-            "auto_launch_desc": "Sistem başladığında Antigravity Tools'u otomatik olarak başlat"
+            "auto_launch_desc": "Sistem başladığında Topoo Gateway'u otomatik olarak başlat"
         },
         "account": {
             "title": "Hesap Ayarları",

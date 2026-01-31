@@ -295,7 +295,7 @@
             "auto_launch": "开机自动启动",
             "auto_launch_enabled": "启用",
             "auto_launch_disabled": "禁用",
-            "auto_launch_desc": "系统启动时自动运行 Antigravity Tools",
+            "auto_launch_desc": "系统启动时自动运行 Topoo Gateway",
             "auto_check_update": "自动检查更新",
             "auto_check_update_desc": "启动时自动检查新版本",
             "auto_check_update_enabled": "已启用自动检查更新",

@@ -289,7 +289,7 @@
             "auto_launch": "Iniciar na Inicialização",
             "auto_launch_enabled": "Habilitado",
             "auto_launch_disabled": "Desabilitado",
-            "auto_launch_desc": "Iniciar automaticamente o Antigravity Tools quando o sistema iniciar",
+            "auto_launch_desc": "Iniciar automaticamente o Topoo Gateway quando o sistema iniciar",
             "auto_check_update": "Verificar Atualizações Automaticamente",
             "auto_check_update_desc": "Verificar automaticamente novas versões na inicialização",
             "auto_check_update_enabled": "Verificação automática habilitada",
