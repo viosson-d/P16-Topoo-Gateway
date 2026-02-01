@@ -696,7 +696,6 @@ pub fn create_codex_sse_stream(
                                                                 // Determine event type based on tool name
                                                                 let maybe_item_added_ev: Option<Value> = if name_str == "shell" || name_str == "local_shell" {
                                                                     // Map to local_shell_call
-<<<<<<< HEAD
                                                                     let cmd_vec: Vec<String> = if args_obj.as_object().map(|o| o.is_empty()).unwrap_or(true) {
                                                                         vec!["powershell.exe".to_string(), "-Command".to_string(), "exit 0".to_string()]
                                                                     } else if let Some(arr) = args_obj.get("command").and_then(|v| v.as_array()) {
@@ -711,23 +710,6 @@ pub fn create_codex_sse_stream(
                                                                         vec!["powershell.exe".to_string(), "-Command".to_string(), "exit 0".to_string()]
                                                                     };
 
-=======
-                                                                 let shell_cmd = crate::modules::process::get_effective_shell();
-                                                                 let cmd_vec: Vec<String> = if args_obj.as_object().map(|o| o.is_empty()).unwrap_or(true) {
-                                                                     vec![shell_cmd, "-Command".to_string(), "exit 0".to_string()]
-                                                                 } else if let Some(arr) = args_obj.get("command").and_then(|v| v.as_array()) {
-                                                                     arr.iter().filter_map(|v| v.as_str()).map(|s| s.to_string()).collect()
-                                                                 } else if let Some(cmd_str) = args_obj.get("command").and_then(|v| v.as_str()) {
-                                                                     if cmd_str.contains(' ') {
-                                                                         vec![shell_cmd, "-Command".to_string(), cmd_str.to_string()]
-                                                                     } else {
-                                                                         vec![cmd_str.to_string()]
-                                                                     }
-                                                                 } else {
-                                                                     vec![shell_cmd, "-Command".to_string(), "exit 0".to_string()]
-                                                                 };
-   
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                                                     Some(json!({
                                                                         "type": "response.output_item.added",
                                                                         "item": {

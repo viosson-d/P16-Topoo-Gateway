@@ -4,12 +4,7 @@ use serde_json::json;
 use crate::models::QuotaData;
 use crate::modules::config;
 
-<<<<<<< HEAD
 const QUOTA_API_URL: &str = "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:fetchAvailableModels";
-=======
-const QUOTA_API_URL: &str = "https://cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels";
-const USER_AGENT: &str = "antigravity/1.11.3 Darwin/arm64";
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// Critical retry threshold: considered near recovery when quota reaches 95%
 const NEAR_READY_THRESHOLD: i32 = 95;
@@ -67,11 +62,7 @@ fn create_warmup_client() -> reqwest::Client {
     crate::utils::http::get_long_client()
 }
 
-<<<<<<< HEAD
 const CLOUD_CODE_BASE_URL: &str = "https://daily-cloudcode-pa.sandbox.googleapis.com";
-=======
-const CLOUD_CODE_BASE_URL: &str = "https://cloudcode-pa.googleapis.com";
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// Fetch project ID and subscription tier
 async fn fetch_project_id(access_token: &str, email: &str) -> (Option<String>, Option<String>) {
@@ -82,11 +73,7 @@ async fn fetch_project_id(access_token: &str, email: &str) -> (Option<String>, O
         .post(format!("{}/v1internal:loadCodeAssist", CLOUD_CODE_BASE_URL))
         .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", access_token))
         .header(reqwest::header::CONTENT_TYPE, "application/json")
-<<<<<<< HEAD
         .header(reqwest::header::USER_AGENT, crate::constants::USER_AGENT.as_str())
-=======
-        .header(reqwest::header::USER_AGENT, "antigravity/windows/amd64")
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         .json(&meta)
         .send()
         .await;
@@ -98,24 +85,9 @@ async fn fetch_project_id(access_token: &str, email: &str) -> (Option<String>, O
                     let project_id = data.project_id.clone();
                     
                     // Core logic: Priority to subscription ID from paid_tier, which better reflects actual account benefits than current_tier
-<<<<<<< HEAD
                     let subscription_tier = data.paid_tier
                         .and_then(|t| t.id)
                         .or_else(|| data.current_tier.and_then(|t| t.id));
-=======
-                    let raw_tier = data.paid_tier
-                        .and_then(|t| t.id)
-                        .or_else(|| data.current_tier.and_then(|t| t.id));
-
-                    // Normalize tier for Frontend consistency (FREE / PRO / ULTRA)
-                    let subscription_tier = raw_tier.map(|s| {
-                        let lower = s.to_lowercase();
-                        if lower.contains("ultra") { "ULTRA".to_string() }
-                        else if lower.contains("pro") { "PRO".to_string() }
-                        else { s }
-                    });
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     
                     if let Some(ref tier) = subscription_tier {
                         crate::modules::logger::log_info(&format!(
@@ -140,13 +112,8 @@ async fn fetch_project_id(access_token: &str, email: &str) -> (Option<String>, O
 }
 
 /// Unified entry point for fetching account quota
-<<<<<<< HEAD
 pub async fn fetch_quota(access_token: &str, email: &str) -> crate::error::AppResult<(QuotaData, Option<String>)> {
     fetch_quota_with_cache(access_token, email, None).await
-=======
-pub async fn fetch_quota(access_token: &str, email: &str, existing_quota: Option<QuotaData>) -> crate::error::AppResult<(QuotaData, Option<String>)> {
-    fetch_quota_with_cache(access_token, email, None, existing_quota).await
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Fetch quota with cache support
@@ -154,10 +121,6 @@ pub async fn fetch_quota_with_cache(
     access_token: &str,
     email: &str,
     cached_project_id: Option<&str>,
-<<<<<<< HEAD
-=======
-    existing_quota: Option<QuotaData>,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 ) -> crate::error::AppResult<(QuotaData, Option<String>)> {
     use crate::error::AppError;
     
@@ -176,7 +139,6 @@ pub async fn fetch_quota_with_cache(
     });
     
     let url = QUOTA_API_URL;
-<<<<<<< HEAD
     let mut last_error: Option<AppError> = None;
 
     for attempt in 1..=MAX_RETRIES {
@@ -184,16 +146,6 @@ pub async fn fetch_quota_with_cache(
             .post(url)
             .bearer_auth(access_token)
             .header(reqwest::header::USER_AGENT, crate::constants::USER_AGENT.as_str())
-=======
-    let max_retries = 3;
-    let mut last_error: Option<AppError> = None;
-
-    for attempt in 1..=max_retries {
-        match client
-            .post(url)
-            .bearer_auth(access_token)
-            .header("User-Agent", USER_AGENT)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             .json(&json!(payload))
             .send()
             .await
@@ -206,36 +158,18 @@ pub async fn fetch_quota_with_cache(
                     // ✅ Special handling for 403 Forbidden - return directly, no retry
                     if status == reqwest::StatusCode::FORBIDDEN {
                         crate::modules::logger::log_warn(&format!(
-<<<<<<< HEAD
                             "Account unauthorized (403 Forbidden), marking as forbidden"
                         ));
                         let mut q = QuotaData::new();
                         q.is_forbidden = true;
                         q.subscription_tier = subscription_tier.clone();
-=======
-                            "Account unauthorized (403 Forbidden) for {}, marking as forbidden and retaining old data",
-                            email
-                        ));
-                        let mut q = existing_quota.unwrap_or_else(QuotaData::new);
-                        q.is_forbidden = true;
-                        // Use fresh tier if we got it, otherwise keep old
-                        if subscription_tier.is_some() {
-                            q.subscription_tier = subscription_tier.clone();
-                        }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         return Ok((q, project_id.clone()));
                     }
                     
                     // Continue retry logic for other errors
-<<<<<<< HEAD
                     if attempt < MAX_RETRIES {
                          let text = response.text().await.unwrap_or_default();
                          crate::modules::logger::log_warn(&format!("API Error: {} - {} (Attempt {}/{})", status, text, attempt, MAX_RETRIES));
-=======
-                    if attempt < max_retries {
-                         let text = response.text().await.unwrap_or_default();
-                         crate::modules::logger::log_warn(&format!("API Error: {} - {} (Attempt {}/{})", status, text, attempt, max_retries));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                          last_error = Some(AppError::Unknown(format!("HTTP {} - {}", status, text)));
                          tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                          continue;
@@ -276,15 +210,9 @@ pub async fn fetch_quota_with_cache(
                 return Ok((quota_data, project_id.clone()));
             },
             Err(e) => {
-<<<<<<< HEAD
                 crate::modules::logger::log_warn(&format!("Request failed: {} (Attempt {}/{})", e, attempt, MAX_RETRIES));
                 last_error = Some(AppError::Network(e));
                 if attempt < MAX_RETRIES {
-=======
-                crate::modules::logger::log_warn(&format!("Request failed: {} (Attempt {}/{})", e, attempt, max_retries));
-                last_error = Some(AppError::Network(e));
-                if attempt < max_retries {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                 }
             }
@@ -297,11 +225,7 @@ pub async fn fetch_quota_with_cache(
 /// Internal fetch quota logic
 #[allow(dead_code)]
 pub async fn fetch_quota_inner(access_token: &str, email: &str) -> crate::error::AppResult<(QuotaData, Option<String>)> {
-<<<<<<< HEAD
     fetch_quota_with_cache(access_token, email, None).await
-=======
-    fetch_quota_with_cache(access_token, email, None, None).await
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Batch fetch all account quotas (backup functionality)
@@ -311,11 +235,7 @@ pub async fn fetch_all_quotas(accounts: Vec<(String, String)>) -> Vec<(String, c
     
     for (account_id, access_token) in accounts {
         // In batch queries, pass account_id for log identification
-<<<<<<< HEAD
         let result = fetch_quota(&access_token, &account_id).await.map(|(q, _)| q);
-=======
-        let result = fetch_quota(&access_token, &account_id, None).await.map(|(q, _)| q);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         results.push((account_id, result));
     }
     
@@ -421,11 +341,7 @@ pub async fn warm_up_all_accounts() -> Result<String, String> {
                         Ok(t) => t,
                         Err(_) => return None,
                     };
-<<<<<<< HEAD
                     let quota = fetch_quota_with_cache(&token, &account.email, Some(&pid)).await.ok();
-=======
-                    let quota = fetch_quota_with_cache(&token, &account.email, Some(&pid), account.quota.clone()).await.ok();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     Some((account.email.clone(), token, pid, quota))
                 });
                 handles.push(handle);
@@ -549,11 +465,7 @@ pub async fn warm_up_account(account_id: &str) -> Result<String, String> {
     
     let email = account_owned.email.clone();
     let (token, pid) = get_valid_token_for_warmup(&account_owned).await?;
-<<<<<<< HEAD
     let (fresh_quota, _) = fetch_quota_with_cache(&token, &email, Some(&pid)).await.map_err(|e| format!("Failed to fetch quota: {}", e))?;
-=======
-    let (fresh_quota, _) = fetch_quota_with_cache(&token, &email, Some(&pid), account_owned.quota.clone()).await.map_err(|e| format!("Failed to fetch quota: {}", e))?;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     let mut models_to_warm = Vec::new();
     let mut warmed_series = std::collections::HashSet::new();

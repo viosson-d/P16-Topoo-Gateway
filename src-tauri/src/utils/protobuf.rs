@@ -41,40 +41,16 @@ pub fn skip_field(data: &[u8], offset: usize, wire_type: u8) -> Result<usize, St
         }
         1 => {
             // 64-bit
-<<<<<<< HEAD
             Ok(offset + 8)
-=======
-            let new_offset = offset + 8;
-            if new_offset > data.len() {
-                return Err("incomplete_data_64bit".to_string());
-            }
-            Ok(new_offset)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
         2 => {
             // Length-delimited
             let (length, content_offset) = read_varint(data, offset)?;
-<<<<<<< HEAD
             Ok(content_offset + length as usize)
         }
         5 => {
             // 32-bit
             Ok(offset + 4)
-=======
-            let new_offset = content_offset + length as usize;
-            if new_offset > data.len() {
-                return Err("incomplete_data_length_delimited".to_string());
-            }
-            Ok(new_offset)
-        }
-        5 => {
-            // 32-bit
-            let new_offset = offset + 4;
-            if new_offset > data.len() {
-                return Err("incomplete_data_32bit".to_string());
-            }
-            Ok(new_offset)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
         _ => Err(format!("unknown_wire_type: {}", wire_type)),
     }

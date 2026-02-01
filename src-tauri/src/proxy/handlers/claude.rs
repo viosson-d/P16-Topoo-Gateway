@@ -9,11 +9,7 @@ use axum::{
 use bytes::Bytes;
 use futures::StreamExt;
 use serde_json::{json, Value};
-<<<<<<< HEAD
 use tokio::time::Duration;
-=======
-use tokio::time::{sleep, Duration};
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use tracing::{debug, error, info};
 
 use crate::proxy::mappers::claude::{
@@ -25,24 +21,15 @@ use crate::proxy::mappers::claude::{
 use crate::proxy::server::AppState;
 use crate::proxy::mappers::context_manager::ContextManager;
 use crate::proxy::mappers::estimation_calibrator::get_calibrator;
-<<<<<<< HEAD
 use crate::proxy::debug_logger;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use axum::http::HeaderMap;
 use std::sync::{atomic::Ordering, Arc};
 
 const MAX_RETRY_ATTEMPTS: usize = 3;
 
 // ===== Model Constants for Background Tasks =====
-<<<<<<< HEAD
 // These can be adjusted for performance/cost optimization or overridden by custom_mapping
 const INTERNAL_BACKGROUND_TASK: &str = "internal-background-task";  // Unified virtual ID for all background tasks
-=======
-// These can be adjusted for performance/cost optimization
-const BACKGROUND_MODEL_LITE: &str = "gemini-2.5-flash";  // For simple/lightweight tasks
-const BACKGROUND_MODEL_STANDARD: &str = "gemini-2.5-flash";   // For complex background tasks
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 // ===== Layer 3: XML Summary Prompt Template =====
 // Borrowed from Practical-Guide-to-Context-Engineering + Claude Code official practice
@@ -114,145 +101,9 @@ The structure MUST be as follows:
 // [REMOVED] apply_jitter function
 // Jitter logic removed to restore stability (v3.3.16 fix)
 
-<<<<<<< HEAD
 // ===== 统一退避策略模块 =====
 // 移除本地重复定义，使用 common 中的统一实现
 use super::common::{determine_retry_strategy, apply_retry_strategy, should_rotate_account, RetryStrategy};
-=======
-/// 重试策略枚举
-#[derive(Debug, Clone)]
-enum RetryStrategy {
-    /// 不重试，直接返回错误
-    NoRetry,
-    /// 固定延迟
-    FixedDelay(Duration),
-    /// 线性退避：base_ms * (attempt + 1)
-    LinearBackoff { base_ms: u64 },
-    /// 指数退避：base_ms * 2^attempt，上限 max_ms
-    ExponentialBackoff { base_ms: u64, max_ms: u64 },
-}
-
-/// 根据错误状态码和错误信息确定重试策略
-fn determine_retry_strategy(
-    status_code: u16,
-    error_text: &str,
-    retried_without_thinking: bool,
-) -> RetryStrategy {
-    match status_code {
-        // 400 错误：Thinking 签名失败
-        400 if !retried_without_thinking
-            && (error_text.contains("Invalid `signature`")
-                || error_text.contains("thinking.signature")
-                || error_text.contains("thinking.thinking")) =>
-        {
-            // 固定 200ms 延迟后重试
-            RetryStrategy::FixedDelay(Duration::from_millis(200))
-        }
-
-        // 429 限流错误
-        429 => {
-            // 优先使用服务端返回的 Retry-After
-            if let Some(delay_ms) = crate::proxy::upstream::retry::parse_retry_delay(error_text) {
-                let actual_delay = delay_ms.saturating_add(200).min(10_000);
-                RetryStrategy::FixedDelay(Duration::from_millis(actual_delay))
-            } else {
-                // 否则使用线性退避：1s, 2s, 3s
-                RetryStrategy::LinearBackoff { base_ms: 1000 }
-            }
-        }
-
-        // 503 服务不可用 / 529 服务器过载
-        503 | 529 => {
-            // 指数退避：1s, 2s, 4s, 8s
-            RetryStrategy::ExponentialBackoff {
-                base_ms: 1000,
-                max_ms: 8000,
-            }
-        }
-
-        // 500 服务器内部错误
-        500 => {
-            // 线性退避：500ms, 1s, 1.5s
-            RetryStrategy::LinearBackoff { base_ms: 500 }
-        }
-
-        // 401/403 认证/权限错误：可重试（轮换账号）
-        401 | 403 => RetryStrategy::FixedDelay(Duration::from_millis(100)),
-
-        // 其他错误：不重试
-        _ => RetryStrategy::NoRetry,
-    }
-}
-
-/// 执行退避策略并返回是否应该继续重试
-async fn apply_retry_strategy(
-    strategy: RetryStrategy,
-    attempt: usize,
-    status_code: u16,
-    trace_id: &str,
-) -> bool {
-    match strategy {
-        RetryStrategy::NoRetry => {
-            debug!("[{}] Non-retryable error {}, stopping", trace_id, status_code);
-            false
-        }
-
-        RetryStrategy::FixedDelay(duration) => {
-            let base_ms = duration.as_millis() as u64;
-            info!(
-                "[{}] ⏱️  Retry with fixed delay: status={}, attempt={}/{}, base={}ms",
-                trace_id,
-                status_code,
-                attempt + 1,
-                MAX_RETRY_ATTEMPTS,
-                base_ms
-            );
-            sleep(duration).await;
-            true
-        }
-
-        RetryStrategy::LinearBackoff { base_ms } => {
-            let calculated_ms = base_ms * (attempt as u64 + 1);
-            info!(
-                "[{}] ⏱️  Retry with linear backoff: status={}, attempt={}/{}, base={}ms",
-                trace_id,
-                status_code,
-                attempt + 1,
-                MAX_RETRY_ATTEMPTS,
-                calculated_ms
-            );
-            sleep(Duration::from_millis(calculated_ms)).await;
-            true
-        }
-
-        RetryStrategy::ExponentialBackoff { base_ms, max_ms } => {
-            let calculated_ms = (base_ms * 2_u64.pow(attempt as u32)).min(max_ms);
-            info!(
-                "[{}] ⏱️  Retry with exponential backoff: status={}, attempt={}/{}, base={}ms",
-                trace_id,
-                status_code,
-                attempt + 1,
-                MAX_RETRY_ATTEMPTS,
-                calculated_ms
-            );
-            sleep(Duration::from_millis(calculated_ms)).await;
-            true
-        }
-    }
-}
-
-/// 判断是否应该轮换账号
-fn should_rotate_account(status_code: u16) -> bool {
-    match status_code {
-        // 这些错误是账号级别的，需要轮换
-        429 | 401 | 403 | 500 => true,
-        // 这些错误是服务端级别的，轮换账号无意义
-        400 | 503 | 529 => false,
-        // 其他错误默认不轮换
-        _ => false,
-    }
-}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 // ===== 退避策略模块结束 =====
 
@@ -264,13 +115,10 @@ pub async fn handle_messages(
     headers: HeaderMap,
     Json(body): Json<Value>,
 ) -> Response {
-<<<<<<< HEAD
     // [FIX] 保存原始请求体的完整副本，用于日志记录
     // 这确保了即使结构体定义遗漏字段，日志也能完整记录所有参数
     let original_body = body.clone();
     
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     tracing::debug!("handle_messages called. Body JSON len: {}", body.to_string().len());
     
     // 生成随机 Trace ID 用户追踪
@@ -278,10 +126,7 @@ pub async fn handle_messages(
         .take(6)
         .map(char::from)
         .collect::<String>().to_lowercase();
-<<<<<<< HEAD
     let debug_cfg = state.debug_logging.read().await.clone();
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
     // Decide whether this request should be handled by z.ai (Anthropic passthrough) or the existing Google flow.
     let zai = state.zai.read().await.clone();
@@ -305,7 +150,6 @@ pub async fn handle_messages(
         }
     };
 
-<<<<<<< HEAD
     if debug_logger::is_enabled(&debug_cfg) {
         // [FIX] 使用原始 body 副本记录日志，确保不丢失任何字段
         let original_payload = json!({
@@ -318,8 +162,6 @@ pub async fn handle_messages(
         debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "original_request", &original_payload).await;
     }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // [Issue #703 Fix] 智能兜底判断:需要归一化模型名用于配额保护检查
     let normalized_model = crate::proxy::common::model_mapping::normalize_to_standard_id(&request.model)
         .unwrap_or_else(|| request.model.clone());
@@ -340,19 +182,9 @@ pub async fn handle_messages(
                     let has_available = state.token_manager.has_available_account("claude", &normalized_model).await;
                     if !has_available {
                         tracing::info!(
-<<<<<<< HEAD
                             "[{}] All Google accounts unavailable (rate-limited or quota-protected for {}), using fallback provider",
                             trace_id,
                             request.model
-=======
-                            "[{}] ⚠️ All Google accounts unavailable (rate-limited or quota-protected for model '{}'), using fallback provider",
-                            trace_id, normalized_model
-                        );
-                    } else {
-                        tracing::debug!(
-                            "[{}] ✅ Found available Google accounts for model '{}'",
-                            trace_id, normalized_model
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         );
                     }
                     !has_available
@@ -424,10 +256,7 @@ pub async fn handle_messages(
             "/v1/messages",
             &headers,
             new_body,
-<<<<<<< HEAD
             request.messages.len(), // [NEW v4.0.0] Pass message count
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         )
         .await;
     }
@@ -552,11 +381,8 @@ pub async fn handle_messages(
     let mut last_error = String::new();
     let retried_without_thinking = false;
     let mut last_email: Option<String> = None;
-<<<<<<< HEAD
     let mut last_mapped_model: Option<String> = None;
     let mut last_status = StatusCode::SERVICE_UNAVAILABLE; // Default to 503 if no response reached
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     for attempt in 0..max_attempts {
         // 2. 模型路由解析
@@ -564,10 +390,7 @@ pub async fn handle_messages(
             &request_for_body.model,
             &*state.custom_mapping.read().await,
         );
-<<<<<<< HEAD
         last_mapped_model = Some(mapped_model.clone());
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         // 将 Claude 工具转为 Value 数组以便探测联网
         let tools_val: Option<Vec<Value>> = request_for_body.tools.as_ref().map(|list| {
@@ -575,13 +398,8 @@ pub async fn handle_messages(
         });
 
         let config = crate::proxy::mappers::common_utils::resolve_request_config(
-<<<<<<< HEAD
             &request_for_body.model,
             &mapped_model,
-=======
-            &request_for_body.model, 
-            &mapped_model, 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             &tools_val,
             request.size.as_deref(),      // [NEW] Pass size parameter
             request.quality.as_deref()    // [NEW] Pass quality parameter
@@ -593,11 +411,7 @@ pub async fn handle_messages(
         let session_id = Some(session_id_str.as_str());
 
         let force_rotate_token = attempt > 0;
-<<<<<<< HEAD
         let (access_token, project_id, email, _wait_ms) = match token_manager.get_token(&config.request_type, force_rotate_token, session_id, &config.final_model).await {
-=======
-        let (access_token, project_id, email, account_name) = match token_manager.get_token(&config.request_type, force_rotate_token, session_id, &config.final_model).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Ok(t) => t,
             Err(e) => {
                 let safe_message = if e.contains("invalid_grant") {
@@ -605,17 +419,12 @@ pub async fn handle_messages(
                 } else {
                     e
                 };
-<<<<<<< HEAD
                 let headers = [
                     ("X-Mapped-Model", mapped_model.as_str()),
                 ];
                  return (
                     StatusCode::SERVICE_UNAVAILABLE,
                     headers,
-=======
-                 return (
-                    StatusCode::SERVICE_UNAVAILABLE,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     Json(json!({
                         "type": "error",
                         "error": {
@@ -640,7 +449,6 @@ pub async fn handle_messages(
 
         if let Some(task_type) = background_task_type {
             // 检测到后台任务,强制降级到 Flash 模型
-<<<<<<< HEAD
             let virtual_model_id = select_background_model(task_type);
             
             // [FIX] 必须根据虚拟 ID Re-resolve 路由，以支持用户自定义映射 (如 internal-task -> gemini-3)
@@ -662,20 +470,6 @@ pub async fn handle_messages(
             // 覆盖用户自定义映射 (同时更新变量和 Request 对象)
             mapped_model = resolved_model.clone();
             request_with_mapped.model = resolved_model;
-=======
-            let downgrade_model = select_background_model(task_type);
-            
-            info!(
-                "[{}][AUTO] 检测到后台任务 (类型: {:?}),强制降级: {} -> {}",
-                trace_id,
-                task_type,
-                mapped_model,
-                downgrade_model
-            );
-            
-            // 覆盖用户自定义映射
-            mapped_model = downgrade_model.to_string();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             
             // 后台任务净化：
             // 1. 移除工具定义（后台任务不需要工具）
@@ -685,41 +479,23 @@ pub async fn handle_messages(
             request_with_mapped.thinking = None;
             
             // 3. 清理历史消息中的 Thinking Block，防止 Invalid Argument
-<<<<<<< HEAD
             // 使用 ContextManager 的统一策略 (Aggressive)
             crate::proxy::mappers::context_manager::ContextManager::purify_history(
                 &mut request_with_mapped.messages, 
                 crate::proxy::mappers::context_manager::PurificationStrategy::Aggressive
             );
-=======
-            for msg in request_with_mapped.messages.iter_mut() {
-                if let crate::proxy::mappers::claude::models::MessageContent::Array(blocks) = &mut msg.content {
-                    blocks.retain(|b| !matches!(b, 
-                        crate::proxy::mappers::claude::models::ContentBlock::Thinking { .. } |
-                        crate::proxy::mappers::claude::models::ContentBlock::RedactedThinking { .. }
-                    ));
-                }
-            }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         // ===== [3-Layer Progressive Compression + Calibrated Estimation] Context Management =====
         // [ENHANCED] 整合 3.3.47 的三层压缩框架 + PR #925 的动态校准机制
-<<<<<<< HEAD
         // [NEW] 只有当 scaling_enabled 为 true 时才执行压缩逻辑 (联动机制)
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // Layer 1 (60%): Tool message trimming - Does NOT break cache
         // Layer 2 (75%): Thinking purification - Breaks cache but preserves signatures
         // Layer 3 (90%): Fork conversation + XML summary - Ultimate optimization
         let mut is_purified = false;
         let mut compression_applied = false;
         
-<<<<<<< HEAD
         if !retried_without_thinking && scaling_enabled {  // 新增 scaling_enabled 联动判断
-=======
-        if !retried_without_thinking {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 1. Determine context limit (Flash: ~1M, Pro: ~2M)
             let context_limit = if mapped_model.contains("flash") {
                 1_000_000
@@ -766,10 +542,6 @@ pub async fn handle_messages(
                         // Success, no need for Layer 2
                     } else {
                         // Still high pressure, update for Layer 2
-<<<<<<< HEAD
-=======
-                        estimated_usage = new_usage;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         usage_ratio = new_ratio;
                         compression_applied = false; // Allow Layer 2 to run
                     }
@@ -802,10 +574,6 @@ pub async fn handle_messages(
                         trace_id, usage_ratio * 100.0, new_ratio * 100.0, estimated_usage - new_usage
                     );
                     
-<<<<<<< HEAD
-=======
-                    estimated_usage = new_usage;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     usage_ratio = new_ratio;
                 }
             }
@@ -843,11 +611,6 @@ pub async fn handle_messages(
                             "[{}] [Layer-3] Compression result: {:.1}% → {:.1}% (saved {} tokens)",
                             trace_id, usage_ratio * 100.0, new_ratio * 100.0, estimated_usage - new_usage
                         );
-<<<<<<< HEAD
-=======
-                        
-                        estimated_usage = new_usage;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                     Err(e) => {
                         error!(
@@ -891,7 +654,6 @@ pub async fn handle_messages(
                 b
             },
             Err(e) => {
-<<<<<<< HEAD
                  let headers = [
                     ("X-Mapped-Model", request_with_mapped.model.as_str()),
                     ("X-Account-Email", email.as_str()),
@@ -899,10 +661,6 @@ pub async fn handle_messages(
                  return (
                     StatusCode::INTERNAL_SERVER_ERROR,
                     headers,
-=======
-                 return (
-                    StatusCode::INTERNAL_SERVER_ERROR,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     Json(json!({
                         "type": "error",
                         "error": {
@@ -913,7 +671,6 @@ pub async fn handle_messages(
                 ).into_response();
             }
         };
-<<<<<<< HEAD
 
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
@@ -928,8 +685,6 @@ pub async fn handle_messages(
             });
             debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "v1internal_request", &payload).await;
         }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
     // 4. 上游调用 - 自动转换逻辑
     let client_wants_stream = request.stream;
@@ -963,10 +718,7 @@ pub async fn handle_messages(
         };
         
         let status = response.status();
-<<<<<<< HEAD
         last_status = status;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         // 成功
         if status.is_success() {
@@ -978,7 +730,6 @@ pub async fn handle_messages(
 
             // 处理流式响应
             if actual_stream {
-<<<<<<< HEAD
                 let meta = json!({
                     "protocol": "anthropic",
                     "trace_id": trace_id,
@@ -997,11 +748,6 @@ pub async fn handle_messages(
                 );
 
                 let current_message_count = request_with_mapped.messages.len();
-=======
-                let stream = response.bytes_stream();
-                let gemini_stream = Box::pin(stream);
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
                 // [FIX #530/#529/#859] Enhanced Peek logic to handle heartbeats and slow start
                 // We must pre-read until we find a MEANINGFUL content block (like message_start).
@@ -1013,12 +759,8 @@ pub async fn handle_messages(
                     Some(session_id_str.clone()),
                     scaling_enabled,
                     context_limit,
-<<<<<<< HEAD
                     Some(raw_estimated), // [FIX] Pass estimated tokens for calibrator learning
                     current_message_count, // [NEW v4.0.0] Pass message count for rewind detection
-=======
-                    Some(raw_estimated) // [FIX] Pass estimated tokens for calibrator learning
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 );
 
                 let mut first_data_chunk = None;
@@ -1090,10 +832,6 @@ pub async fn handle_messages(
                                 .header(header::CONNECTION, "keep-alive")
                                 .header("X-Accel-Buffering", "no")
                                 .header("X-Account-Email", &email)
-<<<<<<< HEAD
-=======
-                                .header("X-Account-Name", account_name.as_deref().unwrap_or(""))
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 .header("X-Mapped-Model", &request_with_mapped.model)
                                 .header("X-Context-Purified", if is_purified { "true" } else { "false" })
                                 .body(Body::from_stream(combined_stream))
@@ -1109,10 +847,6 @@ pub async fn handle_messages(
                                         .status(StatusCode::OK)
                                         .header(header::CONTENT_TYPE, "application/json")
                                         .header("X-Account-Email", &email)
-<<<<<<< HEAD
-=======
-                                        .header("X-Account-Name", account_name.as_deref().unwrap_or(""))
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                         .header("X-Mapped-Model", &request_with_mapped.model)
                                         .header("X-Context-Purified", if is_purified { "true" } else { "false" })
                                         .body(Body::from(serde_json::to_string(&full_response).unwrap()))
@@ -1163,7 +897,6 @@ pub async fn handle_messages(
                 // 转换
                 // [FIX #765] Pass session_id and model_name for signature caching
                 let s_id_owned = session_id.map(|s| s.to_string());
-<<<<<<< HEAD
                 // 转换
                 let claude_response = match transform_response(
                     &gemini_response,
@@ -1173,9 +906,6 @@ pub async fn handle_messages(
                     request_with_mapped.model.clone(),
                     request_with_mapped.messages.len(), // [NEW v4.0.0] Pass message count for rewind detection
                 ) {
-=======
-                let claude_response = match transform_response(&gemini_response, scaling_enabled, context_limit, s_id_owned, request_with_mapped.model.clone()) {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     Ok(r) => r,
                     Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, format!("Transform error: {}", e)).into_response(),
                 };
@@ -1196,27 +926,19 @@ pub async fn handle_messages(
                     cache_info
                 );
 
-<<<<<<< HEAD
                 return (StatusCode::OK, [("X-Account-Email", email.as_str()), ("X-Mapped-Model", request_with_mapped.model.as_str())], Json(claude_response)).into_response();
-=======
-                return (StatusCode::OK, [("X-Account-Email", email.as_str()), ("X-Account-Name", account_name.as_deref().unwrap_or("")), ("X-Mapped-Model", request_with_mapped.model.as_str())], Json(claude_response)).into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }
         
         // 1. 立即提取状态码和 headers（防止 response 被 move）
         let status_code = status.as_u16();
-<<<<<<< HEAD
         last_status = status;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
         
         // 2. 获取错误文本并转移 Response 所有权
         let error_text = response.text().await.unwrap_or_else(|_| format!("HTTP {}", status));
         last_error = format!("HTTP {}: {}", status_code, error_text);
         debug!("[{}] Upstream Error Response: {}", trace_id, error_text);
-<<<<<<< HEAD
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
                 "kind": "upstream_response_error",
@@ -1231,8 +953,6 @@ pub async fn handle_messages(
             });
             debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "upstream_response_error", &payload).await;
         }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         // 3. 标记限流状态(用于 UI 显示) - 使用异步版本以支持实时配额刷新
         // 🆕 传入实际使用的模型,实现模型级别限流,避免不同模型配额互相影响
@@ -1248,10 +968,6 @@ pub async fn handle_messages(
                 || error_text.contains("thinking.thinking: Field required")
                 || error_text.contains("thinking.signature")
                 || error_text.contains("thinking.thinking")
-<<<<<<< HEAD
-=======
-                || error_text.contains("INVALID_ARGUMENT")
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 || error_text.contains("Corrupted thought signature")
                 || error_text.contains("failed to deserialise")
                 || error_text.contains("Invalid signature")
@@ -1316,10 +1032,7 @@ pub async fn handle_messages(
                             _ => new_blocks.push(block),
                         }
                     }
-<<<<<<< HEAD
                     *blocks = new_blocks;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
             
@@ -1343,14 +1056,9 @@ pub async fn handle_messages(
             // [FIX] 强制重试：因为我们已经清理了 thinking block，所以这是一个新的、可以重试的请求
             // 不要使用 determine_retry_strategy，因为它会因为 retried_without_thinking=true 而返回 NoRetry
             if apply_retry_strategy(
-<<<<<<< HEAD
                 RetryStrategy::FixedDelay(Duration::from_millis(200)), 
                 attempt, 
                 max_attempts,
-=======
-                RetryStrategy::FixedDelay(Duration::from_millis(100)), 
-                attempt, 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 status_code, 
                 &trace_id
             ).await {
@@ -1367,11 +1075,7 @@ pub async fn handle_messages(
         let strategy = determine_retry_strategy(status_code, &error_text, retried_without_thinking);
         
         // 执行退避
-<<<<<<< HEAD
         if apply_retry_strategy(strategy, attempt, max_attempts, status_code, &trace_id).await {
-=======
-        if apply_retry_strategy(strategy, attempt, status_code, &trace_id).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 判断是否需要轮换账号
             if !should_rotate_account(status_code) {
                 debug!("[{}] Keeping same account for status {} (server-side issue)", trace_id, status_code);
@@ -1401,7 +1105,6 @@ pub async fn handle_messages(
         }
     }
     
-<<<<<<< HEAD
     
     if let Some(email) = last_email {
         // [FIX] Include X-Mapped-Model in exhaustion error
@@ -1454,22 +1157,6 @@ pub async fn handle_messages(
                 "id": "err_retry_exhausted",
                 "type": error_type,
                 "message": format!("All {} attempts failed. Last status: {}. Error: {}", max_attempts, last_status, last_error)
-=======
-    if let Some(email) = last_email {
-        (StatusCode::TOO_MANY_REQUESTS, [("X-Account-Email", email)], Json(json!({
-            "type": "error",
-            "error": {
-                "type": "overloaded_error",
-                "message": format!("All {} attempts failed. Last error: {}", max_attempts, last_error)
-            }
-        }))).into_response()
-    } else {
-        (StatusCode::TOO_MANY_REQUESTS, Json(json!({
-            "type": "error",
-            "error": {
-                "type": "overloaded_error",
-                "message": format!("All {} attempts failed. Last error: {}", max_attempts, last_error)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         }))).into_response()
     }
@@ -1514,10 +1201,7 @@ pub async fn handle_count_tokens(
             "/v1/messages/count_tokens",
             &headers,
             body,
-<<<<<<< HEAD
             0, // [NEW v4.0.0] Tokens count doesn't need rewind detection
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         )
         .await;
     }
@@ -1681,21 +1365,12 @@ fn extract_last_user_message_for_detection(request: &ClaudeRequest) -> Option<St
 /// 根据后台任务类型选择合适的模型
 fn select_background_model(task_type: BackgroundTaskType) -> &'static str {
     match task_type {
-<<<<<<< HEAD
         BackgroundTaskType::TitleGeneration => INTERNAL_BACKGROUND_TASK,
         BackgroundTaskType::SimpleSummary => INTERNAL_BACKGROUND_TASK,
         BackgroundTaskType::SystemMessage => INTERNAL_BACKGROUND_TASK,
         BackgroundTaskType::PromptSuggestion => INTERNAL_BACKGROUND_TASK,
         BackgroundTaskType::EnvironmentProbe => INTERNAL_BACKGROUND_TASK,
         BackgroundTaskType::ContextCompression => INTERNAL_BACKGROUND_TASK,
-=======
-        BackgroundTaskType::TitleGeneration => BACKGROUND_MODEL_LITE,     // 极简任务
-        BackgroundTaskType::SimpleSummary => BACKGROUND_MODEL_LITE,       // 简单摘要
-        BackgroundTaskType::SystemMessage => BACKGROUND_MODEL_LITE,       // 系统消息
-        BackgroundTaskType::PromptSuggestion => BACKGROUND_MODEL_LITE,    // 建议生成
-        BackgroundTaskType::EnvironmentProbe => BACKGROUND_MODEL_LITE,    // 环境探测
-        BackgroundTaskType::ContextCompression => BACKGROUND_MODEL_STANDARD, // 复杂压缩
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
@@ -1837,11 +1512,7 @@ async fn call_gemini_sync(
     trace_id: &str,
 ) -> Result<String, String> {
     // Get token and transform request
-<<<<<<< HEAD
     let (access_token, project_id, _, _wait_ms) = token_manager
-=======
-    let (access_token, project_id, _, _) = token_manager
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         .get_token("gemini", false, None, model)
         .await
         .map_err(|e| format!("Failed to get account: {}", e))?;
@@ -1939,11 +1610,7 @@ async fn try_compress_with_summary(
     });
     
     let summary_request = ClaudeRequest {
-<<<<<<< HEAD
         model: INTERNAL_BACKGROUND_TASK.to_string(),
-=======
-        model: BACKGROUND_MODEL_LITE.to_string(),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         messages: summary_messages,
         system: None,
         stream: false,
@@ -1959,19 +1626,11 @@ async fn try_compress_with_summary(
         quality: None,
     };
     
-<<<<<<< HEAD
     debug!("[{}] [Layer-3] Calling {} for summary generation", trace_id, INTERNAL_BACKGROUND_TASK);
     
     // 3. Call upstream using helper function (reuse existing infrastructure)
     let xml_summary = call_gemini_sync(
         INTERNAL_BACKGROUND_TASK,
-=======
-    debug!("[{}] [Layer-3] Calling {} for summary generation", trace_id, BACKGROUND_MODEL_LITE);
-    
-    // 3. Call upstream using helper function (reuse existing infrastructure)
-    let xml_summary = call_gemini_sync(
-        BACKGROUND_MODEL_LITE,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         &summary_request,
         token_manager,
         trace_id,

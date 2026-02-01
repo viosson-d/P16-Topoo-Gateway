@@ -19,10 +19,7 @@ pub struct TrayTexts {
 fn load_translations(lang: &str) -> HashMap<String, String> {
     let json_content = match lang {
         "en" | "en-US" => include_str!("../../../src/locales/en.json"),
-<<<<<<< HEAD
         "tr" | "tr-TR" => include_str!("../../../src/locales/tr.json"),
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         _ => include_str!("../../../src/locales/zh.json"),
     };
     

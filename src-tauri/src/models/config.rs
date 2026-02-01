@@ -15,10 +15,6 @@ pub struct AppConfig {
     pub proxy: ProxyConfig,
     pub antigravity_executable: Option<String>, // [NEW] Manually specified Antigravity executable path
     pub antigravity_args: Option<Vec<String>>, // [NEW] Antigravity startup arguments
-<<<<<<< HEAD
-=======
-    pub custom_shell_path: Option<String>, // [RE-ADDED] Custom shell path for terminal operations
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     #[serde(default)]
     pub auto_launch: bool,  // Launch on startup
     #[serde(default)]
@@ -27,11 +23,8 @@ pub struct AppConfig {
     pub quota_protection: QuotaProtectionConfig, // [NEW] Quota protection configuration
     #[serde(default)]
     pub pinned_quota_models: PinnedQuotaModelsConfig, // [NEW] Pinned quota models list
-<<<<<<< HEAD
     #[serde(default)]
     pub circuit_breaker: CircuitBreakerConfig, // [NEW] Circuit breaker configuration
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Scheduled warmup configuration
@@ -139,7 +132,6 @@ impl Default for PinnedQuotaModelsConfig {
     }
 }
 
-<<<<<<< HEAD
 /// Circuit breaker configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CircuitBreakerConfig {
@@ -171,8 +163,6 @@ impl Default for CircuitBreakerConfig {
     }
 }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 impl AppConfig {
     pub fn new() -> Self {
         Self {
@@ -186,18 +176,11 @@ impl AppConfig {
             proxy: ProxyConfig::default(),
             antigravity_executable: None,
             antigravity_args: None,
-<<<<<<< HEAD
-=======
-            custom_shell_path: None,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             auto_launch: false,
             scheduled_warmup: ScheduledWarmupConfig::default(),
             quota_protection: QuotaProtectionConfig::default(),
             pinned_quota_models: PinnedQuotaModelsConfig::default(),
-<<<<<<< HEAD
             circuit_breaker: CircuitBreakerConfig::default(),
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 }

@@ -418,13 +418,8 @@ pub fn transform_claude_request_in(
 
     // Resolve grounding config
     let config = crate::proxy::mappers::common_utils::resolve_request_config(
-<<<<<<< HEAD
         &claude_req.model,
         &mapped_model,
-=======
-        &claude_req.model, 
-        &mapped_model, 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         &tools_val,
         claude_req.size.as_deref(),      // [NEW] Pass size parameter
         claude_req.quality.as_deref()    // [NEW] Pass quality parameter
@@ -780,46 +775,15 @@ fn build_system_instruction(system: &Option<SystemPrompt>, _model_name: &str, ha
     if let Some(sys) = system {
         match sys {
             SystemPrompt::String(text) => {
-<<<<<<< HEAD
                 // [MODIFIED] No longer filter "You are an interactive CLI tool"
                 // We pass everything through to ensure Flash/Lite models get full instructions
                 parts.push(json!({"text": text}));
-=======
-                // [FIX] 过滤 OpenCode 默认提示词，但保留用户自定义指令 (Instructions from: ...)
-                if text.contains("You are an interactive CLI tool") {
-                    // 提取用户自定义指令部分
-                    if let Some(idx) = text.find("Instructions from:") {
-                        let custom_part = &text[idx..];
-                        tracing::info!("[Claude-Request] Extracted custom instructions (len: {}), filtered default prompt", custom_part.len());
-                        parts.push(json!({"text": custom_part}));
-                    } else {
-                        tracing::info!("[Claude-Request] Filtering out OpenCode default system instruction (len: {})", text.len());
-                    }
-                } else {
-                    parts.push(json!({"text": text}));
-                }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
             SystemPrompt::Array(blocks) => {
                 for block in blocks {
                     if block.block_type == "text" {
-<<<<<<< HEAD
                         // [MODIFIED] No longer filter "You are an interactive CLI tool"
                         parts.push(json!({"text": block.text}));
-=======
-                        // [FIX] 过滤 OpenCode 默认提示词，但保留用户自定义指令
-                        if block.text.contains("You are an interactive CLI tool") {
-                            if let Some(idx) = block.text.find("Instructions from:") {
-                                let custom_part = &block.text[idx..];
-                                tracing::info!("[Claude-Request] Extracted custom instructions from block (len: {})", custom_part.len());
-                                parts.push(json!({"text": custom_part}));
-                            } else {
-                                tracing::info!("[Claude-Request] Filtering out OpenCode default system block (len: {})", block.text.len());
-                            }
-                        } else {
-                            parts.push(json!({"text": block.text}));
-                        }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                 }
             }
@@ -952,7 +916,6 @@ fn build_contents(
                         // [FIX #752] Strict signature validation
                         // Only use signatures that are cached and compatible with the target model
                         if let Some(sig) = signature {
-<<<<<<< HEAD
                             // Check signature length first - if it's too short, it's definitely invalid
                             if sig.len() < MIN_SIGNATURE_LENGTH {
                                 tracing::warn!(
@@ -964,8 +927,6 @@ fn build_contents(
                                 continue;
                             }
                             
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             let cached_family = crate::proxy::SignatureCache::global().get_signature_family(sig);
 
                             match cached_family {
@@ -996,7 +957,6 @@ fn build_contents(
                                     parts.push(part);
                                 }
                                 None => {
-<<<<<<< HEAD
                                     // For JSON tool calling compatibility, if signature is long enough but unknown,
                                     // we should trust it rather than downgrade to text
                                     if sig.len() >= MIN_SIGNATURE_LENGTH {
@@ -1022,16 +982,6 @@ fn build_contents(
                                         saw_non_thinking = true;
                                         continue;
                                     }
-=======
-                                    // Unknown signature origin: downgrade to text for safety
-                                    tracing::warn!(
-                                        "[Thinking-Signature] Unknown signature origin (len: {}). Downgrading to text for safety.",
-                                        sig.len()
-                                    );
-                                    parts.push(json!({"text": thinking}));
-                                    saw_non_thinking = true;
-                                    continue;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 }
                             }
                         } else {
@@ -1094,12 +1044,6 @@ fn build_contents(
                             pending_tool_use_ids.push(id.clone());
                         }
 
-<<<<<<< HEAD
-=======
-                        // [New] 递归清理参数中可能存在的非法校验字段
-                        crate::proxy::common::json_schema::clean_json_schema(&mut part);
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         // 存储 id -> name 映射
                         tool_id_to_name.insert(id.clone(), name.clone());
 
@@ -1149,7 +1093,6 @@ fn build_contents(
                             if is_retry && signature.is_none() {
                                 tracing::warn!("[Tool-Signature] Skipping signature backfill for tool_use: {} during retry.", id);
                             } else {
-<<<<<<< HEAD
                                 // Check signature length first - if it's too short, it's definitely invalid
                                 if sig.len() < MIN_SIGNATURE_LENGTH {
                                     tracing::warn!(
@@ -1157,10 +1100,6 @@ fn build_contents(
                                         id, sig.len(), MIN_SIGNATURE_LENGTH
                                     );
                                 } else {
-=======
-                                // Check signature length
-                                if sig.len() >= MIN_SIGNATURE_LENGTH {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     // Check signature compatibility (optional for tool_use)
                                     let cached_family = crate::proxy::SignatureCache::global()
                                         .get_signature_family(&sig);
@@ -1179,7 +1118,6 @@ fn build_contents(
                                             }
                                         }
                                         None => {
-<<<<<<< HEAD
                                             // For JSON tool calling compatibility, if signature is long enough but unknown,
                                             // we should trust it rather than drop it
                                             if sig.len() >= MIN_SIGNATURE_LENGTH {
@@ -1200,32 +1138,12 @@ fn build_contents(
                                                     // In non-thinking mode, allow unknown signatures
                                                     true
                                                 }
-=======
-                                            // Unknown origin: only use in non-thinking mode
-                                            if is_thinking_enabled {
-                                                tracing::warn!(
-                                                    "[Tool-Signature] Unknown signature origin for tool_use: {} (len: {}). Dropping in thinking mode.",
-                                                    id, sig.len()
-                                                );
-                                                false
-                                            } else {
-                                                // In non-thinking mode, allow unknown signatures
-                                                true
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                             }
                                         }
                                     };
                                     if should_use_sig {
                                         part["thoughtSignature"] = json!(sig);
                                     }
-<<<<<<< HEAD
-=======
-                                } else {
-                                    tracing::warn!(
-                                        "[Tool-Signature] Signature too short for tool_use: {} (len: {})",
-                                        id, sig.len()
-                                    );
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 }
                             }
                         } else {
@@ -1700,15 +1618,9 @@ fn build_generation_config(
 
             if let Some(budget_tokens) = thinking.budget_tokens {
                 let mut budget = budget_tokens;
-<<<<<<< HEAD
                 // [FIX] Broaden check to support all Flash thinking models (e.g. gemini-2.0-flash-thinking)
                 let is_flash_model =
                     has_web_search || claude_req.model.to_lowercase().contains("flash");
-=======
-                // gemini-2.5-flash 上限 24576
-                let is_flash_model =
-                    has_web_search || claude_req.model.contains("gemini-2.5-flash");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if is_flash_model {
                     budget = budget.min(24576);
                 }
@@ -1754,43 +1666,26 @@ fn build_generation_config(
     }*/
 
     // max_tokens 映射为 maxOutputTokens
-<<<<<<< HEAD
     // [FIX] 不再默认设置 81920，防止非思维模型 (如 claude-sonnet-4-5) 报 400 Invalid Argument
     let mut final_max_tokens: Option<i64> = claude_req.max_tokens.map(|t| t as i64);
-=======
-    // Respect client-provided max_tokens (aligns with OpenAI mapper behavior)
-    let mut final_max_tokens: i64 = claude_req.max_tokens.map(|t| t as i64).unwrap_or(16384);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     // [NEW] 确保 maxOutputTokens 大于 thinkingBudget (API 强约束)
     if let Some(thinking_config) = config.get("thinkingConfig") {
         if let Some(budget) = thinking_config.get("thinkingBudget").and_then(|t| t.as_u64()) {
-<<<<<<< HEAD
             let current = final_max_tokens.unwrap_or(0);
             if current <= budget as i64 {
                 final_max_tokens = Some((budget + 8192) as i64);
                 tracing::info!(
                     "[Generation-Config] Bumping maxOutputTokens to {} due to thinking budget of {}", 
                     final_max_tokens.unwrap(), budget
-=======
-            if final_max_tokens <= budget as i64 {
-                final_max_tokens = (budget + 8192) as i64;
-                tracing::info!(
-                    "[Generation-Config] Bumping maxOutputTokens to {} due to thinking budget of {}", 
-                    final_max_tokens, budget
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 );
             }
         }
     }
     
-<<<<<<< HEAD
     if let Some(val) = final_max_tokens {
         config["maxOutputTokens"] = json!(val);
     }
-=======
-    config["maxOutputTokens"] = json!(final_max_tokens);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // [优化] 设置全局停止序列,防止模型幻觉出对话标记
     // 注意: 不包含 "[DONE]" 是因为:
@@ -2466,7 +2361,6 @@ mod tests {
             panic!("Expected array content at index 2");
         }
     }
-<<<<<<< HEAD
     #[test]
     fn test_default_max_tokens() {
         let req = ClaudeRequest {
@@ -2555,7 +2449,5 @@ mod tests {
         let budget_pro = result_pro["request"]["generationConfig"]["thinkingConfig"]["thinkingBudget"].as_u64().unwrap();
         assert_eq!(budget_pro, 32000);
     }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 

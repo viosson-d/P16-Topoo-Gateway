@@ -36,7 +36,6 @@ fn estimate_tokens_from_str(s: &str) -> u32 {
     ((ascii_tokens + unicode_tokens) as f32 * 1.15).ceil() as u32
 }
 
-<<<<<<< HEAD
 /// Strategy for context purification
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PurificationStrategy {
@@ -46,13 +45,10 @@ pub enum PurificationStrategy {
     Aggressive,
 }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// Context Manager implementation
 pub struct ContextManager;
 
 impl ContextManager {
-<<<<<<< HEAD
     /// Purify message history based on the selected strategy
     ///
     /// This removes Thinking blocks completely (unlike compression which keeps placeholders/signatures)
@@ -105,8 +101,6 @@ impl ContextManager {
 }
 
 impl ContextManager {
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     /// Estimate token usage for a Claude Request
     ///
     /// This is a lightweight estimation, not a precise count.

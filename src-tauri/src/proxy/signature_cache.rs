@@ -18,7 +18,6 @@ struct CacheEntry<T> {
     timestamp: SystemTime,
 }
 
-<<<<<<< HEAD
 /// Specialized entry for session-based signatures to track message count
 #[derive(Clone, Debug)]
 struct SessionSignatureEntry {
@@ -26,8 +25,6 @@ struct SessionSignatureEntry {
     message_count: usize,
 }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 impl<T> CacheEntry<T> {
     fn new(data: T) -> Self {
         Self {
@@ -60,11 +57,7 @@ pub struct SignatureCache {
     /// Key: session fingerprint (e.g., "sid-a1b2c3d4...")
     /// Value: The most recent valid thought signature for this session
     /// This prevents signature pollution between different conversations
-<<<<<<< HEAD
     session_signatures: Mutex<HashMap<String, CacheEntry<SessionSignatureEntry>>>,
-=======
-    session_signatures: Mutex<HashMap<String, CacheEntry<String>>>,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 impl SignatureCache {
@@ -160,18 +153,13 @@ impl SignatureCache {
     /// # Arguments
     /// * `session_id` - Session fingerprint (e.g., "sid-a1b2c3d4...")
     /// * `signature` - The thought signature to store
-<<<<<<< HEAD
     /// * `message_count` - The current message count of the conversation (to detect Rewind)
     pub fn cache_session_signature(&self, session_id: &str, signature: String, message_count: usize) {
-=======
-    pub fn cache_session_signature(&self, session_id: &str, signature: String) {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if signature.len() < MIN_SIGNATURE_LENGTH {
             return;
         }
 
         if let Ok(mut cache) = self.session_signatures.lock() {
-<<<<<<< HEAD
             let should_store = match cache.get(session_id) {
                 None => true,
                 Some(existing) => {
@@ -195,20 +183,11 @@ impl SignatureCache {
                         // message_count > existing.data.message_count: normal progression
                         true
                     }
-=======
-            // Only update if new signature is longer (likely more complete)
-            let should_store = match cache.get(session_id) {
-                None => true,
-                Some(existing) => {
-                    // Expired entries should be replaced
-                    existing.is_expired() || signature.len() > existing.data.len()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             };
 
             if should_store {
                 tracing::debug!(
-<<<<<<< HEAD
                     "[SignatureCache] Session {} (msg_count={}) -> storing signature (len={})",
                     session_id,
                     message_count,
@@ -221,13 +200,6 @@ impl SignatureCache {
                         message_count 
                     })
                 );
-=======
-                    "[SignatureCache] Session {} -> storing signature (len={})",
-                    session_id,
-                    signature.len()
-                );
-                cache.insert(session_id.to_string(), CacheEntry::new(signature));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             // Cleanup when limit is reached (Session cache has largest limit)
@@ -256,15 +228,9 @@ impl SignatureCache {
                     tracing::debug!(
                         "[SignatureCache] Session {} -> HIT (len={})",
                         session_id,
-<<<<<<< HEAD
                         entry.data.signature.len()
                     );
                     return Some(entry.data.signature.clone());
-=======
-                        entry.data.len()
-                    );
-                    return Some(entry.data.clone());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 } else {
                     tracing::debug!("[SignatureCache] Session {} -> EXPIRED", session_id);
                 }
@@ -330,7 +296,6 @@ mod tests {
         assert!(cache.get_session_signature("sid-test123").is_none());
         
         // Store first signature
-<<<<<<< HEAD
         cache.cache_session_signature("sid-test123", sig1.clone(), 5);
         assert_eq!(cache.get_session_signature("sid-test123"), Some(sig1.clone()));
         
@@ -349,22 +314,6 @@ mod tests {
         // Too short signature should be ignored entirely (even if rewind)
         cache.cache_session_signature("sid-test123", sig3, 1);
         assert_eq!(cache.get_session_signature("sid-test123"), Some(sig1));
-=======
-        cache.cache_session_signature("sid-test123", sig1.clone());
-        assert_eq!(cache.get_session_signature("sid-test123"), Some(sig1.clone()));
-        
-        // Longer signature should replace
-        cache.cache_session_signature("sid-test123", sig2.clone());
-        assert_eq!(cache.get_session_signature("sid-test123"), Some(sig2.clone()));
-        
-        // Shorter valid signature should NOT replace
-        cache.cache_session_signature("sid-test123", sig1.clone());
-        assert_eq!(cache.get_session_signature("sid-test123"), Some(sig2.clone()));
-        
-        // Too short signature should be ignored entirely
-        cache.cache_session_signature("sid-test123", sig3);
-        assert_eq!(cache.get_session_signature("sid-test123"), Some(sig2));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         // Different session should be isolated
         assert!(cache.get_session_signature("sid-other").is_none());
@@ -377,11 +326,7 @@ mod tests {
         
         cache.cache_tool_signature("tool_1", sig.clone());
         cache.cache_thinking_family(sig.clone(), "model".to_string());
-<<<<<<< HEAD
         cache.cache_session_signature("sid-1", sig.clone(), 1);
-=======
-        cache.cache_session_signature("sid-1", sig.clone());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         
         assert!(cache.get_tool_signature("tool_1").is_some());
         assert!(cache.get_signature_family(&sig).is_some());

@@ -1,21 +1,13 @@
 use crate::proxy::TokenManager;
 use axum::{
-<<<<<<< HEAD
     extract::{DefaultBodyLimit, Path, State, Query},
     http::{StatusCode, HeaderMap},
     response::{IntoResponse, Json, Response, Html},
     routing::{any, get, post, delete},
-=======
-    extract::DefaultBodyLimit,
-    http::StatusCode,
-    response::{IntoResponse, Json, Response},
-    routing::{any, get, post},
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Router,
 };
 use std::sync::Arc;
 use tokio::sync::oneshot;
-<<<<<<< HEAD
 use tracing::{debug, error};
 use tokio::sync::RwLock;
 use std::sync::atomic::AtomicUsize;
@@ -23,22 +15,6 @@ use futures::TryFutureExt;
 use serde::{Deserialize, Serialize};
 use crate::modules::{account, logger, proxy_db, config, token_stats, migration};
 use crate::models::AppConfig;
-=======
-use tracing::{debug, error, info};
-use tokio::sync::RwLock;
-use std::sync::atomic::AtomicUsize;
-// use hyper::upgrade::on;
-// use tokio::io::copy_bidirectional;
-use hyper::Method;
-use hyper::service::Service;
-use tower_http::trace::TraceLayer;
-// use hyper_util::rt::TokioIo; // Removed unused import if needed, but keeping for safety if used elsewhere or future.
-// use std::pin::Pin;
-// use std::task::{Context, Poll};
-// use std::mem::MaybeUninit;
-
-// struct HyperToTokio removed to avoid compilation errors
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// Axum 应用状态
 #[derive(Clone)]
@@ -57,7 +33,6 @@ pub struct AppState {
     pub zai_vision_mcp: Arc<crate::proxy::zai_vision_mcp::ZaiVisionMcpState>,
     pub monitor: Arc<crate::proxy::monitor::ProxyMonitor>,
     pub experimental: Arc<RwLock<crate::proxy::config::ExperimentalConfig>>,
-<<<<<<< HEAD
     pub debug_logging: Arc<RwLock<crate::proxy::config::DebugLoggingConfig>>,
     pub switching: Arc<RwLock<bool>>, // [NEW] 账号切换状态，用于防止并发切换
     pub integration: crate::modules::integration::SystemManager, // [NEW] 系统集成层实现
@@ -161,18 +136,6 @@ pub struct AxumServer {
     pub cloudflared_state: Arc<crate::commands::cloudflared::CloudflaredState>,
     pub is_running: Arc<RwLock<bool>>,
     pub token_manager: Arc<TokenManager>, // [NEW] 暴露出 TokenManager 供反代服务复用
-=======
-}
-
-/// Axum 服务器实例
-pub struct AxumServer {
-    shutdown_tx: Option<oneshot::Sender<()>>,
-    custom_mapping: Arc<tokio::sync::RwLock<std::collections::HashMap<String, String>>>,
-    proxy_state: Arc<tokio::sync::RwLock<crate::proxy::config::UpstreamProxyConfig>>,
-    security_state: Arc<RwLock<crate::proxy::ProxySecurityConfig>>,
-    zai_state: Arc<RwLock<crate::proxy::ZaiConfig>>,
-    experimental: Arc<RwLock<crate::proxy::config::ExperimentalConfig>>,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 impl AxumServer {
@@ -208,7 +171,6 @@ impl AxumServer {
         *exp = config.experimental.clone();
         tracing::info!("实验性配置已热更新");
     }
-<<<<<<< HEAD
 
     pub async fn update_debug_logging(&self, config: &crate::proxy::config::ProxyConfig) {
         let mut dbg_cfg = self.debug_logging.write().await;
@@ -227,8 +189,6 @@ impl AxumServer {
         tracing::info!("反代服务运行状态更新为: {}", running);
     }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     /// 启动 Axum 服务器
     pub async fn start(
         host: String,
@@ -237,21 +197,14 @@ impl AxumServer {
         custom_mapping: std::collections::HashMap<String, String>,
         _request_timeout: u64,
         upstream_proxy: crate::proxy::config::UpstreamProxyConfig,
-<<<<<<< HEAD
         user_agent_override: Option<String>,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         security_config: crate::proxy::ProxySecurityConfig,
         zai_config: crate::proxy::ZaiConfig,
         monitor: Arc<crate::proxy::monitor::ProxyMonitor>,
         experimental_config: crate::proxy::config::ExperimentalConfig,
-<<<<<<< HEAD
         debug_logging: crate::proxy::config::DebugLoggingConfig,
         integration: crate::modules::integration::SystemManager,
         cloudflared_state: Arc<crate::commands::cloudflared::CloudflaredState>,
-=======
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     ) -> Result<(Self, tokio::task::JoinHandle<()>), String> {
         let custom_mapping_state = Arc::new(tokio::sync::RwLock::new(custom_mapping));
 	        let proxy_state = Arc::new(tokio::sync::RwLock::new(upstream_proxy.clone()));
@@ -261,11 +214,8 @@ impl AxumServer {
 	        let zai_vision_mcp_state =
 	            Arc::new(crate::proxy::zai_vision_mcp::ZaiVisionMcpState::new());
 	        let experimental_state = Arc::new(RwLock::new(experimental_config));
-<<<<<<< HEAD
             let debug_logging_state = Arc::new(RwLock::new(debug_logging));
             let is_running_state = Arc::new(RwLock::new(true));
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 	        let state = AppState {
 	            token_manager: token_manager.clone(),
@@ -275,7 +225,6 @@ impl AxumServer {
                 std::collections::HashMap::new(),
             )),
             upstream_proxy: proxy_state.clone(),
-<<<<<<< HEAD
             upstream: {
                 let u = Arc::new(crate::proxy::upstream::client::UpstreamClient::new(Some(
                     upstream_proxy.clone(),
@@ -286,17 +235,11 @@ impl AxumServer {
                 }
                 u
             },
-=======
-            upstream: Arc::new(crate::proxy::upstream::client::UpstreamClient::new(Some(
-                upstream_proxy.clone(),
-            ))),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             zai: zai_state.clone(),
             provider_rr: provider_rr.clone(),
             zai_vision_mcp: zai_vision_mcp_state,
             monitor: monitor.clone(),
             experimental: experimental_state.clone(),
-<<<<<<< HEAD
             debug_logging: debug_logging_state.clone(),
             switching: Arc::new(RwLock::new(false)),
             integration: integration.clone(),
@@ -305,14 +248,11 @@ impl AxumServer {
             cloudflared_state: cloudflared_state.clone(),
             is_running: is_running_state.clone(),
             port,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         };
 
 
         // 构建路由 - 使用新架构的 handlers！
         use crate::proxy::handlers;
-<<<<<<< HEAD
         use crate::proxy::middleware::{
             auth_middleware, admin_auth_middleware, monitor_middleware, 
             service_status_middleware, cors_layer, ip_filter_middleware
@@ -322,10 +262,6 @@ impl AxumServer {
         let proxy_routes = Router::new()
             .route("/health", get(health_check_handler))
             .route("/healthz", get(health_check_handler))
-=======
-        // 构建路由
-        let app = Router::new()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // OpenAI Protocol
             .route("/v1/models", get(handlers::openai::handle_list_models))
             .route(
@@ -364,7 +300,6 @@ impl AxumServer {
                 "/mcp/web_search_prime/mcp",
                 any(handlers::mcp::handle_web_search_prime),
             )
-<<<<<<< HEAD
             .route(
                 "/mcp/web_reader/mcp",
                 any(handlers::mcp::handle_web_reader),
@@ -375,18 +310,6 @@ impl AxumServer {
             )
             // Gemini Protocol (Native)
             .route("/v1beta/models", get(handlers::gemini::handle_list_models))
-=======
-	            .route(
-	                "/mcp/web_reader/mcp",
-	                any(handlers::mcp::handle_web_reader),
-	            )
-	            .route(
-	                "/mcp/zai-mcp-server/mcp",
-	                any(handlers::mcp::handle_zai_mcp_server),
-	            )
-	            // Gemini Protocol (Native)
-	            .route("/v1beta/models", get(handlers::gemini::handle_list_models))
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // Handle both GET (get info) and POST (generateContent with colon) at the same route
             .route(
                 "/v1beta/models/:model",
@@ -400,7 +323,6 @@ impl AxumServer {
             .route("/internal/warmup", post(handlers::warmup::handle_warmup)) // 内部预热端点
             .route("/v1/api/event_logging/batch", post(silent_ok_handler))
             .route("/v1/api/event_logging", post(silent_ok_handler))
-<<<<<<< HEAD
             // 应用 AI 服务特定的层
             .layer(axum::middleware::from_fn_with_state(state.clone(), auth_middleware))
             .layer(axum::middleware::from_fn_with_state(state.clone(), monitor_middleware))
@@ -554,18 +476,6 @@ impl AxumServer {
         } else {
             app
         };
-=======
-            .route("/healthz", get(health_check_handler))
-            .layer(DefaultBodyLimit::max(100 * 1024 * 1024))
-            .layer(axum::middleware::from_fn_with_state(state.clone(), crate::proxy::middleware::monitor::monitor_middleware))
-            .layer(TraceLayer::new_for_http())
-            .layer(axum::middleware::from_fn_with_state(
-                security_state.clone(),
-                crate::proxy::middleware::auth_middleware,
-            ))
-            .layer(crate::proxy::middleware::cors_layer())
-            .with_state(state);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         // 绑定地址
         let addr = format!("{}:{}", host, port);
@@ -579,7 +489,6 @@ impl AxumServer {
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel::<()>();
 
         let server_instance = Self {
-<<<<<<< HEAD
             shutdown_tx: Arc::new(tokio::sync::Mutex::new(Some(shutdown_tx))),
             custom_mapping: custom_mapping_state.clone(),
             proxy_state,
@@ -591,14 +500,6 @@ impl AxumServer {
             cloudflared_state,
             is_running: is_running_state,
             token_manager: token_manager.clone(),
-=======
-            shutdown_tx: Some(shutdown_tx),
-            custom_mapping: custom_mapping_state.clone(),
-            proxy_state,
-            security_state,
-            zai_state,
-            experimental: experimental_state.clone(),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         };
 
         // 在新任务中启动服务器
@@ -611,7 +512,6 @@ impl AxumServer {
                 tokio::select! {
                     res = listener.accept() => {
                         match res {
-<<<<<<< HEAD
                             Ok((stream, remote_addr)) => {
                                 let io = TokioIo::new(stream);
                                 
@@ -632,36 +532,6 @@ impl AxumServer {
                                         .await
                                     {
                                         debug!("连接处理结束或出错: {:?}", err);
-=======
-                            Ok((stream, _)) => {
-                                let io = TokioIo::new(stream);
-                                let app = app.clone(); // Clone app for this connection to avoid moving original
-                                let _service = TowerToHyperService::new(app.clone());
-
-                                tokio::task::spawn(async move {
-                                    // 我们需要手动构建一个中间件来捕捉 CONNECT 请求，
-                                    // 因为 Axum 默认会将非匹配请求丢弃或处理为 404
-                                    // 这里使用 Tower 的 Service 层进行拦截。
-                                    let _tower_service = TowerToHyperService::new(app.clone());
-                                    
-                                    // 升级逻辑：如果是 CONNECT 方法，我们直接接管 IO
-                                    if let Err(err) = http1::Builder::new()
-                                        .serve_connection(io, hyper::service::service_fn(move |req| {
-                                            let app_inner = app.clone();
-                                            async move {
-                                                if req.method() == Method::CONNECT {
-                                                    Ok::<_, hyper::Error>(handle_connect(req).await)
-                                                } else {
-                                                    let mut tower_service = TowerToHyperService::new(app_inner);
-                                                    tower_service.call(req).await.map_err(|e| match e {})
-                                                }
-                                            }
-                                        }))
-                                        .with_upgrades()
-                                        .await
-                                    {
-                                        debug!("连接处理结束: {:?}", err);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                     }
                                 });
                             }
@@ -682,7 +552,6 @@ impl AxumServer {
     }
 
     /// 停止服务器
-<<<<<<< HEAD
     pub fn stop(&self) {
         let tx_mutex = self.shutdown_tx.clone();
         tokio::spawn(async move {
@@ -692,55 +561,16 @@ impl AxumServer {
                 tracing::info!("Axum server 停止信号已发送");
             }
         });
-=======
-    pub fn stop(mut self) {
-        if let Some(tx) = self.shutdown_tx.take() {
-            let _ = tx.send(());
-        }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
 // ===== API 处理器 (旧代码已移除，由 src/proxy/handlers/* 接管) =====
 
-<<<<<<< HEAD
 /// 健康检查处理器
 async fn health_check_handler() -> Response {
     Json(serde_json::json!({
         "status": "ok",
         "version": env!("CARGO_PKG_VERSION")
-=======
-
-/// 处理 HTTP CONNECT 请求（隧道代理）
-async fn handle_connect(req: hyper::Request<hyper::body::Incoming>) -> Response {
-    let host = req.uri().host().map(|h| h.to_string());
-    let _port = req.uri().port_u16().unwrap_or(443);
-
-    if let Some(_host) = host {
-        tokio::task::spawn(async move {
-            // [TEMPORARY FIX] CONNECT logic disabled due to Hyper 1.0 <-> Tokio IO compatibility issues.
-            // Re-implement using proper Hyper traits when possible.
-            error!("[Proxy] CONNECT method not supported in this version (compilation fix).");
-            /*
-            match on(req).await {
-                Ok(upgraded) => {
-                     // ... 
-                }
-                Err(e) => error!("[Proxy] Upgrade failed: {}", e),
-            }
-            */
-        });
-        StatusCode::NOT_IMPLEMENTED.into_response()
-    } else {
-        StatusCode::BAD_REQUEST.into_response()
-    }
-}
-
-/// 健康检查处理器
-async fn health_check_handler() -> Response {
-    Json(serde_json::json!({
-        "status": "ok"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }))
     .into_response()
 }
@@ -749,7 +579,6 @@ async fn health_check_handler() -> Response {
 async fn silent_ok_handler() -> Response {
     StatusCode::OK.into_response()
 }
-<<<<<<< HEAD
 
 // ============================================================================
 // [PHASE 1] 整合后的 Admin Handlers
@@ -2260,5 +2089,3 @@ fn get_oauth_redirect_uri(port: u16, _host: Option<&str>, _proto: Option<&str>) 
         format!("http://localhost:{}/auth/callback", port)
     }
 }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

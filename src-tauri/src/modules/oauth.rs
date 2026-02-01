@@ -49,11 +49,7 @@ impl UserInfo {
 
 
 /// Generate OAuth authorization URL
-<<<<<<< HEAD
 pub fn get_auth_url(redirect_uri: &str, state: &str) -> String {
-=======
-pub fn get_auth_url(redirect_uri: &str) -> String {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let scopes = vec![
         "https://www.googleapis.com/auth/cloud-platform",
         "https://www.googleapis.com/auth/userinfo.email",
@@ -70,10 +66,7 @@ pub fn get_auth_url(redirect_uri: &str) -> String {
         ("access_type", "offline"),
         ("prompt", "consent"),
         ("include_granted_scopes", "true"),
-<<<<<<< HEAD
         ("state", state),
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     ];
     
     let url = url::Url::parse_with_params(AUTH_URL, &params).expect("Invalid Auth URL");
@@ -82,11 +75,7 @@ pub fn get_auth_url(redirect_uri: &str) -> String {
 
 /// Exchange authorization code for token
 pub async fn exchange_code(code: &str, redirect_uri: &str) -> Result<TokenResponse, String> {
-<<<<<<< HEAD
     let client = crate::utils::http::get_long_client(); // [FIX #948/887] Extend timeout to 60s for OAuth
-=======
-    let client = crate::utils::http::get_long_client(); 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     let params = [
         ("client_id", CLIENT_ID),
@@ -96,23 +85,12 @@ pub async fn exchange_code(code: &str, redirect_uri: &str) -> Result<TokenRespon
         ("grant_type", "authorization_code"),
     ];
 
-<<<<<<< HEAD
-=======
-    crate::modules::logger::log_info(&format!("Exchanging OAuth code for token (URL: {}, Redirect: {})", TOKEN_URL, redirect_uri));
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let response = client
         .post(TOKEN_URL)
         .form(&params)
         .send()
         .await
         .map_err(|e| {
-<<<<<<< HEAD
-=======
-            let error_detail = format!("{:?}", e);
-            crate::modules::logger::log_error(&format!("OAuth network error: {}", error_detail));
-            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if e.is_connect() || e.is_timeout() {
                 format!("Token exchange request failed: {}. 请检查你的网络代理设置，确保可以稳定连接 Google 服务。", e)
             } else {
@@ -236,7 +214,6 @@ pub async fn ensure_fresh_token(
         None,  // session_id will be generated in token_manager
     ))
 }
-<<<<<<< HEAD
 
 #[cfg(test)]
 mod tests {
@@ -253,5 +230,3 @@ mod tests {
         assert!(url.contains("response_type=code"));
     }
 }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

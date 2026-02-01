@@ -12,7 +12,6 @@ fn connect_db() -> Result<Connection, String> {
     let conn = Connection::open(db_path).map_err(|e| e.to_string())?;
     
     // Enable WAL mode for better concurrency
-<<<<<<< HEAD
     conn.pragma_update(None, "journal_mode", "WAL").map_err(|e| e.to_string())?;
     
     // Set busy timeout to 5000ms to avoid "database is locked" errors
@@ -20,32 +19,11 @@ fn connect_db() -> Result<Connection, String> {
     
     // Synchronous NORMAL is faster and safe enough for WAL
     conn.pragma_update(None, "synchronous", "NORMAL").map_err(|e| e.to_string())?;
-=======
-    if let Err(e) = conn.pragma_update(None, "journal_mode", "WAL") {
-         eprintln!("WARN: Failed to set proxy DB WAL mode: {}", e);
-    }
-    
-    // Set busy timeout to 5000ms to avoid "database is locked" errors
-    if let Err(e) = conn.pragma_update(None, "busy_timeout", 5000) {
-        eprintln!("WARN: Failed to set proxy DB busy timeout: {}", e);
-    }
-    
-    // Synchronous NORMAL is faster and safe enough for WAL
-    if let Err(e) = conn.pragma_update(None, "synchronous", "NORMAL") {
-        eprintln!("WARN: Failed to set proxy DB synchronous mode: {}", e);
-    }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     Ok(conn)
 }
 
 pub fn init_db() -> Result<(), String> {
-<<<<<<< HEAD
-=======
-    let db_path = get_proxy_db_path()?;
-    crate::modules::logger::log_info(&format!("Initializing Proxy Database at: {:?}", db_path));
-    
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // connect_db will initialize WAL mode and other pragmas
     let conn = connect_db()?;
     
@@ -71,12 +49,7 @@ pub fn init_db() -> Result<(), String> {
     let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN account_email TEXT", []);
     let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN mapped_model TEXT", []);
     let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN protocol TEXT", []);
-<<<<<<< HEAD
     let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN client_ip TEXT", []);
-=======
-    let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN client TEXT", []);
-    let _ = conn.execute("ALTER TABLE request_logs ADD COLUMN account_name TEXT", []);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_timestamp ON request_logs (timestamp DESC)",
@@ -96,13 +69,8 @@ pub fn save_log(log: &ProxyRequestLog) -> Result<(), String> {
     let conn = connect_db()?;
 
     conn.execute(
-<<<<<<< HEAD
         "INSERT INTO request_logs (id, timestamp, method, url, status, duration, model, error, request_body, response_body, input_tokens, output_tokens, account_email, mapped_model, protocol, client_ip)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
-=======
-        "INSERT INTO request_logs (id, timestamp, method, url, status, duration, model, error, request_body, response_body, input_tokens, output_tokens, account_email, mapped_model, protocol, client, account_name)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         params![
             log.id,
             log.timestamp,
@@ -119,12 +87,7 @@ pub fn save_log(log: &ProxyRequestLog) -> Result<(), String> {
             log.account_email,
             log.mapped_model,
             log.protocol,
-<<<<<<< HEAD
             log.client_ip,
-=======
-            log.client,
-            log.account_name,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         ],
     ).map_err(|e| e.to_string())?;
 
@@ -138,11 +101,7 @@ pub fn get_logs_summary(limit: usize, offset: usize) -> Result<Vec<ProxyRequestL
     let mut stmt = conn.prepare(
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 NULL as request_body, NULL as response_body,
-<<<<<<< HEAD
                 input_tokens, output_tokens, account_email, mapped_model, protocol, client_ip
-=======
-                input_tokens, output_tokens, account_email, mapped_model, protocol, client, account_name
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          FROM request_logs 
          ORDER BY timestamp DESC 
          LIMIT ?1 OFFSET ?2"
@@ -165,15 +124,9 @@ pub fn get_logs_summary(limit: usize, offset: usize) -> Result<Vec<ProxyRequestL
             input_tokens: row.get(10).unwrap_or(None),
             output_tokens: row.get(11).unwrap_or(None),
             protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
             client_ip: row.get(15).unwrap_or(None),
         })
 
-=======
-            client: row.get(15).unwrap_or(None),
-            account_name: row.get(16).unwrap_or(None),
-        })
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }).map_err(|e| e.to_string())?;
 
     let mut logs = Vec::new();
@@ -216,11 +169,7 @@ pub fn get_log_detail(log_id: &str) -> Result<ProxyRequestLog, String> {
     let mut stmt = conn.prepare(
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 request_body, response_body, input_tokens, output_tokens, 
-<<<<<<< HEAD
                 account_email, mapped_model, protocol, client_ip
-=======
-                account_email, mapped_model, protocol
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          FROM request_logs 
          WHERE id = ?1"
     ).map_err(|e| e.to_string())?;
@@ -242,12 +191,7 @@ pub fn get_log_detail(log_id: &str) -> Result<ProxyRequestLog, String> {
             input_tokens: row.get(10).unwrap_or(None),
             output_tokens: row.get(11).unwrap_or(None),
             protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
             client_ip: row.get(15).unwrap_or(None),
-=======
-            client: row.get(15).unwrap_or(None),
-            account_name: row.get(16).unwrap_or(None),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         })
     }).map_err(|e| e.to_string())
 }
@@ -344,11 +288,7 @@ pub fn get_logs_filtered(filter: &str, errors_only: bool, limit: usize, offset: 
     let sql = if errors_only {
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 NULL as request_body, NULL as response_body,
-<<<<<<< HEAD
                 input_tokens, output_tokens, account_email, mapped_model, protocol, client_ip
-=======
-                input_tokens, output_tokens, account_email, mapped_model, protocol, client, account_name
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          FROM request_logs 
          WHERE (status < 200 OR status >= 400)
          ORDER BY timestamp DESC 
@@ -356,26 +296,16 @@ pub fn get_logs_filtered(filter: &str, errors_only: bool, limit: usize, offset: 
     } else if filter.is_empty() {
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 NULL as request_body, NULL as response_body,
-<<<<<<< HEAD
                 input_tokens, output_tokens, account_email, mapped_model, protocol, client_ip
-=======
-                input_tokens, output_tokens, account_email, mapped_model, protocol, client, account_name
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          FROM request_logs 
          ORDER BY timestamp DESC 
          LIMIT ?1 OFFSET ?2"
     } else {
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 NULL as request_body, NULL as response_body,
-<<<<<<< HEAD
                 input_tokens, output_tokens, account_email, mapped_model, protocol, client_ip
          FROM request_logs 
          WHERE (url LIKE ?3 OR method LIKE ?3 OR model LIKE ?3 OR CAST(status AS TEXT) LIKE ?3 OR account_email LIKE ?3 OR client_ip LIKE ?3)
-=======
-                input_tokens, output_tokens, account_email, mapped_model, protocol, client, account_name
-         FROM request_logs 
-         WHERE (url LIKE ?3 OR method LIKE ?3 OR model LIKE ?3 OR CAST(status AS TEXT) LIKE ?3 OR account_email LIKE ?3)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          ORDER BY timestamp DESC 
          LIMIT ?1 OFFSET ?2"
     };
@@ -399,15 +329,9 @@ pub fn get_logs_filtered(filter: &str, errors_only: bool, limit: usize, offset: 
                 input_tokens: row.get(10).unwrap_or(None),
                 output_tokens: row.get(11).unwrap_or(None),
                 protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
                 client_ip: row.get(15).unwrap_or(None),
             })
 
-=======
-                client: row.get(15).unwrap_or(None),
-                account_name: row.get(16).unwrap_or(None),
-            })
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }).map_err(|e| e.to_string())?;
         logs_iter.filter_map(|r| r.ok()).collect()
     } else if errors_only {
@@ -429,15 +353,9 @@ pub fn get_logs_filtered(filter: &str, errors_only: bool, limit: usize, offset: 
                 input_tokens: row.get(10).unwrap_or(None),
                 output_tokens: row.get(11).unwrap_or(None),
                 protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
                 client_ip: row.get(15).unwrap_or(None),
             })
 
-=======
-                client: row.get(15).unwrap_or(None),
-                account_name: row.get(16).unwrap_or(None),
-            })
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }).map_err(|e| e.to_string())?;
         logs_iter.filter_map(|r| r.ok()).collect()
     } else {
@@ -459,15 +377,9 @@ pub fn get_logs_filtered(filter: &str, errors_only: bool, limit: usize, offset: 
                 input_tokens: row.get(10).unwrap_or(None),
                 output_tokens: row.get(11).unwrap_or(None),
                 protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
                 client_ip: row.get(15).unwrap_or(None),
             })
 
-=======
-                client: row.get(15).unwrap_or(None),
-                account_name: row.get(16).unwrap_or(None),
-            })
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }).map_err(|e| e.to_string())?;
         logs_iter.filter_map(|r| r.ok()).collect()
     };
@@ -482,11 +394,7 @@ pub fn get_all_logs_for_export() -> Result<Vec<ProxyRequestLog>, String> {
     let mut stmt = conn.prepare(
         "SELECT id, timestamp, method, url, status, duration, model, error, 
                 request_body, response_body, input_tokens, output_tokens, 
-<<<<<<< HEAD
                 account_email, mapped_model, protocol, client_ip
-=======
-                account_email, mapped_model, protocol, client, account_name
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
          FROM request_logs 
          ORDER BY timestamp DESC"
     ).map_err(|e| e.to_string())?;
@@ -508,15 +416,9 @@ pub fn get_all_logs_for_export() -> Result<Vec<ProxyRequestLog>, String> {
             input_tokens: row.get(10).unwrap_or(None),
             output_tokens: row.get(11).unwrap_or(None),
             protocol: row.get(14).unwrap_or(None),
-<<<<<<< HEAD
             client_ip: row.get(15).unwrap_or(None),
         })
 
-=======
-            client: row.get(15).unwrap_or(None),
-            account_name: row.get(16).unwrap_or(None),
-        })
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }).map_err(|e| e.to_string())?;
 
     let mut logs = Vec::new();
@@ -526,7 +428,6 @@ pub fn get_all_logs_for_export() -> Result<Vec<ProxyRequestLog>, String> {
     Ok(logs)
 }
 
-<<<<<<< HEAD
 // ... existing code ...
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -578,59 +479,3 @@ pub fn get_token_usage_by_ip(limit: usize, hours: i64) -> Result<Vec<IpTokenStat
     Ok(stats)
 }
 
-=======
-/// Get logs by ID list with full details for export
-#[allow(dead_code)]
-pub fn get_logs_by_ids(ids: &[String]) -> Result<Vec<ProxyRequestLog>, String> {
-    if ids.is_empty() {
-        return Ok(Vec::new());
-    }
-    
-    let conn = connect_db()?;
-    
-    // Build placeholders for IN clause
-    let placeholders: Vec<String> = ids.iter().enumerate().map(|(i, _)| format!("?{}", i + 1)).collect();
-    let sql = format!(
-        "SELECT id, timestamp, method, url, status, duration, model, error, 
-                request_body, response_body, input_tokens, output_tokens, 
-                account_email, mapped_model, protocol
-         FROM request_logs 
-         WHERE id IN ({})
-         ORDER BY timestamp DESC",
-        placeholders.join(", ")
-    );
-
-    let mut stmt = conn.prepare(&sql).map_err(|e| e.to_string())?;
-    
-    // Convert ids to params
-    let params: Vec<&dyn rusqlite::ToSql> = ids.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
-    
-    let logs_iter = stmt.query_map(params.as_slice(), |row| {
-        Ok(ProxyRequestLog {
-            id: row.get(0)?,
-            timestamp: row.get(1)?,
-            method: row.get(2)?,
-            url: row.get(3)?,
-            status: row.get(4)?,
-            duration: row.get(5)?,
-            model: row.get(6)?,
-            mapped_model: row.get(13).unwrap_or(None),
-            account_email: row.get(12).unwrap_or(None),
-            error: row.get(7)?,
-            request_body: row.get(8).unwrap_or(None),
-            response_body: row.get(9).unwrap_or(None),
-            input_tokens: row.get(10).unwrap_or(None),
-            output_tokens: row.get(11).unwrap_or(None),
-            protocol: row.get(14).unwrap_or(None),
-            client: row.get(15).unwrap_or(None),
-            account_name: row.get(16).unwrap_or(None),
-        })
-    }).map_err(|e| e.to_string())?;
-
-    let mut logs = Vec::new();
-    for log in logs_iter {
-        logs.push(log.map_err(|e| e.to_string())?);
-    }
-    Ok(logs)
-}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

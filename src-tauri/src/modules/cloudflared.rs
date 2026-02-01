@@ -12,13 +12,10 @@ use std::os::windows::process::CommandExt;
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
-<<<<<<< HEAD
 #[cfg(target_os = "windows")]
 const DETACHED_PROCESS: u32 = 0x00000008;
 #[cfg(target_os = "windows")]
 const CREATE_NEW_PROCESS_GROUP: u32 = 0x00000200;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// Cloudflared隧道模式
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -159,7 +156,6 @@ impl CloudflaredManager {
                 .map_err(|e| format!("Failed to create bin directory: {}", e))?;
         }
 
-<<<<<<< HEAD
         let download_url = get_download_url()?;
         info!("[cloudflared] Downloading from: {}", download_url);
 
@@ -171,43 +167,12 @@ impl CloudflaredManager {
             return Err(format!("Download failed with status: {}", response.status()));
         }
 
-=======
-        let download_urls = get_download_urls()?;
-        let mut response = None;
-        let mut last_error = String::from("No URLs available");
-
-        for url in &download_urls {
-            info!("[cloudflared] Attempting download from: {}", url);
-            match reqwest::get(url).await {
-                Ok(res) => {
-                    if res.status().is_success() {
-                        response = Some(res);
-                        break;
-                    } else {
-                        last_error = format!("Status: {}", res.status());
-                        info!("[cloudflared] Download failed from {}: {}", url, last_error);
-                    }
-                }
-                Err(e) => {
-                    last_error = e.to_string();
-                    info!("[cloudflared] Download failed from {}: {}", url, last_error);
-                }
-            }
-        }
-
-        let response = response.ok_or_else(|| format!("All download attempts failed. Last error: {}", last_error))?;
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let bytes = response
             .bytes()
             .await
             .map_err(|e| format!("Failed to read response: {}", e))?;
 
-<<<<<<< HEAD
         let is_archive = download_url.ends_with(".tgz");
-=======
-        let is_archive = download_urls[0].ends_with(".tgz");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if is_archive {
             let archive_path = self.bin_path.with_extension("tgz");
             std::fs::write(&archive_path, &bytes)
@@ -273,7 +238,6 @@ impl CloudflaredManager {
         info!("[cloudflared] Starting tunnel to: {}", local_url);
 
         let mut cmd = Command::new(&self.bin_path);
-<<<<<<< HEAD
         
         // 设置工作目录
         // 设置工作目录
@@ -281,14 +245,11 @@ impl CloudflaredManager {
             cmd.current_dir(bin_dir);
             debug!("[cloudflared] Working directory: {:?}", bin_dir);
         }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         match config.mode {
             TunnelMode::Quick => {
                 cmd.arg("tunnel")
                     .arg("--url")
-<<<<<<< HEAD
                     .arg(&local_url);
                 
                 // 注意：--no-autoupdate 参数在较新版本的 cloudflared 中已不被支持，会导致进程立即退出
@@ -302,21 +263,12 @@ impl CloudflaredManager {
                 // cmd.arg("--loglevel").arg("info");
                 
                 info!("[cloudflared] Command args: tunnel --url {} ...", local_url);
-=======
-                    .arg(&local_url)
-                    .arg("--no-autoupdate"); // 禁止自动更新避免意外重启
-                if config.use_http2 {
-                    cmd.arg("--protocol").arg("http2");
-                }
-                cmd.arg("--loglevel").arg("info"); // 输出更多日志便于排查
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
             TunnelMode::Auth => {
                 if let Some(token) = &config.token {
                     cmd.arg("tunnel")
                         .arg("run")
                         .arg("--token")
-<<<<<<< HEAD
                         .arg(token);
                     
                     // 注意：--no-autoupdate 参数不被支持
@@ -330,30 +282,18 @@ impl CloudflaredManager {
                     // cmd.arg("--loglevel").arg("info");
                     
                     info!("[cloudflared] Command args: tunnel run --token [HIDDEN] ...");
-=======
-                        .arg(token)
-                        .arg("--no-autoupdate");
-                    if config.use_http2 {
-                        cmd.arg("--protocol").arg("http2");
-                    }
-                    cmd.arg("--loglevel").arg("info");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 } else {
                     return Err("Token required for auth mode".to_string());
                 }
             }
         }
 
-<<<<<<< HEAD
         // 恢复管道
         cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
         
         // 使用 DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP 隐藏窗口
         #[cfg(target_os = "windows")]
         cmd.creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP);
-=======
-        cmd.stdout(Stdio::piped()).stderr(Stdio::piped());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
         let mut child = cmd.spawn().map_err(|e| format!("Failed to spawn: {}", e))?;
 
@@ -458,11 +398,7 @@ impl CloudflaredManager {
 }
 
 /// 获取下载URL
-<<<<<<< HEAD
 fn get_download_url() -> Result<String, String> {
-=======
-fn get_download_urls() -> Result<Vec<String>, String> {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
 
@@ -475,27 +411,10 @@ fn get_download_urls() -> Result<Vec<String>, String> {
         _ => return Err(format!("Unsupported platform: {}-{}", os, arch)),
     };
 
-<<<<<<< HEAD
     Ok(format!(
         "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-{}-{}{}",
         os_str, arch_str, ext
     ))
-=======
-    let filename = format!("cloudflared-{}-{}{}", os_str, arch_str, ext);
-    let original_url = format!(
-        "https://github.com/cloudflare/cloudflared/releases/latest/download/{}",
-        filename
-    );
-    
-    // Add common mirrors for China accessibility
-    let mirrors = vec![
-        original_url.clone(),
-        format!("https://mirror.ghproxy.com/{}", original_url), // GHProxy mirror
-        format!("https://gh.api.99988866.xyz/{}", original_url), // Another common mirror
-    ];
-
-    Ok(mirrors)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 fn spawn_log_reader<R>(stream: R, status_ref: Arc<RwLock<CloudflaredStatus>>)
@@ -506,12 +425,8 @@ where
         let reader = BufReader::new(stream);
         let mut lines = reader.lines();
         while let Ok(Some(line)) = lines.next_line().await {
-<<<<<<< HEAD
             // 恢复日志级别为 debug，避免污染生产环境日志
             debug!("[cloudflared output] {}", line);
-=======
-            debug!("[cloudflared] {}", line);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if let Some(url) = extract_tunnel_url(&line) {
                 info!("[cloudflared] Tunnel URL: {}", url);
                 let mut s = status_ref.write().await;
@@ -522,7 +437,6 @@ where
 }
 
 /// 从日志行提取隧道URL
-<<<<<<< HEAD
 /// 支持两种模式：
 /// 1. 快速隧道：直接提取 .trycloudflare.com URL
 /// 2. 命名隧道：从 ingress 配置中解析 hostname
@@ -550,11 +464,5 @@ fn extract_tunnel_url(line: &str) -> Option<String> {
     }
     
     None
-=======
-fn extract_tunnel_url(line: &str) -> Option<String> {
-    line.split_whitespace()
-        .find(|s| s.starts_with("https://") && s.contains(".trycloudflare.com"))
-        .map(|s| s.to_string())
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 

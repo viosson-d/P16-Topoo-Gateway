@@ -226,13 +226,10 @@ pub struct StreamingState {
     pub in_mcp_xml: bool,
     // [FIX] Estimated prompt tokens for calibrator learning
     pub estimated_prompt_tokens: Option<u32>,
-<<<<<<< HEAD
     // [FIX #859] Post-thinking interruption tracking
     pub has_thinking: bool,
     pub has_content: bool,
     pub message_count: usize, // [NEW v4.0.0] Message count for rewind detection
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 impl StreamingState {
@@ -257,12 +254,9 @@ impl StreamingState {
             mcp_xml_buffer: String::new(),
             in_mcp_xml: false,
             estimated_prompt_tokens: None,
-<<<<<<< HEAD
             has_thinking: false,
             has_content: false,
             message_count: 0,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
@@ -696,11 +690,8 @@ impl<'a> PartProcessor<'a> {
             }
 
             chunks.extend(self.process_function_call(fc, signature));
-<<<<<<< HEAD
             // [FIX #859] Mark that we have received actual content (tool use)
             self.state.has_content = true;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             return chunks;
         }
 
@@ -764,12 +755,9 @@ impl<'a> PartProcessor<'a> {
             ));
         }
 
-<<<<<<< HEAD
         // [FIX #859] Mark that we have received thinking content
         self.state.has_thinking = true;
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         if !text.is_empty() {
             chunks.push(
                 self.state
@@ -786,15 +774,11 @@ impl<'a> PartProcessor<'a> {
 
             // 2. [NEW v3.3.17] Cache to session-based storage for tool loop recovery
             if let Some(session_id) = &self.state.session_id {
-<<<<<<< HEAD
                 SignatureCache::global().cache_session_signature(
                     session_id, 
                     sig.clone(), 
                     self.state.message_count
                 );
-=======
-                SignatureCache::global().cache_session_signature(session_id, sig.clone());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 tracing::debug!(
                     "[Claude-SSE] Cached signature to session {} (length: {})",
                     session_id,
@@ -826,12 +810,9 @@ impl<'a> PartProcessor<'a> {
             return chunks;
         }
 
-<<<<<<< HEAD
         // [FIX #859] Mark that we have received actual content (text)
         self.state.has_content = true;
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 处理之前的 trailingSignature
         if self.state.has_trailing_signature() {
             chunks.extend(self.state.end_block());
@@ -996,15 +977,11 @@ impl<'a> PartProcessor<'a> {
 
             // 3. [NEW v3.3.17] Cache to session-based storage
             if let Some(session_id) = &self.state.session_id {
-<<<<<<< HEAD
                 SignatureCache::global().cache_session_signature(
                     session_id, 
                     sig.clone(),
                     self.state.message_count
                 );
-=======
-                SignatureCache::global().cache_session_signature(session_id, sig.clone());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             tracing::debug!(

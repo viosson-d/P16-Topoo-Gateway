@@ -157,18 +157,11 @@ pub struct NonStreamingProcessor {
     pub context_limit: u32,
     pub session_id: Option<String>,
     pub model_name: String,
-<<<<<<< HEAD
     pub message_count: usize, // [NEW v4.0.0] Message count for rewind detection
 }
 
 impl NonStreamingProcessor {
     pub fn new(session_id: Option<String>, model_name: String, message_count: usize) -> Self {
-=======
-}
-
-impl NonStreamingProcessor {
-    pub fn new(session_id: Option<String>, model_name: String) -> Self {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         Self {
             content_blocks: Vec::new(),
             text_builder: String::new(),
@@ -180,10 +173,7 @@ impl NonStreamingProcessor {
             context_limit: 1_048_576, // Default to 1M
             session_id,
             model_name,
-<<<<<<< HEAD
             message_count,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
@@ -261,11 +251,7 @@ impl NonStreamingProcessor {
         if let Some(sig) = &signature {
             if let Some(s_id) = &self.session_id {
                 crate::proxy::SignatureCache::global()
-<<<<<<< HEAD
                     .cache_session_signature(s_id, sig.to_string(), self.message_count);
-=======
-                    .cache_session_signature(s_id, sig.to_string());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 crate::proxy::SignatureCache::global()
                     .cache_thinking_family(sig.to_string(), self.model_name.clone());
                 tracing::debug!(
@@ -551,24 +537,15 @@ impl NonStreamingProcessor {
     }
 }
 
-<<<<<<< HEAD
-=======
-/// 转换 Gemini 响应为 Claude 响应 (公共接口)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 pub fn transform_response(
     gemini_response: &GeminiResponse,
     scaling_enabled: bool,
     context_limit: u32,
     session_id: Option<String>,
     model_name: String,
-<<<<<<< HEAD
     message_count: usize, // [NEW v4.0.0] Message count for rewind detection
 ) -> Result<ClaudeResponse, String> {
     let mut processor = NonStreamingProcessor::new(session_id, model_name, message_count);
-=======
-) -> Result<ClaudeResponse, String> {
-    let mut processor = NonStreamingProcessor::new(session_id, model_name);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     Ok(processor.process(gemini_response, scaling_enabled, context_limit))
 }
 
@@ -611,10 +588,7 @@ mod tests {
             1_000_000,
             None,
             "gemini-2.5-flash".to_string(),
-<<<<<<< HEAD
             1,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
         assert!(result.is_ok());
 
@@ -671,10 +645,7 @@ mod tests {
             1_000_000,
             None,
             "gemini-2.5-flash".to_string(),
-<<<<<<< HEAD
             1,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
         assert!(result.is_ok());
 

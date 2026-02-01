@@ -1,13 +1,8 @@
 // OpenAI Handler
-<<<<<<< HEAD
 use axum::{
     extract::Json, extract::State, http::StatusCode, response::IntoResponse, response::Response,
 };
 use base64::Engine as _;
-=======
-use axum::{extract::Json, extract::State, http::StatusCode, response::IntoResponse, response::Response};
-use base64::Engine as _; 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 use bytes::Bytes;
 use serde_json::{json, Value};
 use tracing::{debug, error, info}; // Import Engine trait for encode method
@@ -17,7 +12,6 @@ use crate::proxy::mappers::openai::{
 };
 // use crate::proxy::upstream::client::UpstreamClient; // 通过 state 获取
 use crate::proxy::server::AppState;
-<<<<<<< HEAD
 use crate::proxy::debug_logger;
 
 const MAX_RETRY_ATTEMPTS: usize = 3;
@@ -26,72 +20,11 @@ use super::common::{
 };
 use crate::proxy::session_manager::SessionManager;
 use tokio::time::Duration;
-=======
-
-const MAX_RETRY_ATTEMPTS: usize = 3;
-use crate::proxy::monitor::ProxyRequestLog;
-use crate::proxy::utils::identify_client;
-use crate::proxy::session_manager::SessionManager;
-use tokio::time::{sleep, Duration};
-
-/// 重试策略枚举
-#[derive(Debug, Clone)]
-enum RetryStrategy {
-    NoRetry,
-    FixedDelay(Duration),
-    LinearBackoff { base_ms: u64 },
-    ExponentialBackoff { base_ms: u64, max_ms: u64 },
-}
-
-fn determine_retry_strategy(status_code: u16, error_text: &str) -> RetryStrategy {
-    match status_code {
-        429 => {
-            if let Some(delay_ms) = crate::proxy::upstream::retry::parse_retry_delay(error_text) {
-                let actual_delay = delay_ms.saturating_add(200).min(10_000);
-                RetryStrategy::FixedDelay(Duration::from_millis(actual_delay))
-            } else {
-                RetryStrategy::LinearBackoff { base_ms: 1000 }
-            }
-        }
-        503 | 529 => RetryStrategy::ExponentialBackoff { base_ms: 1000, max_ms: 8000 },
-        500 => RetryStrategy::LinearBackoff { base_ms: 500 },
-        401 | 403 => RetryStrategy::FixedDelay(Duration::from_millis(100)),
-        _ => RetryStrategy::NoRetry,
-    }
-}
-
-async fn apply_retry_strategy(strategy: RetryStrategy, attempt: usize, status_code: u16, trace_id: &str) -> bool {
-    match strategy {
-        RetryStrategy::NoRetry => {
-            debug!("[{}] Non-retryable error {}, stopping", trace_id, status_code);
-            false
-        }
-        RetryStrategy::FixedDelay(duration) => {
-            info!("[{}] ⏱️ Retry with fixed delay: status={}, attempt={}/{}", trace_id, status_code, attempt + 1, MAX_RETRY_ATTEMPTS);
-            sleep(duration).await;
-            true
-        }
-        RetryStrategy::LinearBackoff { base_ms } => {
-            let delay = base_ms * (attempt as u64 + 1);
-            info!("[{}] ⏱️ Retry with linear backoff: status={}, attempt={}/{}", trace_id, status_code, attempt + 1, MAX_RETRY_ATTEMPTS);
-            sleep(Duration::from_millis(delay)).await;
-            true
-        }
-        RetryStrategy::ExponentialBackoff { base_ms, max_ms } => {
-             let delay = (base_ms * 2_u64.pow(attempt as u32)).min(max_ms);
-             info!("[{}] ⏱️ Retry with exponential backoff: status={}, attempt={}/{}", trace_id, status_code, attempt + 1, MAX_RETRY_ATTEMPTS);
-             sleep(Duration::from_millis(delay)).await;
-             true
-        }
-    }
-}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 pub async fn handle_chat_completions(
     State(state): State<AppState>,
     Json(mut body): Json<Value>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-<<<<<<< HEAD
     // [FIX] 保存原始请求体的完整副本，用于日志记录
     // 这确保了即使结构体定义遗漏字段，日志也能完整记录所有参数
     let original_body = body.clone();
@@ -104,16 +37,6 @@ pub async fn handle_chat_completions(
     if is_responses_format {
         debug!("Detected Responses API format, converting to Chat Completions format");
 
-=======
-    // [NEW] 自动检测并转换 Responses 格式
-    // 如果请求包含 instructions 或 input 但没有 messages，则认为是 Responses 格式
-    let is_responses_format = !body.get("messages").is_some() 
-        && (body.get("instructions").is_some() || body.get("input").is_some());
-    
-    if is_responses_format {
-        debug!("Detected Responses API format, converting to Chat Completions format");
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 转换 instructions 为 system message
         if let Some(instructions) = body.get("instructions").and_then(|v| v.as_str()) {
             if !instructions.is_empty() {
@@ -121,31 +44,19 @@ pub async fn handle_chat_completions(
                     "role": "system",
                     "content": instructions
                 });
-<<<<<<< HEAD
 
-=======
-                
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 // 初始化 messages 数组
                 if !body.get("messages").is_some() {
                     body["messages"] = json!([]);
                 }
-<<<<<<< HEAD
 
-=======
-                
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 // 将 system message 插入到开头
                 if let Some(messages) = body.get_mut("messages").and_then(|v| v.as_array_mut()) {
                     messages.insert(0, system_msg);
                 }
             }
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // 转换 input 为 user message（如果存在）
         if let Some(input) = body.get("input") {
             let user_msg = if input.is_string() {
@@ -160,11 +71,7 @@ pub async fn handle_chat_completions(
                     "content": input.to_string()
                 })
             };
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if let Some(messages) = body.get_mut("messages").and_then(|v| v.as_array_mut()) {
                 messages.push(user_msg);
             }
@@ -191,7 +98,6 @@ pub async fn handle_chat_completions(
             });
     }
 
-<<<<<<< HEAD
     let trace_id = format!("req_{}", chrono::Utc::now().timestamp_subsec_millis());
     info!(
         "[{}] OpenAI Chat Request: {} | {} messages | stream: {}",
@@ -209,27 +115,16 @@ pub async fn handle_chat_completions(
         });
         debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "original_request", &original_payload).await;
     }
-=======
-    debug!("Received OpenAI request for model: {}", openai_req.model);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 1. 获取 UpstreamClient (Clone handle)
     let upstream = state.upstream.clone();
     let token_manager = state.token_manager;
     let pool_size = token_manager.len();
-<<<<<<< HEAD
     // [FIX] Ensure max_attempts is at least 2 to allow for internal retries
     let max_attempts = MAX_RETRY_ATTEMPTS.min(pool_size.saturating_add(1)).max(2);
 
     let mut last_error = String::new();
     let mut last_email: Option<String> = None;
-=======
-    let max_attempts = MAX_RETRY_ATTEMPTS.min(pool_size).max(1);
-
-    let mut last_error = String::new();
-    let mut last_email: Option<String> = None;
-    let mut last_account_name: Option<String> = None;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 2. 模型路由解析 (移到循环外以支持在所有路径返回 X-Mapped-Model)
     let mapped_model = crate::proxy::common::model_mapping::resolve_model_route(
@@ -247,13 +142,8 @@ pub async fn handle_chat_completions(
             &openai_req.model,
             &mapped_model,
             &tools_val,
-<<<<<<< HEAD
             None, // size (not used in handler, transform_openai_request handles it)
             None, // quality
-=======
-            None,  // size (not used in handler, transform_openai_request handles it)
-            None   // quality
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
 
         // 3. 提取 SessionId (粘性指纹)
@@ -261,7 +151,6 @@ pub async fn handle_chat_completions(
 
         // 4. 获取 Token (使用准确的 request_type)
         // 关键：在重试尝试 (attempt > 0) 时强制轮换账号
-<<<<<<< HEAD
         let (access_token, project_id, email, _wait_ms) = match token_manager
             .get_token(
                 &config.request_type,
@@ -269,15 +158,10 @@ pub async fn handle_chat_completions(
                 Some(&session_id),
                 &mapped_model,
             )
-=======
-        let (access_token, project_id, email, account_name) = match token_manager
-            .get_token(&config.request_type, attempt > 0, Some(&session_id), &openai_req.model)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             .await
         {
             Ok(t) => t,
             Err(e) => {
-<<<<<<< HEAD
                 // [FIX] Attach headers to error response for logging visibility
                 let headers = [("X-Mapped-Model", mapped_model.as_str())];
                 return Ok((
@@ -286,26 +170,15 @@ pub async fn handle_chat_completions(
                     format!("Token error: {}", e),
                 )
                     .into_response());
-=======
-                return Err((
-                    StatusCode::SERVICE_UNAVAILABLE,
-                    format!("Token error: {}", e),
-                ));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         };
 
         last_email = Some(email.clone());
-<<<<<<< HEAD
-=======
-        last_account_name = account_name.clone();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         info!("✓ Using account: {} (type: {})", email, config.request_type);
 
         // 4. 转换请求
         let gemini_body = transform_openai_request(&openai_req, &project_id, &mapped_model);
 
-<<<<<<< HEAD
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
                 "kind": "v1internal_request",
@@ -320,15 +193,12 @@ pub async fn handle_chat_completions(
             debug_logger::write_debug_payload(&debug_cfg, Some(&trace_id), "v1internal_request", &payload).await;
         }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // [New] 打印转换后的报文 (Gemini Body) 供调试
         if let Ok(body_json) = serde_json::to_string_pretty(&gemini_body) {
             debug!("[OpenAI-Request] Transformed Gemini Body:\n{}", body_json);
         }
 
         // 5. 发送请求
-<<<<<<< HEAD
         let client_wants_stream = openai_req.stream;
         let force_stream_internally = !client_wants_stream;
         let actual_stream = client_wants_stream || force_stream_internally;
@@ -340,10 +210,6 @@ pub async fn handle_chat_completions(
             );
         }
 
-=======
-        let actual_stream = openai_req.stream;
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let method = if actual_stream {
             "streamGenerateContent"
         } else {
@@ -377,7 +243,6 @@ pub async fn handle_chat_completions(
                 use axum::response::Response;
                 use futures::StreamExt;
 
-<<<<<<< HEAD
                 let meta = json!({
                     "protocol": "openai",
                     "trace_id": trace_id,
@@ -411,41 +276,18 @@ pub async fn handle_chat_completions(
                     )
                     .await
                     {
-=======
-                let gemini_stream = response.bytes_stream();
-                
-                // [P1 FIX] Enhanced Peek logic to handle heartbeats and slow start
-                // Pre-read until we find meaningful content, skip heartbeats
-                let mut openai_stream =
-                    create_openai_sse_stream(Box::pin(gemini_stream), openai_req.model.clone());
-                
-                let mut first_data_chunk = None;
-                let mut retry_this_account = false;
-                
-                // Loop to skip heartbeats during peek
-                loop {
-                    match tokio::time::timeout(std::time::Duration::from_secs(20), openai_stream.next()).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         Ok(Some(Ok(bytes))) => {
                             if bytes.is_empty() {
                                 continue;
                             }
-<<<<<<< HEAD
 
-=======
-                            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             let text = String::from_utf8_lossy(&bytes);
                             // Skip SSE comments/pings (heartbeats)
                             if text.trim().starts_with(":") || text.trim().starts_with("data: :") {
                                 tracing::debug!("[OpenAI] Skipping peek heartbeat");
                                 continue;
                             }
-<<<<<<< HEAD
 
-=======
-                            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             // Check for error events
                             if text.contains("\"error\"") {
                                 tracing::warn!("[OpenAI] Error detected during peek, retrying...");
@@ -453,11 +295,7 @@ pub async fn handle_chat_completions(
                                 retry_this_account = true;
                                 break;
                             }
-<<<<<<< HEAD
 
-=======
-                            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             // We found real data!
                             first_data_chunk = Some(bytes);
                             break;
@@ -469,32 +307,23 @@ pub async fn handle_chat_completions(
                             break;
                         }
                         Ok(None) => {
-<<<<<<< HEAD
                             tracing::warn!(
                                 "[OpenAI] Stream ended during peek (Empty Response), retrying..."
                             );
-=======
-                            tracing::warn!("[OpenAI] Stream ended during peek (Empty Response), retrying...");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             last_error = "Empty response stream during peek".to_string();
                             retry_this_account = true;
                             break;
                         }
                         Err(_) => {
-<<<<<<< HEAD
                             tracing::warn!(
                                 "[OpenAI] Timeout waiting for first data (60s), retrying..."
                             );
-=======
-                            tracing::warn!("[OpenAI] Timeout waiting for first data (20s), retrying...");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             last_error = "Timeout waiting for first data".to_string();
                             retry_this_account = true;
                             break;
                         }
                     }
                 }
-<<<<<<< HEAD
 
                 if retry_this_account {
                     continue; // Rotate to next account
@@ -508,20 +337,6 @@ pub async fn handle_chat_completions(
                     .chain(openai_stream);
 
                 if client_wants_stream {
-=======
-                
-                if retry_this_account {
-                    continue; // Rotate to next account
-                }
-                
-                // Combine first chunk with remaining stream
-                let combined_stream = futures::stream::once(async move { 
-                    Ok::<Bytes, String>(first_data_chunk.unwrap()) 
-                })
-                .chain(openai_stream);
-                
-                if actual_stream {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     // 客户端请求流式，返回 SSE
                     let body = Body::from_stream(combined_stream);
                     return Ok(Response::builder()
@@ -530,16 +345,11 @@ pub async fn handle_chat_completions(
                         .header("Connection", "keep-alive")
                         .header("X-Accel-Buffering", "no")
                         .header("X-Account-Email", &email)
-<<<<<<< HEAD
-=======
-                        .header("X-Account-Name", account_name.as_deref().unwrap_or(""))
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         .header("X-Mapped-Model", &mapped_model)
                         .body(body)
                         .unwrap()
                         .into_response());
                 } else {
-<<<<<<< HEAD
                     // 客户端请求非流式，但内部强制转为流式
                     // 收集流数据并聚合为 JSON
                     use crate::proxy::mappers::openai::collector::collect_stream_to_json;
@@ -566,11 +376,6 @@ pub async fn handle_chat_completions(
                                 .into_response());
                         }
                     }
-=======
-                    // 非流式请求（虽然内部可能走流但这里按原始需求转换）
-                    // 实际上既然实际流已经是 actual_stream 了，这里的逻辑应该一致
-                    unreachable!("actual_stream should be the original stream flag");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
 
@@ -580,7 +385,6 @@ pub async fn handle_chat_completions(
                 .map_err(|e| (StatusCode::BAD_GATEWAY, format!("Parse error: {}", e)))?;
 
             let openai_response = transform_openai_response(&gemini_resp);
-<<<<<<< HEAD
             return Ok((
                 StatusCode::OK,
                 [
@@ -590,18 +394,10 @@ pub async fn handle_chat_completions(
                 Json(openai_response),
             )
                 .into_response());
-=======
-            return Ok((StatusCode::OK, [
-                ("X-Account-Email", email.as_str()), 
-                ("X-Account-Name", account_name.as_deref().unwrap_or("")),
-                ("X-Mapped-Model", mapped_model.as_str())
-            ], Json(openai_response)).into_response());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         // 处理特定错误并重试
         let status_code = status.as_u16();
-<<<<<<< HEAD
         let _retry_after = response
             .headers()
             .get("Retry-After")
@@ -611,10 +407,6 @@ pub async fn handle_chat_completions(
             .text()
             .await
             .unwrap_or_else(|_| format!("HTTP {}", status_code));
-=======
-        let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
-        let error_text = response.text().await.unwrap_or_else(|_| format!("HTTP {}", status_code));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         last_error = format!("HTTP {}: {}", status_code, error_text);
 
         // [New] 打印错误报文日志
@@ -623,7 +415,6 @@ pub async fn handle_chat_completions(
             status_code,
             error_text
         );
-<<<<<<< HEAD
         if debug_logger::is_enabled(&debug_cfg) {
             let payload = json!({
                 "kind": "upstream_response_error",
@@ -669,30 +460,6 @@ pub async fn handle_chat_completions(
             // 2. [REMOVED] 不再特殊处理 QUOTA_EXHAUSTED，允许账号轮换
             // if error_text.contains("QUOTA_EXHAUSTED") { ... }
             /*
-=======
-
-        // 429/529/503 智能处理
-        if status_code == 429 || status_code == 529 || status_code == 503 || status_code == 500 {
-            // 记录限流信息 (全局同步)
-            token_manager.mark_rate_limited(&email, status_code, retry_after.as_deref(), &error_text);
-
-            // 1. 优先尝试解析 RetryInfo (由 Google Cloud 直接下发)
-            if let Some(delay_ms) = crate::proxy::upstream::retry::parse_retry_delay(&error_text) {
-                let actual_delay = delay_ms.saturating_add(200).min(10_000);
-                tracing::warn!(
-                    "OpenAI Upstream {} on {} attempt {}/{}, waiting {}ms then retrying",
-                    status_code,
-                    email,
-                    attempt + 1,
-                    max_attempts,
-                    actual_delay
-                );
-                tokio::time::sleep(tokio::time::Duration::from_millis(actual_delay)).await;
-                continue;
-            }
-
-            // 2. 只有明确包含 "QUOTA_EXHAUSTED" 才停止，避免误判频率提示 (如 "check quota")
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             if error_text.contains("QUOTA_EXHAUSTED") {
                 error!(
                     "OpenAI Quota exhausted (429) on account {} attempt {}/{}, stopping to protect pool.",
@@ -700,18 +467,9 @@ pub async fn handle_chat_completions(
                     attempt + 1,
                     max_attempts
                 );
-<<<<<<< HEAD
                 return Ok((status, [("X-Account-Email", email.as_str()), ("X-Mapped-Model", mapped_model.as_str())], error_text).into_response());
             }
             */
-=======
-                return Ok((status, [
-                    ("X-Account-Email", email.as_str()), 
-                    ("X-Account-Name", account_name.as_deref().unwrap_or("")),
-                    ("X-Mapped-Model", mapped_model.as_str())
-                ], error_text).into_response());
-            }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
             // 3. 其他限流或服务器过载情况，轮换账号
             tracing::warn!(
@@ -725,11 +483,7 @@ pub async fn handle_chat_completions(
         }
 
         // [NEW] 处理 400 错误 (Thinking 签名失效)
-<<<<<<< HEAD
         if status_code == 400
-=======
-        if status_code == 400 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             && (error_text.contains("Invalid `signature`")
                 || error_text.contains("thinking.signature")
                 || error_text.contains("Invalid signature")
@@ -739,20 +493,12 @@ pub async fn handle_chat_completions(
                 "[OpenAI] Signature error detected on account {}, retrying without thinking",
                 email
             );
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 追加修复提示词到最后一条用户消息
             if let Some(last_msg) = openai_req.messages.last_mut() {
                 if last_msg.role == "user" {
                     let repair_prompt = "\n\n[System Recovery] Your previous output contained an invalid signature. Please regenerate the response without the corrupted signature block.";
-<<<<<<< HEAD
 
-=======
-                    
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     if let Some(content) = &mut last_msg.content {
                         use crate::proxy::mappers::openai::{OpenAIContent, OpenAIContentBlock};
                         match content {
@@ -761,11 +507,7 @@ pub async fn handle_chat_completions(
                             }
                             OpenAIContent::Array(arr) => {
                                 arr.push(OpenAIContentBlock::Text {
-<<<<<<< HEAD
                                     text: repair_prompt.to_string(),
-=======
-                                    text: repair_prompt.to_string()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 });
                             }
                         }
@@ -773,17 +515,12 @@ pub async fn handle_chat_completions(
                     }
                 }
             }
-<<<<<<< HEAD
 
-=======
-            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             continue; // 重试
         }
 
         // 只有 403 (权限/地区限制) 和 401 (认证失效) 触发账号轮换
         if status_code == 403 || status_code == 401 {
-<<<<<<< HEAD
             if apply_retry_strategy(
                 RetryStrategy::FixedDelay(Duration::from_millis(200)),
                 attempt,
@@ -795,16 +532,6 @@ pub async fn handle_chat_completions(
             {
                 continue;
             }
-=======
-            tracing::warn!(
-                "OpenAI Upstream {} on account {} attempt {}/{}, rotating account",
-                status_code,
-                email,
-                attempt + 1,
-                max_attempts
-            );
-            continue;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         // 404 等由于模型配置或路径错误的 HTTP 异常，直接报错，不进行无效轮换
@@ -812,7 +539,6 @@ pub async fn handle_chat_completions(
             "OpenAI Upstream non-retryable error {} on account {}: {}",
             status_code, email, error_text
         );
-<<<<<<< HEAD
         return Ok((
             status,
             [
@@ -822,44 +548,23 @@ pub async fn handle_chat_completions(
             error_text,
         )
             .into_response());
-=======
-        return Ok((status, [
-            ("X-Account-Email", email.as_str()), 
-            ("X-Account-Name", account_name.as_deref().unwrap_or("")),
-            ("X-Mapped-Model", mapped_model.as_str())
-        ], error_text).into_response());
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     // 所有尝试均失败
     if let Some(email) = last_email {
         Ok((
             StatusCode::TOO_MANY_REQUESTS,
-<<<<<<< HEAD
             [("X-Account-Email", email), ("X-Mapped-Model", mapped_model)],
             format!("All accounts exhausted. Last error: {}", last_error),
         )
             .into_response())
-=======
-            [
-                ("X-Account-Email", email), 
-                ("X-Account-Name", last_account_name.unwrap_or_default()),
-                ("X-Mapped-Model", mapped_model)
-            ],
-            format!("All accounts exhausted. Last error: {}", last_error),
-        ).into_response())
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     } else {
         Ok((
             StatusCode::TOO_MANY_REQUESTS,
             [("X-Mapped-Model", mapped_model)],
             format!("All accounts exhausted. Last error: {}", last_error),
-<<<<<<< HEAD
         )
             .into_response())
-=======
-        ).into_response())
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
@@ -869,11 +574,7 @@ pub async fn handle_completions(
     State(state): State<AppState>,
     Json(mut body): Json<Value>,
 ) -> Response {
-<<<<<<< HEAD
     debug!(
-=======
-    info!(
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "Received /v1/completions or /v1/responses payload: {:?}",
         body
     );
@@ -1130,7 +831,6 @@ pub async fn handle_completions(
     // [Fix Phase 2] Backport normalization logic from handle_chat_completions
     // Handle "instructions" + "input" (Codex style) -> system + user messages
     // This is critical because `transform_openai_request` expects `messages` to be populated.
-<<<<<<< HEAD
 
     // [FIX] 检查是否已经有 messages (被第一次标准化处理过)
     let has_codex_fields = body.get("instructions").is_some() || body.get("input").is_some();
@@ -1146,40 +846,16 @@ pub async fn handle_completions(
 
         let mut messages = Vec::new();
 
-=======
-    
-    // [FIX] 检查是否已经有 messages (被第一次标准化处理过)
-    let has_codex_fields = body.get("instructions").is_some() || body.get("input").is_some();
-    let already_normalized = body.get("messages")
-        .and_then(|m| m.as_array())
-        .map(|arr| !arr.is_empty())
-        .unwrap_or(false);
-    
-    // 只有在未标准化时才进行简单转换
-    if has_codex_fields && !already_normalized {
-        tracing::debug!("[Codex] Performing simple normalization (messages not yet populated)");
-        
-        let mut messages = Vec::new();
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // instructions -> system message
         if let Some(inst) = body.get("instructions").and_then(|v| v.as_str()) {
             if !inst.is_empty() {
                 messages.push(json!({
                     "role": "system",
-<<<<<<< HEAD
                     "content": inst
                 }));
             }
         }
 
-=======
-                    "content": inst 
-                }));
-            }
-        }
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // input -> user message (支持对象数组形式的对话历史)
         if let Some(input) = body.get("input") {
             if let Some(s) = input.as_str() {
@@ -1189,17 +865,12 @@ pub async fn handle_completions(
                 }));
             } else if let Some(arr) = input.as_array() {
                 // 判断是消息对象数组还是简单的内容块/字符串数组
-<<<<<<< HEAD
                 let is_message_array = arr
                     .first()
                     .and_then(|v| v.as_object())
                     .map(|obj| obj.contains_key("role"))
                     .unwrap_or(false);
 
-=======
-                let is_message_array = arr.first().and_then(|v| v.as_object()).map(|obj| obj.contains_key("role")).unwrap_or(false);
-                
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if is_message_array {
                     // 深度识别：像处理 messages 一样处理 input 数组
                     for item in arr {
@@ -1207,7 +878,6 @@ pub async fn handle_completions(
                     }
                 } else {
                     // 降级处理：传统的字符串或混合内容拼接
-<<<<<<< HEAD
                     let content = arr
                         .iter()
                         .map(|v| {
@@ -1222,14 +892,6 @@ pub async fn handle_completions(
                         .collect::<Vec<_>>()
                         .join("\n");
 
-=======
-                    let content = arr.iter().map(|v| {
-                        if let Some(s) = v.as_str() { s.to_string() }
-                        else if v.is_object() { v.to_string() }
-                        else { "".to_string() }
-                    }).collect::<Vec<_>>().join("\n");
-                    
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     if !content.is_empty() {
                         messages.push(json!({
                             "role": "user",
@@ -1247,7 +909,6 @@ pub async fn handle_completions(
                 }
             };
         }
-<<<<<<< HEAD
 
         if let Some(obj) = body.as_object_mut() {
             tracing::debug!(
@@ -1260,28 +921,12 @@ pub async fn handle_completions(
         tracing::debug!(
             "[Codex] Skipping normalization (messages already populated by first pass)"
         );
-=======
-        
-        if let Some(obj) = body.as_object_mut() {
-            tracing::debug!("[Codex] Injecting normalized messages: {} messages", messages.len());
-            obj.insert("messages".to_string(), json!(messages));
-        }
-    } else if already_normalized {
-        tracing::debug!("[Codex] Skipping normalization (messages already populated by first pass)");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     let mut openai_req: OpenAIRequest = match serde_json::from_value(body.clone()) {
         Ok(req) => req,
         Err(e) => {
-<<<<<<< HEAD
             return (StatusCode::BAD_REQUEST, format!("Invalid request: {}", e)).into_response();
-=======
-            return (
-                StatusCode::BAD_REQUEST,
-                format!("Invalid request: {}", e),
-            ).into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     };
 
@@ -1304,12 +949,8 @@ pub async fn handle_completions(
     let upstream = state.upstream.clone();
     let token_manager = state.token_manager;
     let pool_size = token_manager.len();
-<<<<<<< HEAD
     // [FIX] Ensure max_attempts is at least 2 to allow for internal retries
     let max_attempts = MAX_RETRY_ATTEMPTS.min(pool_size.saturating_add(1)).max(2);
-=======
-    let max_attempts = MAX_RETRY_ATTEMPTS.min(pool_size).max(1);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     let mut last_error = String::new();
     let mut last_email: Option<String> = None;
@@ -1332,20 +973,14 @@ pub async fn handle_completions(
             &openai_req.model,
             &mapped_model,
             &tools_val,
-<<<<<<< HEAD
             None, // size
             None, // quality
-=======
-            None,  // size
-            None   // quality
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         );
 
         // 3. 提取 SessionId (复用)
         // [New] 使用 TokenManager 内部逻辑提取 session_id，支持粘性调度
         let session_id_str = SessionManager::extract_openai_session_id(&openai_req);
         let session_id = Some(session_id_str.as_str());
-<<<<<<< HEAD
 
         // 重试时强制轮换，除非只是简单的网络抖动但 Claude 逻辑里 attempt > 0 总是 force_rotate
         let force_rotate = attempt > 0;
@@ -1370,25 +1005,6 @@ pub async fn handle_completions(
             }
         };
 
-=======
-        
-        // 重试时强制轮换，除非只是简单的网络抖动但 Claude 逻辑里 attempt > 0 总是 force_rotate
-        let force_rotate = attempt > 0;
-
-        // 4. 获取 Token
-        let (access_token, project_id, email, account_name) = 
-            match token_manager.get_token(&config.request_type, force_rotate, session_id, &openai_req.model).await {
-                Ok(t) => t,
-                Err(e) => {
-                    return (
-                        StatusCode::SERVICE_UNAVAILABLE,
-                        [("X-Mapped-Model", mapped_model)],
-                        format!("Token error: {}", e),
-                    ).into_response()
-                }
-            };
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         last_email = Some(email.clone());
 
         info!("✓ Using account: {} (type: {})", email, config.request_type);
@@ -1396,7 +1012,6 @@ pub async fn handle_completions(
         let gemini_body = transform_openai_request(&openai_req, &project_id, &mapped_model);
 
         // [New] 打印转换后的报文 (Gemini Body) 供调试 (Codex 路径) ———— 缩减为 simple debug
-<<<<<<< HEAD
         debug!(
             "[Codex-Request] Transformed Gemini Body ({} parts)",
             gemini_body
@@ -1410,12 +1025,6 @@ pub async fn handle_completions(
         let client_wants_stream = openai_req.stream;
         let force_stream_internally = !client_wants_stream;
         let list_response = client_wants_stream || force_stream_internally;
-=======
-        debug!("[Codex-Request] Transformed Gemini Body ({} parts)", 
-           gemini_body.get("contents").and_then(|c| c.as_array()).map(|a| a.len()).unwrap_or(0));
-
-        let list_response = openai_req.stream;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         let method = if list_response {
             "streamGenerateContent"
         } else {
@@ -1430,16 +1039,12 @@ pub async fn handle_completions(
             Ok(r) => r,
             Err(e) => {
                 last_error = e.clone();
-<<<<<<< HEAD
                 debug!(
                     "Codex Request failed on attempt {}/{}: {}",
                     attempt + 1,
                     max_attempts,
                     e
                 );
-=======
-                debug!("Codex Request failed on attempt {}/{}: {}", attempt + 1, max_attempts, e);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 continue;
             }
         };
@@ -1455,7 +1060,6 @@ pub async fn handle_completions(
                 use futures::StreamExt;
 
                 let gemini_stream = response.bytes_stream();
-<<<<<<< HEAD
 
                 // DECISION: Which stream to create?
                 // If client wants stream: give them what they asked (Legacy/Codex SSE).
@@ -1644,88 +1248,6 @@ pub async fn handle_completions(
                         }
                     }
                 }
-=======
-                let mut openai_stream = if is_codex_style {
-                    use crate::proxy::mappers::openai::streaming::create_codex_sse_stream;
-                    create_codex_sse_stream(Box::pin(gemini_stream), openai_req.model.clone())
-                } else {
-                    use crate::proxy::mappers::openai::streaming::create_legacy_sse_stream;
-                    create_legacy_sse_stream(Box::pin(gemini_stream), openai_req.model.clone())
-                };
-
-                // [P1 FIX] Enhanced Peek logic to handle heartbeats and slow start
-                let mut first_data_chunk = None;
-                let mut retry_this_account = false;
-                
-                // Loop to skip heartbeats during peek
-                loop {
-                    match tokio::time::timeout(std::time::Duration::from_secs(60), openai_stream.next()).await {
-                        Ok(Some(Ok(bytes))) => {
-                            if bytes.is_empty() {
-                                continue;
-                            }
-                            
-                            let text = String::from_utf8_lossy(&bytes);
-                            // Skip SSE comments/pings (heartbeats)
-                            if text.trim().starts_with(":") || text.trim().starts_with("data: :") {
-                                tracing::debug!("[OpenAI-Legacy] Skipping peek heartbeat");
-                                continue;
-                            }
-                            
-                            // Check for error events
-                            if text.contains("\"error\"") {
-                                tracing::warn!("[OpenAI-Legacy] Error detected during peek, retrying...");
-                                last_error = "Error event during peek".to_string();
-                                retry_this_account = true;
-                                break;
-                            }
-                            
-                            // We found real data!
-                            first_data_chunk = Some(bytes);
-                            break;
-                        }
-                        Ok(Some(Err(e))) => {
-                            tracing::warn!("[OpenAI-Legacy] Stream error during peek: {}, retrying...", e);
-                            last_error = format!("Stream error during peek: {}", e);
-                            retry_this_account = true;
-                            break;
-                        }
-                        Ok(None) => {
-                            tracing::warn!("[OpenAI-Legacy] Stream ended during peek (Empty Response), retrying...");
-                            last_error = "Empty response stream during peek".to_string();
-                            retry_this_account = true;
-                            break;
-                        }
-                        Err(_) => {
-                            tracing::warn!("[OpenAI-Legacy] Timeout waiting for first data (60s), retrying...");
-                            last_error = "Timeout waiting for first data".to_string();
-                            retry_this_account = true;
-                            break;
-                        }
-                    }
-                }
-                
-                if retry_this_account {
-                    continue; // Rotate to next account
-                }
-                
-                // Combine first chunk with remaining stream
-                let combined_stream = futures::stream::once(async move { 
-                    Ok::<Bytes, String>(first_data_chunk.unwrap()) 
-                })
-                .chain(openai_stream);
-
-                return Response::builder()
-                    .header("Content-Type", "text/event-stream")
-                    .header("Cache-Control", "no-cache")
-                    .header("Connection", "keep-alive")
-                    .header("X-Account-Email", &email)
-                    .header("X-Account-Name", account_name.as_deref().unwrap_or(""))
-                    .header("X-Mapped-Model", &mapped_model)
-                    .body(Body::from_stream(combined_stream))
-                    .unwrap()
-                    .into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
 
             let gemini_resp: Value = match response.json().await {
@@ -1735,12 +1257,8 @@ pub async fn handle_completions(
                         StatusCode::BAD_GATEWAY,
                         [("X-Mapped-Model", mapped_model.as_str())],
                         format!("Parse error: {}", e),
-<<<<<<< HEAD
                     )
                         .into_response();
-=======
-                    ).into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             };
 
@@ -1768,7 +1286,6 @@ pub async fn handle_completions(
                 "usage": chat_resp.usage
             });
 
-<<<<<<< HEAD
             return (
                 StatusCode::OK,
                 [
@@ -1778,18 +1295,10 @@ pub async fn handle_completions(
                 Json(legacy_resp),
             )
                 .into_response();
-=======
-            return (StatusCode::OK, [
-                ("X-Account-Email", email.as_str()), 
-                ("X-Account-Name", account_name.as_deref().unwrap_or("")),
-                ("X-Mapped-Model", mapped_model.as_str())
-            ], Json(legacy_resp)).into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         // Handle errors and retry
         let status_code = status.as_u16();
-<<<<<<< HEAD
         let retry_after = response
             .headers()
             .get("Retry-After")
@@ -1799,10 +1308,6 @@ pub async fn handle_completions(
             .text()
             .await
             .unwrap_or_else(|_| format!("HTTP {}", status_code));
-=======
-        let retry_after = response.headers().get("Retry-After").and_then(|h| h.to_str().ok()).map(|s| s.to_string());
-        let error_text = response.text().await.unwrap_or_else(|_| format!("HTTP {}", status_code));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         last_error = format!("HTTP {}: {}", status_code, error_text);
 
         tracing::error!(
@@ -1813,7 +1318,6 @@ pub async fn handle_completions(
 
         // 3. 标记限流状态(用于 UI 显示)
         if status_code == 429 || status_code == 529 || status_code == 503 || status_code == 500 {
-<<<<<<< HEAD
             token_manager
                 .mark_rate_limited_async(
                     &email,
@@ -1829,20 +1333,10 @@ pub async fn handle_completions(
         let strategy = determine_retry_strategy(status_code, &error_text, false);
 
         if apply_retry_strategy(strategy, attempt, max_attempts, status_code, &trace_id).await {
-=======
-            token_manager.mark_rate_limited_async(&email, status_code, retry_after.as_deref(), &error_text, Some(&mapped_model)).await;
-        }
-
-        // 确定重试策略
-        let strategy = determine_retry_strategy(status_code, &error_text);
-        
-        if apply_retry_strategy(strategy, attempt, status_code, &trace_id).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 继续重试 (loop 会增加 attempt, 导致 force_rotate=true)
             continue;
         } else {
             // 不可重试
-<<<<<<< HEAD
             return (
                 status,
                 [
@@ -1852,13 +1346,6 @@ pub async fn handle_completions(
                 error_text,
             )
                 .into_response();
-=======
-            return (status, [
-                ("X-Account-Email", email.as_str()), 
-                ("X-Account-Name", account_name.as_deref().unwrap_or("")),
-                ("X-Mapped-Model", mapped_model.as_str())
-            ], error_text).into_response();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
@@ -1868,30 +1355,21 @@ pub async fn handle_completions(
             StatusCode::TOO_MANY_REQUESTS,
             [("X-Account-Email", email), ("X-Mapped-Model", mapped_model)],
             format!("All accounts exhausted. Last error: {}", last_error),
-<<<<<<< HEAD
         )
             .into_response()
-=======
-        ).into_response()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     } else {
         (
             StatusCode::TOO_MANY_REQUESTS,
             [("X-Mapped-Model", mapped_model)],
             format!("All accounts exhausted. Last error: {}", last_error),
-<<<<<<< HEAD
         )
             .into_response()
-=======
-        ).into_response()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
 
 pub async fn handle_list_models(State(state): State<AppState>) -> impl IntoResponse {
     use crate::proxy::common::model_mapping::get_all_dynamic_models;
 
-<<<<<<< HEAD
     let model_ids = get_all_dynamic_models(&state.custom_mapping).await;
 
     let data: Vec<_> = model_ids
@@ -1905,20 +1383,6 @@ pub async fn handle_list_models(State(state): State<AppState>) -> impl IntoRespo
             })
         })
         .collect();
-=======
-    let model_ids = get_all_dynamic_models(
-        &state.custom_mapping,
-    ).await;
-
-    let data: Vec<_> = model_ids.into_iter().map(|id| {
-        json!({
-            "id": id,
-            "object": "model",
-            "created": 1706745600,
-            "owned_by": "antigravity"
-        })
-    }).collect();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     Json(json!({
         "object": "list",
@@ -1978,11 +1442,7 @@ pub async fn handle_images_generations(
     let (image_config, _) = crate::proxy::mappers::common_utils::parse_image_config_with_params(
         model,
         Some(size),
-<<<<<<< HEAD
         Some(quality),
-=======
-        Some(quality)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     );
 
     // 3. Prompt Enhancement（保留原有逻辑）
@@ -2000,13 +1460,9 @@ pub async fn handle_images_generations(
     let upstream = state.upstream.clone();
     let token_manager = state.token_manager;
 
-<<<<<<< HEAD
     let (access_token, project_id, email, _wait_ms) = match token_manager
         .get_token("image_gen", false, None, "dall-e-3")
         .await
-=======
-    let (access_token, project_id, email, account_name) = match token_manager.get_token("image_gen", false, None, "dall-e-3").await
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     {
         Ok(t) => t,
         Err(e) => {
@@ -2030,20 +1486,13 @@ pub async fn handle_images_generations(
         let image_config = image_config.clone(); // 使用解析后的完整配置
         let _response_format = response_format.to_string();
 
-<<<<<<< HEAD
         let model_to_use = "gemini-3-pro-image".to_string();
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         tasks.push(tokio::spawn(async move {
             let gemini_body = json!({
                 "project": project_id,
                 "requestId": format!("agent-{}", uuid::Uuid::new_v4()),
-<<<<<<< HEAD
                 "model": model_to_use,
-=======
-                "model": "gemini-3-pro-image",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "userAgent": "antigravity",
                 "requestType": "image_gen",
                 "request": {
@@ -2171,19 +1620,10 @@ pub async fn handle_images_generations(
 
     Ok((
         StatusCode::OK,
-<<<<<<< HEAD
         [("X-Account-Email", email.as_str())],
         Json(openai_response),
     )
         .into_response())
-=======
-        [
-            ("X-Account-Email", email.as_str()),
-            ("X-Account-Name", account_name.as_deref().unwrap_or(""))
-        ],
-        Json(openai_response)
-    ).into_response())
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 pub async fn handle_images_edits(
@@ -2194,7 +1634,6 @@ pub async fn handle_images_edits(
 
     let mut image_data = None;
     let mut mask_data = None;
-<<<<<<< HEAD
     let mut reference_images: Vec<String> = Vec::new(); // Store base64 data of reference images
     let mut prompt = String::new();
     let mut n = 1;
@@ -2205,13 +1644,6 @@ pub async fn handle_images_edits(
     let mut aspect_ratio: Option<String> = None;
     let mut image_size_param: Option<String> = None;
     let mut style: Option<String> = None;
-=======
-    let mut prompt = String::new();
-    let mut n = 1;
-    let mut size = "1024x1024".to_string();
-    let mut response_format = "b64_json".to_string(); // Default to b64_json for better compatibility with tools handling edits
-    let mut model = "gemini-3-pro-image".to_string();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     while let Some(field) = multipart
         .next_field()
@@ -2232,7 +1664,6 @@ pub async fn handle_images_edits(
                 .await
                 .map_err(|e| (StatusCode::BAD_REQUEST, format!("Mask read error: {}", e)))?;
             mask_data = Some(base64::engine::general_purpose::STANDARD.encode(data));
-<<<<<<< HEAD
         } else if name.starts_with("image") && name != "image_size" {
             // Support image1, image2, etc.
             let data = field.bytes().await.map_err(|e| {
@@ -2242,8 +1673,6 @@ pub async fn handle_images_edits(
                 )
             })?;
             reference_images.push(base64::engine::general_purpose::STANDARD.encode(data));
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         } else if name == "prompt" {
             prompt = field
                 .text()
@@ -2257,7 +1686,6 @@ pub async fn handle_images_edits(
             if let Ok(val) = field.text().await {
                 size = val;
             }
-<<<<<<< HEAD
         } else if name == "image_size" {
             if let Ok(val) = field.text().await {
                 image_size_param = Some(val);
@@ -2270,8 +1698,6 @@ pub async fn handle_images_edits(
             if let Ok(val) = field.text().await {
                 style = Some(val);
             }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         } else if name == "response_format" {
             if let Ok(val) = field.text().await {
                 response_format = val;
@@ -2285,29 +1711,18 @@ pub async fn handle_images_edits(
         }
     }
 
-<<<<<<< HEAD
     // Validation: Require either 'image' (standard edit) OR 'prompt' (generation)
     // If reference images are present, we treat it as generation with image context
-=======
-    if image_data.is_none() {
-        return Err((StatusCode::BAD_REQUEST, "Missing image".to_string()));
-    }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     if prompt.is_empty() {
         return Err((StatusCode::BAD_REQUEST, "Missing prompt".to_string()));
     }
 
     tracing::info!(
-<<<<<<< HEAD
         "[Images] Edit/Ref Request: model={}, prompt={}, n={}, size={}, aspect_ratio={:?}, image_size={:?}, style={:?}, refs={}, has_main_image={}",
-=======
-        "[Images] Edit Request: model={}, prompt={}, n={}, size={}, mask={}, response_format={}",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         model,
         prompt,
         n,
         size,
-<<<<<<< HEAD
         aspect_ratio,
         image_size_param,
         style,
@@ -2321,28 +1736,6 @@ pub async fn handle_images_edits(
     let (access_token, project_id, email, _wait_ms) = match token_manager
         .get_token("image_gen", false, None, "dall-e-3")
         .await
-=======
-        mask_data.is_some(),
-        response_format
-    );
-
-    // FIX: Client Display Issue
-    // Cherry Studio (and potentially others) might accept Data URI for generations but display raw text for edits
-    // if 'url' format is used with a data-uri.
-    // If request asks for 'url' but we are a local proxy, returning b64_json is often safer for correct rendering if the client supports it.
-    // However, strictly following spec means 'url' should be 'url'.
-    // Let's rely on client requesting the right thing, BUT allow a server-side heuristic:
-    // If we simply return b64_json structure even if url was requested? No, that breaks spec.
-    // Instead, let's assume successful clients request b64_json.
-    // But if users see raw text, it means client defaulted to 'url' or we defaulted to 'url'.
-    // Let's keep the log to confirm.
-
-    // 1. 获取 Upstream
-    let upstream = state.upstream.clone();
-    let token_manager = state.token_manager;
-    // Fix: Proper get_token call with correct signature and unwrap (using image_gen quota)
-    let (access_token, project_id, email, account_name) = match token_manager.get_token("image_gen", false, None, "dall-e-3").await
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     {
         Ok(t) => t,
         Err(e) => {
@@ -2353,7 +1746,6 @@ pub async fn handle_images_edits(
         }
     };
 
-<<<<<<< HEAD
     // 2. Prepare Config (Aspect Ratio / Size)
     // Priority: aspect_ratio param > size param
     // Priority: image_size param > quality param (derived from model suffix or default)
@@ -2389,15 +1781,6 @@ pub async fn handle_images_edits(
     }));
 
     // Add Main Image (if standard edit)
-=======
-    // 2. 映射配置
-    let mut contents_parts = Vec::new();
-
-    contents_parts.push(json!({
-        "text": format!("Edit this image: {}", prompt)
-    }));
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     if let Some(data) = image_data {
         contents_parts.push(json!({
             "inlineData": {
@@ -2407,10 +1790,7 @@ pub async fn handle_images_edits(
         }));
     }
 
-<<<<<<< HEAD
     // Add Mask (if standard edit)
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     if let Some(data) = mask_data {
         contents_parts.push(json!({
             "inlineData": {
@@ -2420,7 +1800,6 @@ pub async fn handle_images_edits(
         }));
     }
 
-<<<<<<< HEAD
     // Add Reference Images (Image-to-Image)
     for ref_data in reference_images {
         contents_parts.push(json!({
@@ -2433,10 +1812,6 @@ pub async fn handle_images_edits(
 
     // 4. Construct Request Body
     let mut gemini_body = json!({
-=======
-    // 构造 Gemini 内网 API Body (Envelope Structure)
-    let gemini_body = json!({
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "project": project_id,
         "requestId": format!("img-edit-{}", uuid::Uuid::new_v4()),
         "model": model,
@@ -2449,10 +1824,7 @@ pub async fn handle_images_edits(
             }],
             "generationConfig": {
                 "candidateCount": 1,
-<<<<<<< HEAD
                 "imageConfig": image_config, // Use parsed config
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "maxOutputTokens": 8192,
                 "stopSequences": [],
                 "temperature": 1.0,
@@ -2469,10 +1841,7 @@ pub async fn handle_images_edits(
         }
     });
 
-<<<<<<< HEAD
     // 5. Execute Requests (Parallel for n > 1)
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let mut tasks = Vec::new();
     for _ in 0..n {
         let upstream = upstream.clone();
@@ -2500,10 +1869,7 @@ pub async fn handle_images_edits(
         }));
     }
 
-<<<<<<< HEAD
     // 6. Collect Results
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let mut images: Vec<Value> = Vec::new();
     let mut errors: Vec<String> = Vec::new();
 
@@ -2591,17 +1957,8 @@ pub async fn handle_images_edits(
 
     Ok((
         StatusCode::OK,
-<<<<<<< HEAD
         [("X-Account-Email", email.as_str())],
         Json(openai_response),
     )
         .into_response())
-=======
-        [
-            ("X-Account-Email", email.as_str()),
-            ("X-Account-Name", account_name.as_deref().unwrap_or(""))
-        ],
-        Json(openai_response)
-    ).into_response())
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }

@@ -4,18 +4,12 @@ mod commands;
 mod utils;
 mod proxy;  // Proxy service module
 pub mod error;
-<<<<<<< HEAD
 pub mod constants;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 use tauri::Manager;
 use modules::logger;
 use tracing::{info, warn, error};
-<<<<<<< HEAD
 use std::sync::Arc;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 /// Increase file descriptor limit for macOS to prevent "Too many open files" errors
 #[cfg(target_os = "macos")]
@@ -49,16 +43,11 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-<<<<<<< HEAD
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // Check for headless mode
     let args: Vec<String> = std::env::args().collect();
     let is_headless = args.iter().any(|arg| arg == "--headless");
-=======
-pub fn run() {
-    println!("🚀 Starting application logic...");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // Increase file descriptor limit (macOS only)
     #[cfg(target_os = "macos")]
@@ -71,11 +60,15 @@ pub fn run() {
     if let Err(e) = modules::token_stats::init_db() {
         error!("Failed to initialize token stats database: {}", e);
     }
-<<<<<<< HEAD
 
     // Initialize security database
     if let Err(e) = modules::security_db::init_db() {
         error!("Failed to initialize security database: {}", e);
+    }
+    
+    // [FIX] Initialize proxy logs database at startup to avoid "no such table" errors
+    if let Err(e) = modules::proxy_db::init_db() {
+        error!("Failed to initialize proxy database: {}", e);
     }
 
     
@@ -186,13 +179,6 @@ pub fn run() {
         return;
     }
 
-=======
-    
-    // [FIX] Initialize proxy logs database at startup to avoid "no such table" errors
-    if let Err(e) = modules::proxy_db::init_db() {
-        error!("Failed to initialize proxy database: {}", e);
-    }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
@@ -203,7 +189,6 @@ pub fn run() {
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
-<<<<<<< HEAD
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let _ = app.get_webview_window("main")
@@ -214,63 +199,19 @@ pub fn run() {
                     app.set_activation_policy(tauri::ActivationPolicy::Regular).unwrap_or(());
                 });
         }))
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         .manage(commands::proxy::ProxyServiceState::new())
         .manage(commands::cloudflared::CloudflaredState::new())
         .setup(|app| {
             info!("Setup starting...");
 
-<<<<<<< HEAD
-=======
-            // Initialize connectivity check in background within setup (where Tokio is ready)
-            tauri::async_runtime::spawn(async move {
-                crate::utils::http::check_connectivity().await;
-            });
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
-            // Linux: Workaround for transparent window crash/freeze
-            // The transparent window feature is unstable on Linux with WebKitGTK
-            // We disable the visual alpha channel to prevent softbuffer-related crashes
-            #[cfg(target_os = "linux")]
-            {
-                use tauri::Manager;
-                if let Some(window) = app.get_webview_window("main") {
-                    // Access GTK window and disable transparency at the GTK level
-                    if let Ok(gtk_window) = window.gtk_window() {
-                        use gtk::prelude::WidgetExt;
-                        // Remove the visual's alpha channel to disable transparency
-                        if let Some(screen) = gtk_window.screen() {
-                            // Use non-composited visual if available
-                            if let Some(visual) = screen.system_visual() {
-                                gtk_window.set_visual(Some(&visual));
-                            }
-                        }
-                        info!("Linux: Applied transparent window workaround");
-                    }
-                }
-            }
-
             modules::tray::create_tray(app.handle())?;
             info!("Tray created");
-<<<<<<< HEAD
             
             // 立即启动管理服务器 (8045)，以便 Web 端能访问
-=======
-
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.unminimize();
-                let _ = window.set_focus();
-            }
-            
-            // Auto-start proxy service
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             let handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 // Load config
                 if let Ok(config) = modules::config::load_app_config() {
-<<<<<<< HEAD
                     let state = handle.state::<commands::proxy::ProxyServiceState>();
                     let cf_state = handle.state::<commands::cloudflared::CloudflaredState>();
                     let integration = crate::modules::integration::SystemManager::Desktop(handle.clone());
@@ -294,15 +235,6 @@ pub fn run() {
                             &state,
                             integration,
                             Arc::new(cf_state.inner().clone()),
-=======
-                    if config.proxy.auto_start {
-                        let state = handle.state::<commands::proxy::ProxyServiceState>();
-                        // Attempt to start service
-                        if let Err(e) = commands::proxy::start_proxy_service(
-                            config.proxy,
-                            state,
-                            handle.clone(),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         ).await {
                             error!("Failed to auto-start proxy service: {}", e);
                         } else {
@@ -313,32 +245,11 @@ pub fn run() {
             });
             
             // Start smart scheduler
-<<<<<<< HEAD
             let scheduler_state = app.handle().state::<commands::proxy::ProxyServiceState>();
             modules::scheduler::start_scheduler(Some(app.handle().clone()), scheduler_state.inner().clone());
             
             // [PHASE 1] 已整合至 Axum 端口 (8045)，不再单独启动 19527 端口
             info!("Management API integrated into main proxy server (port 8045)");
-=======
-            modules::scheduler::start_scheduler(app.handle().clone());
-            
-            // Start HTTP API server (for external calls, e.g. VS Code plugin)
-            match modules::http_api::load_settings() {
-                Ok(settings) if settings.enabled => {
-                    modules::http_api::spawn_server(settings.port);
-                    info!("HTTP API server started on port {}", settings.port);
-                }
-                Ok(_) => {
-                    info!("HTTP API server is disabled in settings");
-                }
-                Err(e) => {
-                    // Use default port if loading fails
-                    error!("Failed to load HTTP API settings: {}, using default port", e);
-                    modules::http_api::spawn_server(modules::http_api::DEFAULT_PORT);
-                    info!("HTTP API server started on port {}", modules::http_api::DEFAULT_PORT);
-                }
-            }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             
             Ok(())
         })
@@ -377,10 +288,7 @@ pub fn run() {
             // Quota commands
             commands::fetch_account_quota,
             commands::refresh_all_quotas,
-<<<<<<< HEAD
-=======
             commands::reset_forbidden_accounts,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // Config commands
             commands::load_config,
             commands::save_config,
@@ -388,13 +296,8 @@ pub fn run() {
             commands::prepare_oauth_url,
             commands::start_oauth_login,
             commands::complete_oauth_login,
-<<<<<<< HEAD
-            commands::complete_oauth_login,
             commands::cancel_oauth_login,
             commands::submit_oauth_code,
-=======
-            commands::cancel_oauth_login,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             commands::import_v1_accounts,
             commands::import_from_db,
             commands::import_custom_db,
@@ -402,18 +305,12 @@ pub fn run() {
             commands::save_text_file,
             commands::read_text_file,
             commands::clear_log_cache,
-<<<<<<< HEAD
             commands::clear_antigravity_cache,
             commands::get_antigravity_cache_paths,
             commands::open_data_folder,
             commands::get_data_dir_path,
             commands::show_main_window,
             commands::set_window_theme,
-=======
-            commands::open_data_folder,
-            commands::get_data_dir_path,
-            commands::show_main_window,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             commands::get_antigravity_path,
             commands::get_antigravity_args,
             commands::check_for_updates,
@@ -446,12 +343,9 @@ pub fn run() {
             commands::proxy::clear_proxy_session_bindings,
             commands::proxy::set_preferred_account,
             commands::proxy::get_preferred_account,
-<<<<<<< HEAD
             commands::proxy::clear_proxy_rate_limit,
             commands::proxy::clear_all_proxy_rate_limits,
-=======
             commands::proxy::force_cleanup_ports,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // Autostart commands
             commands::autostart::toggle_auto_launch,
             commands::autostart::is_auto_launch_enabled,
@@ -476,7 +370,6 @@ pub fn run() {
             proxy::cli_sync::execute_cli_sync,
             proxy::cli_sync::execute_cli_restore,
             proxy::cli_sync::get_cli_config_content,
-<<<<<<< HEAD
             // Security/IP monitoring commands
             commands::security::get_ip_access_logs,
             commands::security::get_ip_stats,
@@ -494,8 +387,6 @@ pub fn run() {
             commands::security::check_ip_in_whitelist,
             commands::security::get_security_config,
             commands::security::update_security_config,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // Cloudflared commands
             commands::cloudflared::cloudflared_check,
             commands::cloudflared::cloudflared_install,

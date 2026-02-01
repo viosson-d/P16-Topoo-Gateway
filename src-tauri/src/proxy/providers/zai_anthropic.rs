@@ -136,10 +136,7 @@ pub async fn forward_anthropic_json(
     path: &str,
     incoming_headers: &HeaderMap,
     mut body: Value,
-<<<<<<< HEAD
     message_count: usize, // [NEW v4.0.0] Pass message count for rewind detection
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 ) -> Response {
     let zai = state.zai.read().await.clone();
     if !zai.enabled || zai.dispatch_mode == crate::proxy::ZaiDispatchMode::Off {
@@ -152,7 +149,6 @@ pub async fn forward_anthropic_json(
 
     if let Some(model) = body.get("model").and_then(|v| v.as_str()) {
         let mapped = map_model_for_zai(model, &zai);
-<<<<<<< HEAD
         body["model"] = Value::String(mapped.clone());
 
         // [FIX] Caching for z.ai (to support thinking-filter)
@@ -164,9 +160,6 @@ pub async fn forward_anthropic_json(
             );
             crate::proxy::SignatureCache::global().cache_thinking_family(sig.to_string(), mapped);
         }
-=======
-        body["model"] = Value::String(mapped);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     let url = match join_base_url(&zai.base_url, path) {

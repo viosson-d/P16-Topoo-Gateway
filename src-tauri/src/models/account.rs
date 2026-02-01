@@ -87,13 +87,10 @@ pub struct AccountSummary {
     pub id: String,
     pub email: String,
     pub name: Option<String>,
-<<<<<<< HEAD
     #[serde(default)]
     pub disabled: bool,
     #[serde(default)]
     pub proxy_disabled: bool,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     pub created_at: i64,
     pub last_used: i64,
 }
@@ -121,11 +118,6 @@ pub struct DeviceProfile {
     pub mac_machine_id: String,
     pub dev_device_id: String,
     pub sqm_id: String,
-<<<<<<< HEAD
-=======
-    #[serde(default)]
-    pub service_machine_id: Option<String>,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 指纹历史版本

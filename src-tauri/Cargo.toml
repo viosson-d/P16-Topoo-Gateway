@@ -1,10 +1,6 @@
 [package]
 name = "antigravity_tools"
-<<<<<<< HEAD
 version = "4.0.10"
-=======
-version = "3.3.49"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 description = "A Tauri App"
 authors = ["you"]
 license = "CC-BY-NC-SA-4.0"
@@ -30,11 +26,7 @@ serde_json = "1"
 uuid = { version = "1.10", features = ["v4", "serde"] }
 chrono = "0.4"
 dirs = "5.0"
-<<<<<<< HEAD
-reqwest = { version = "0.12", features = ["json", "stream", "socks", "blocking"] }
-=======
-reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "socks", "rustls-tls"] }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
+reqwest = { version = "0.12", features = ["json", "stream", "socks", "blocking", "rustls-tls"], default-features = false }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "time"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
@@ -44,11 +36,7 @@ tokio = { version = "1", features = ["full"] }
 url = "2.5.7"
 tauri-plugin-dialog = "2.6.0"
 tauri-plugin-fs = "2.4.5"
-<<<<<<< HEAD
 image = { version = "0.25.9", default-features = false, features = ["png", "webp"] }
-=======
-image = "0.25.9"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 thiserror = "2.0.17"
 
 # 反代服务依赖
@@ -57,13 +45,8 @@ tokio-stream = { version = "0.1.17", features = ["sync"] }
 
 hyper = { version = "1", features = ["full"] }
 hyper-util = { version = "0.1", features = ["full"] }
-<<<<<<< HEAD
 tower = { version = "0.4", features = ["util"] }
 tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
-=======
-tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "trace"] }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 eventsource-stream = "0.2"
 dashmap = "6.1"
 anyhow = "1.0"
@@ -74,10 +57,7 @@ regex = "1.12.2"                    # Duration 解析
 once_cell = "1.19"                  # 静态初始化 (模型映射表)
 pin-project = "1.1"                 # Pin 投影辅助
 bytes = "1.5"                       # SSE 字节操作
-<<<<<<< HEAD
-=======
 arc-swap = "1.7"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 tauri-plugin-single-instance = { version = "2.3.6", features = ["deep-link"] }
 libc = "0.2"
 tracing-appender = "0.2.4"
@@ -88,10 +68,7 @@ tauri-plugin-process = "2"
 sha2 = "0.10"
 toml = "0.8"
 toml_edit = "0.22"
-<<<<<<< HEAD
 tauri-plugin-window-state = "2"
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 [target.'cfg(target_os = "linux")'.dependencies]
 gtk = "0.18"

@@ -1,16 +1,5 @@
 //! HTTP API Module
 //! Provides local HTTP interfaces for external programs (e.g., VS Code extension) to call.
-<<<<<<< HEAD
-=======
-//! 
-//! Endpoints:
-//! - GET  /health                    Health check
-//! - GET  /accounts                  Get all accounts and quotas
-//! - GET  /accounts/current          Get current account
-//! - POST /accounts/switch           Switch account (async execution)
-//! - POST /accounts/refresh          Refresh all quotas
-//! - POST /accounts/:id/bind-device  Bind device fingerprint
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 use axum::{
     extract::{Path, Query, State},
@@ -27,11 +16,7 @@ use tower_http::cors::{Any, CorsLayer};
 use crate::modules::{account, logger, proxy_db};
 
 /// Default port for HTTP API server
-<<<<<<< HEAD
 pub const DEFAULT_PORT: u16 = 19527;
-=======
-pub const DEFAULT_PORT: u16 = 19528;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 // ============================================================================
 // Settings
@@ -99,7 +84,6 @@ pub fn save_settings(settings: &HttpApiSettings) -> Result<(), String> {
 #[derive(Clone)]
 pub struct ApiState {
     /// Whether there is a switch operation currently in progress
-<<<<<<< HEAD
     pub switching: Arc<RwLock<bool>>,
     pub integration: crate::modules::integration::SystemManager,
 }
@@ -109,15 +93,6 @@ impl ApiState {
         Self {
             switching: Arc::new(RwLock::new(false)),
             integration,
-=======
-    switching: Arc<RwLock<bool>>,
-}
-
-impl ApiState {
-    pub fn new() -> Self {
-        Self {
-            switching: Arc::new(RwLock::new(false)),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 }
@@ -363,11 +338,7 @@ async fn switch_account(
     tokio::spawn(async move {
         logger::log_info(&format!("[HTTP API] Starting account switch: {}", account_id));
         
-<<<<<<< HEAD
         match account::switch_account(&account_id, &state_clone.integration).await {
-=======
-        match account::switch_account(&account_id).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Ok(()) => {
                 logger::log_info(&format!("[HTTP API] Account switch successful: {}", account_id));
             }
@@ -455,22 +426,11 @@ async fn get_logs(
 ) -> Result<impl IntoResponse, (StatusCode, Json<ErrorResponse>)> {
     let limit = if params.limit == 0 { 50 } else { params.limit };
 
-<<<<<<< HEAD
     let total = proxy_db::get_logs_count_filtered(&params.filter, params.errors_only)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse { error: e })))?;
 
     let logs = proxy_db::get_logs_filtered(&params.filter, params.errors_only, limit, params.offset)
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse { error: e })))?;
-=======
-    let (total, logs) = tokio::task::spawn_blocking(move || {
-        let total = proxy_db::get_logs_count_filtered(&params.filter, params.errors_only)?;
-        let logs = proxy_db::get_logs_filtered(&params.filter, params.errors_only, limit, params.offset)?;
-        Ok::<(u64, Vec<_>), String>((total, logs))
-    })
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse { error: format!("Task join error: {}", e) })))?
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(ErrorResponse { error: e })))?;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     Ok(Json(LogsResponse {
         total,
@@ -483,13 +443,8 @@ async fn get_logs(
 // ============================================================================
 
 /// Start HTTP API server
-<<<<<<< HEAD
 pub async fn start_server(port: u16, integration: crate::modules::integration::SystemManager) -> Result<(), String> {
     let state = ApiState::new(integration);
-=======
-pub async fn start_server(port: u16) -> Result<(), String> {
-    let state = ApiState::new();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // CORS config - allow local calls
     let cors = CorsLayer::new()
@@ -523,17 +478,10 @@ pub async fn start_server(port: u16) -> Result<(), String> {
 }
 
 /// Start HTTP API server in background (non-blocking)
-<<<<<<< HEAD
 pub fn spawn_server(port: u16, integration: crate::modules::integration::SystemManager) {
     // Use tauri::async_runtime::spawn to ensure running within Tauri's runtime
     tauri::async_runtime::spawn(async move {
         if let Err(e) = start_server(port, integration).await {
-=======
-pub fn spawn_server(port: u16) {
-    // Use tauri::async_runtime::spawn to ensure running within Tauri's runtime
-    tauri::async_runtime::spawn(async move {
-        if let Err(e) = start_server(port).await {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             logger::log_error(&format!("[HTTP API] Failed to start server: {}", e));
         }
     });

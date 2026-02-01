@@ -238,12 +238,6 @@ pub fn extract_refresh_token_from_file(db_path: &PathBuf) -> Result<String, Stri
     let conn = rusqlite::Connection::open(db_path)
         .map_err(|e| format!("Failed to open database: {}", e))?;
         
-<<<<<<< HEAD
-=======
-    // Set busy timeout to prevent locking conflicts
-    let _ = conn.execute("PRAGMA busy_timeout=5000", []);
-        
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // Read from ItemTable
     let current_data: String = conn
         .query_row(

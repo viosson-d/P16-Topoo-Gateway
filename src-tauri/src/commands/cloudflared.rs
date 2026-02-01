@@ -4,10 +4,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 /// Cloudflared服务状态管理
-<<<<<<< HEAD
 #[derive(Clone)]
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 pub struct CloudflaredState {
     pub manager: Arc<RwLock<Option<CloudflaredManager>>>,
 }

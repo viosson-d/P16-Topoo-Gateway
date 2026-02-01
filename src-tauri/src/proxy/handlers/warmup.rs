@@ -37,13 +37,6 @@ pub struct WarmupResponse {
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
-<<<<<<< HEAD
-=======
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub input_tokens: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub output_tokens: Option<u32>,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// 处理预热请求
@@ -61,11 +54,7 @@ pub async fn handle_warmup(
         (at.clone(), pid.clone())
     } else {
         match state.token_manager.get_token_by_email(&req.email).await {
-<<<<<<< HEAD
             Ok((at, pid, _, _wait_ms)) => (at, pid),
-=======
-            Ok((at, pid, _)) => (at, pid),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             Err(e) => {
                 warn!(
                     "[Warmup-API] Step 1 FAILED: Token error for {}: {}",
@@ -77,11 +66,6 @@ pub async fn handle_warmup(
                         success: false,
                         message: format!("Failed to get token for {}", req.email),
                         error: Some(e),
-<<<<<<< HEAD
-=======
-                        input_tokens: None,
-                        output_tokens: None,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }),
                 )
                     .into_response();
@@ -137,11 +121,6 @@ pub async fn handle_warmup(
                         success: false,
                         message: format!("Transform error: {}", e),
                         error: Some(e),
-<<<<<<< HEAD
-=======
-                        input_tokens: None,
-                        output_tokens: None,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }),
                 )
                     .into_response();
@@ -206,7 +185,6 @@ pub async fn handle_warmup(
     match result {
         Ok(response) => {
             let status = response.status();
-<<<<<<< HEAD
             let mut response = if status.is_success() {
                 info!(
                     "[Warmup-API] ========== SUCCESS: {} / {} ==========",
@@ -225,113 +203,14 @@ pub async fn handle_warmup(
                 let status_code = status.as_u16();
                 let error_text = response.text().await.unwrap_or_default();
                 (
-=======
-            
-            if !status.is_success() {
-                let status_code = status.as_u16();
-                let error_text = response.text().await.unwrap_or_default();
-                let mut res = (
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     StatusCode::from_u16(status_code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
                     Json(WarmupResponse {
                         success: false,
                         message: format!("Warmup failed: HTTP {}", status_code),
                         error: Some(error_text),
-<<<<<<< HEAD
                     }),
                 )
                     .into_response()
-=======
-                        input_tokens: None,
-                        output_tokens: None,
-                    }),
-                ).into_response();
-                
-                // 添加响应头以便跟踪
-                if let Ok(email_val) = axum::http::HeaderValue::from_str(&req.email) {
-                    res.headers_mut().insert("X-Account-Email", email_val);
-                }
-                if let Ok(model_val) = axum::http::HeaderValue::from_str(&req.model) {
-                    res.headers_mut().insert("X-Mapped-Model", model_val);
-                }
-                return res;
-            }
-
-            // 处理成功响应：解析 Body 以提取 Token
-            let full_body = response.bytes().await.unwrap_or_default();
-            let body_str = String::from_utf8_lossy(&full_body);
-            
-            let mut input_tokens = None;
-            let mut output_tokens = None;
-
-            if prefer_non_stream {
-                // 非流式，直接解析 JSON
-                if let Ok(val) = serde_json::from_str::<Value>(&body_str) {
-                    let internal = val.get("response").unwrap_or(&val);
-                    if let Some(usage) = internal.get("usageMetadata").or(internal.get("usage")) {
-                        input_tokens = usage.get("promptTokenCount")
-                            .or(usage.get("prompt_tokens"))
-                            .and_then(|v| v.as_u64())
-                            .map(|v| v as u32);
-                        output_tokens = usage.get("candidatesTokenCount")
-                            .or(usage.get("completion_tokens"))
-                            .and_then(|v| v.as_u64())
-                            .map(|v| v as u32);
-                    }
-                }
-            } else {
-                // 流式 (SSE)，解析包含 usage 的数据行
-                for line in body_str.lines().rev() {
-                    if line.starts_with("data: ") {
-                        let json_part = line.trim_start_matches("data: ").trim();
-                        if let Ok(val) = serde_json::from_str::<Value>(json_part) {
-                            let internal = val.get("response").unwrap_or(&val);
-                            if let Some(usage) = internal.get("usageMetadata").or(internal.get("usage")) {
-                                input_tokens = usage.get("promptTokenCount")
-                                    .or(usage.get("prompt_tokens"))
-                                    .and_then(|v| v.as_u64())
-                                    .map(|v| v as u32);
-                                output_tokens = usage.get("candidatesTokenCount")
-                                    .or(usage.get("completion_tokens"))
-                                    .and_then(|v| v.as_u64())
-                                    .map(|v| v as u32);
-                                if input_tokens.is_some() { break; }
-                            }
-                        }
-                    }
-                }
-            }
-
-            info!(
-                "[Warmup-API] ========== SUCCESS: {} / {} (In: {:?}, Out: {:?}) ==========",
-                req.email, req.model, input_tokens, output_tokens
-            );
-
-            let mut response = if input_tokens.is_none() {
-                 let snippet: String = body_str.chars().take(500).collect();
-                 let debug_message = format!("Warmup triggered for {} (Tokens Missing). Body: {}", req.model, snippet);
-                 (
-                    StatusCode::OK,
-                    Json(WarmupResponse {
-                        success: true,
-                        message: debug_message,
-                        error: None,
-                        input_tokens,
-                        output_tokens,
-                    }),
-                ).into_response()
-            } else {
-                 (
-                    StatusCode::OK,
-                    Json(WarmupResponse {
-                        success: true,
-                        message: "Warmup successful".to_string(),
-                        error: None,
-                        input_tokens,
-                        output_tokens,
-                    }),
-                ).into_response()
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             };
 
             // 添加响应头，让监控中间件捕获账号信息
@@ -356,11 +235,6 @@ pub async fn handle_warmup(
                     success: false,
                     message: "Warmup request failed".to_string(),
                     error: Some(e),
-<<<<<<< HEAD
-=======
-                    input_tokens: None,
-                    output_tokens: None,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }),
             ).into_response();
 

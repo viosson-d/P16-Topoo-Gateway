@@ -5,9 +5,6 @@
 pub mod model_mapping;
 pub mod utils;
 pub mod json_schema;
-<<<<<<< HEAD
 pub mod tool_adapter;
 pub mod tool_adapters;
 pub mod schema_cache;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

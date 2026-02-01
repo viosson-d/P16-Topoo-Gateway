@@ -13,19 +13,13 @@ use std::sync::Mutex;
 static ACCOUNT_INDEX_LOCK: Lazy<Mutex<()>> = Lazy::new(|| Mutex::new(()));
 
 // ... existing constants ...
-<<<<<<< HEAD
 const DATA_DIR: &str = ".antigravity_tools";
-=======
-const FALLBACK_DATA_DIR: &str = ".antigravity_tools_p16";
-const PROJECT_CWD_DATA_DIR: &str = "app_data";
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 const ACCOUNTS_INDEX: &str = "accounts.json";
 const ACCOUNTS_DIR: &str = "accounts";
 
 // ... existing functions get_data_dir, get_accounts_dir, load_account_index, save_account_index ...
 /// Get data directory path
 pub fn get_data_dir() -> Result<PathBuf, String> {
-<<<<<<< HEAD
     let home = dirs::home_dir().ok_or("failed_to_get_home_dir")?;
     let data_dir = home.join(DATA_DIR);
     
@@ -36,54 +30,6 @@ pub fn get_data_dir() -> Result<PathBuf, String> {
     }
     
     Ok(data_dir)
-=======
-    // 1. Determine project root for dev-mode consistency
-    let cwd = std::env::current_dir().unwrap_or_default();
-    let project_root = if cwd.ends_with("src-tauri") {
-        cwd.parent().unwrap_or(&cwd).to_path_buf()
-    } else {
-        cwd
-    };
-    
-    let project_app_data = project_root.join(PROJECT_CWD_DATA_DIR);
-    
-    // Heuristic for "running from source" or "dev mode"
-    let is_source_dir = project_root.join("src-tauri").join("Cargo.toml").exists();
-    let is_tauri_dev = std::env::var("TAURI_ENV").ok().map_or(false, |v| v == "dev") ||
-                       std::env::var("TAURI_DEBUG").is_ok();
-
-    // Strategy:
-    // A. If app_data already exists in project root, ALWAYS use it (prevents confusion)
-    if project_app_data.exists() {
-        return Ok(project_app_data);
-    }
-
-    // B. If running from source/dev, create and use root app_data
-    if is_source_dir || is_tauri_dev {
-        if !project_app_data.exists() {
-            fs::create_dir_all(&project_app_data).map_err(|e| format!("failed_to_create_dev_data_dir: {}", e))?;
-        }
-        crate::modules::logger::log_info(&format!("Dev Mode: Resolved data directory to project root: {:?}", project_app_data));
-        return Ok(project_app_data);
-    }
-
-    // C. Standard mode: use system Application Support
-    if let Some(dir) = dirs::data_dir() {
-        // 使用独立路径避免端口冲突
-        let standard_path = dir.join("viosson.antigravity.tools");
-        if standard_path.exists() || fs::create_dir_all(&standard_path).is_ok() {
-            return Ok(standard_path);
-        }
-    }
-
-    // D. Final Fallback: use ~/.antigravity_tools_p16
-    let home_dir = dirs::home_dir().ok_or("failed_to_get_home_dir")?;
-    let fallback_path = home_dir.join(FALLBACK_DATA_DIR);
-    if !fallback_path.exists() {
-        fs::create_dir_all(&fallback_path).map_err(|e| format!("failed_to_create_fallback_dir: {}", e))?;
-    }
-    Ok(fallback_path)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Get accounts directory path
@@ -174,11 +120,7 @@ pub fn save_account(account: &Account) -> Result<(), String> {
 /// List all accounts
 pub fn list_accounts() -> Result<Vec<Account>, String> {
     crate::modules::logger::log_info("Listing accounts...");
-<<<<<<< HEAD
     let index = load_account_index()?;
-=======
-    let mut index = load_account_index()?;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     let mut accounts = Vec::new();
     
     for summary in &index.accounts {
@@ -219,11 +161,8 @@ pub fn add_account(email: String, name: Option<String>, token: TokenData) -> Res
         id: account_id.clone(),
         email: email.clone(),
         name: name.clone(),
-<<<<<<< HEAD
         disabled: false,
         proxy_disabled: false,
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         created_at: account.created_at,
         last_used: account.last_used,
     });
@@ -401,15 +340,9 @@ pub fn reorder_accounts(account_ids: &[String]) -> Result<(), String> {
     save_account_index(&index)
 }
 
-<<<<<<< HEAD
 /// Switch current account (Core Logic)
 pub async fn switch_account(account_id: &str, integration: &(impl modules::integration::SystemIntegration + ?Sized)) -> Result<(), String> {
     use crate::modules::oauth;
-=======
-/// Switch current account
-pub async fn switch_account(account_id: &str) -> Result<(), String> {
-    use crate::modules::{oauth, process, db, device};
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     let index = {
         let _lock = ACCOUNT_INDEX_LOCK.lock().map_err(|e| format!("failed_to_acquire_lock: {}", e))?;
@@ -425,7 +358,6 @@ pub async fn switch_account(account_id: &str) -> Result<(), String> {
     crate::modules::logger::log_info(&format!("Switching to account: {} (ID: {})", account.email, account.id));
     
     // 2. Ensure Token is valid (auto-refresh)
-<<<<<<< HEAD
     let fresh_token = oauth::ensure_fresh_token(&account.token).await
         .map_err(|e| format!("Token refresh failed: {}", e))?;
         
@@ -446,190 +378,6 @@ pub async fn switch_account(account_id: &str) -> Result<(), String> {
     integration.on_account_switch(&account).await?;
 
     // 4. Update tool internal state
-=======
-    crate::modules::logger::log_info("Step 2: Ensuring token is fresh (with 5s timeout)...");
-    
-    // [FIX] Don't block switching on network issues. If refresh is slow, background it or skip.
-    // We use a 5s timeout here. If it fails, we proceed with the old token.
-    let token_result = tokio::time::timeout(
-        std::time::Duration::from_secs(5), 
-        oauth::ensure_fresh_token(&account.token)
-    ).await;
-
-    match token_result {
-        Ok(Ok(fresh_token)) => {
-            if fresh_token.access_token != account.token.access_token {
-                crate::modules::logger::log_info("✅ Token refreshed successfully");
-                account.token = fresh_token;
-                save_account(&account)?;
-            } else {
-                crate::modules::logger::log_info("✅ Token already fresh");
-            }
-        },
-        Ok(Err(e)) => {
-            crate::modules::logger::log_warn(&format!("⚠️ Token refresh failed: {}. Using existing token (may cause 401)", e));
-        },
-        Err(_) => {
-            crate::modules::logger::log_warn("⚠️ Token refresh timeout (5s). Using existing token (may cause 401)");
-        }
-    }
-        
-    crate::modules::logger::log_info("Step 2: Token is ready.");
-    
-    // 3. Get storage path while process is potentially running (to capture --user-data-dir)
-    let storage_path = device::get_storage_path()
-        .map_err(|e| {
-            crate::modules::logger::log_error(&format!("Failed to get storage path: {}", e));
-            e
-        })?;
-    crate::modules::logger::log_info(&format!("Step 3: Storage path identified: {:?}", storage_path));
-
-    // [RESTORED] Restart Antigravity to apply changes
-    if process::is_antigravity_running() {
-        crate::modules::logger::log_info("Step 4: Antigravity is running, restarting to apply ID changes...");
-        
-        tokio::task::spawn_blocking(move || {
-            if let Err(e) = process::close_antigravity(20) {
-                crate::modules::logger::log_warn(&format!("Failed to close Antigravity: {}", e));
-            }
-            // Wait for full release
-            std::thread::sleep(std::time::Duration::from_secs(2));
-            crate::modules::logger::log_info("Step 4: Antigravity closed and waiting.");
-        })
-        .await
-        .map_err(|e| format!("TaskJoinError: {}", e))?;
-        
-        crate::modules::logger::log_info("Step 4: Antigravity shutdown complete.");
-    } else {
-        crate::modules::logger::log_info("Step 4: Antigravity is not running, skipping shutdown.");
-    }
-
-    // 5. Write device profile (generate/bind if missing), only update storage on switch
-    let profile_to_apply = {
-        if let Some(mut p) = account.device_profile.clone() {
-            // [FIX] Ensure service_machine_id exists for legacy profiles
-            if p.service_machine_id.is_none() {
-                crate::modules::logger::log_info(&format!("Patching missing service_machine_id for account {}", account.email));
-                p.service_machine_id = Some(Uuid::new_v4().to_string());
-                // Data fix persistence
-                match apply_profile_to_account(&mut account, p.clone(), None, false) {
-                    Ok(_) => {
-                        if let Err(e) = save_account(&account) {
-                            crate::modules::logger::log_warn(&format!("Failed to save patched account: {}", e));
-                        }
-                    },
-                    Err(e) => crate::modules::logger::log_warn(&format!("Failed to apply patched profile: {}", e)),
-                }
-            }
-            p
-        } else {
-            // [FIX] If no bound profile, generate and bind one for isolation
-            // This ensures each account gets a unique fingerprint upon first switch
-            crate::modules::logger::log_info(&format!("Account {} has no bound fingerprint, generating new one for isolation...", account.email));
-            let new_profile = device::generate_profile();
-            // Bind to account and save
-            apply_profile_to_account(&mut account, new_profile.clone(), Some("auto_generated".to_string()), true)?;
-            new_profile
-        }
-    };
-    crate::modules::logger::log_info(&format!(
-        "Writing device profile to storage.json: machineId={}, macMachineId={}, devDeviceId={}, sqmId={}",
-        profile_to_apply.machine_id,
-        profile_to_apply.mac_machine_id,
-        profile_to_apply.dev_device_id,
-        profile_to_apply.sqm_id
-    ));
-    crate::modules::logger::log_info(&format!("Step 5: Writing device profile to storage.json..."));
-    device::write_profile(&storage_path, &profile_to_apply)
-        .map_err(|e| {
-            crate::modules::logger::log_error(&format!("Failed to write profile: {}", e));
-            e
-        })?;
-
-    // [FIX] 双写机制: 如果当前使用的是项目的 app_data/storage.json (开发模式)，
-    // 则额外写入 IDE 的 storage.json，确保切换账号时 IDE 同步切换
-    #[cfg(target_os = "macos")]
-    {
-        // [FIX] 双写机制: 调试模式 - 强制执行路径检查和写入
-        let cwd = std::env::current_dir().unwrap_or_default();
-        let project_root = if cwd.ends_with("src-tauri") {
-            cwd.parent().unwrap_or(&cwd).to_path_buf()
-        } else {
-            cwd
-        };
-        let local_data = project_root.join("app_data");
-        crate::modules::logger::log_info(&format!("🔍 DEBUG_SYNC: Start Dual Write Check"));
-        crate::modules::logger::log_info(&format!("🔍 DEBUG_SYNC: CWD: {:?}", project_root));
-        crate::modules::logger::log_info(&format!("🔍 DEBUG_SYNC: User Data Dir: {:?}", dirs::home_dir()));
-        
-        // 强制尝试写入 (移除 local_data 判断，直接尝试)
-        let ide_storage = PathBuf::from(dirs::home_dir().unwrap_or(PathBuf::from("/Users/viosson")))
-            .join("Library/Application Support/Antigravity/User/globalStorage/storage.json");
-        
-        crate::modules::logger::log_info(&format!(
-            "📝 DEBUG_SYNC: 准备写入 IDE storage.json: {:?}",
-            ide_storage
-        ));
-        
-        // 确保目录存在
-        if let Some(parent) = ide_storage.parent() {
-                let _ = std::fs::create_dir_all(parent);
-        }
-
-        match device::write_profile(&ide_storage, &profile_to_apply) {
-            Ok(_) => crate::modules::logger::log_info("✅ DEBUG_SYNC: IDE storage.json 写入成功"),
-            Err(e) => crate::modules::logger::log_warn(&format!(
-                "⚠️ DEBUG_SYNC: IDE storage.json 写入失败: {}", e
-            )),
-        }
-    }
-
-    // 5. Get database path and backup
-    let db_path = db::get_db_path()
-        .map_err(|e| {
-            crate::modules::logger::log_error(&format!("Failed to get DB path: {}", e));
-            e
-        })?;
-    crate::modules::logger::log_info(&format!("Step 5: Database path identified: {:?}", db_path));
-
-    if db_path.exists() {
-        let backup_path = db_path.with_extension("vscdb.backup");
-        crate::modules::logger::log_info(&format!("Auto-backing up database to {:?}", backup_path));
-        fs::copy(&db_path, &backup_path)
-            .map_err(|e| {
-                crate::modules::logger::log_error(&format!("Database backup failed: {}", e));
-                format!("failed_to_backup_database: {}", e)
-            })?;
-    } else {
-        crate::modules::logger::log_info("Database does not exist, skipping backup");
-    }
-
-    // 5a. [DISABLED] Force close internal process caused self-termination crash
-    // crate::modules::logger::log_info("Step 5a: Closing Antigravity to prevent state overwrite...");
-    // if let Err(e) = process::close_antigravity(5) {
-    //     crate::modules::logger::log_warn(&format!("Step 5a: Failed to close Antigravity: {}", e));
-    // } else {
-    //     crate::modules::logger::log_info("Step 5a: Antigravity closed successfully.");
-    //     std::thread::sleep(std::time::Duration::from_secs(1));
-    // }
-
-    // 6. Inject Token
-    crate::modules::logger::log_info("Step 6: Injecting Token into database...");
-    db::inject_token(
-        &db_path,
-        &account.token.access_token,
-        &account.token.refresh_token,
-        account.token.expiry_timestamp,
-        &account.email,
-    ).map_err(|e| {
-        crate::modules::logger::log_error(&format!("Token injection failed: {}", e));
-        e
-    })?;
-    crate::modules::logger::log_info("Step 6: Token injection successful.");
-
-    // 7. Update tool internal state
-    crate::modules::logger::log_info("Step 7: Updating current_account_id in index...");
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     {
         let _lock = ACCOUNT_INDEX_LOCK.lock().map_err(|e| format!("failed_to_acquire_lock: {}", e))?;
         let mut index = load_account_index()?;
@@ -639,39 +387,10 @@ pub async fn switch_account(account_id: &str) -> Result<(), String> {
     
     account.update_last_used();
     save_account(&account)?;
-<<<<<<< HEAD
 
     crate::modules::logger::log_info(&format!("Account switch core logic completed: {}", account.email));
 
     Ok(())
-=======
-    crate::modules::logger::log_info("Step 7: Account metadata updated.");
-
-    // 7.5 [NEW] Clear Auth State to ensure new profile takes effect (removes cached sessions)
-    crate::modules::logger::log_info("Step 7.5: Clearing session cache from state.vscdb...");
-    if let Err(e) = device::clear_auth_state() {
-        crate::modules::logger::log_warn(&format!("Failed to clear auth state: {}", e));
-        // Non-fatal, proceed
-    }
-
-
-    // 8. Restart Antigravity
-    crate::modules::logger::log_info("Step 8: Restarting Antigravity...");
-
-    crate::modules::logger::log_info("Step 8b: Starting new instance...");
-    process::start_antigravity()
-        .map_err(|e| {
-            crate::modules::logger::log_error(&format!("Failed to restart Antigravity: {}", e));
-            e
-        })?;
-    crate::modules::logger::log_info(&format!("Step 8b: Antigravity start command sent."));
-
-    tracing::info!("SUCCESS: Account switch completed: {}", account.email);
-    tracing::info!("ACTION: switch_account process finished successfully.");
-
-    Ok(())
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 /// Get device profile info: current storage.json + account bound profile
@@ -906,7 +625,6 @@ pub fn update_account_quota(account_id: &str, quota: QuotaData) -> Result<(), St
     save_account(&account)
 }
 
-<<<<<<< HEAD
 /// Toggle proxy disabled status for an account
 pub fn toggle_proxy_status(account_id: &str, enable: bool, reason: Option<&str>) -> Result<(), String> {
     let mut account = load_account(account_id)?;
@@ -927,8 +645,6 @@ pub fn toggle_proxy_status(account_id: &str, enable: bool, reason: Option<&str>)
     Ok(())
 }
 
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 /// Export all accounts' refresh_tokens
 #[allow(dead_code)]
 pub fn export_accounts() -> Result<Vec<(String, String)>, String> {
@@ -1005,11 +721,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
     }
 
     // 2. Attempt query
-<<<<<<< HEAD
     let result: crate::error::AppResult<(QuotaData, Option<String>)> = modules::fetch_quota(&account.token.access_token, &account.email).await;
-=======
-    let result: crate::error::AppResult<(QuotaData, Option<String>)> = modules::fetch_quota(&account.token.access_token, &account.email, account.quota.clone()).await;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     
     // Capture potentially updated project_id and save
     if let Ok((ref _q, ref project_id)) = result {
@@ -1070,11 +782,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
                 upsert_account(account.email.clone(), name, new_token.clone()).map_err(AppError::Account)?;
                 
                 // Retry query
-<<<<<<< HEAD
                 let retry_result: crate::error::AppResult<(QuotaData, Option<String>)> = modules::fetch_quota(&new_token.access_token, &account.email).await;
-=======
-                let retry_result: crate::error::AppResult<(QuotaData, Option<String>)> = modules::fetch_quota(&token_res.access_token, &account.email, account.quota.clone()).await;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 
                 // Also handle project_id saving during retry
                 if let Ok((ref _q, ref project_id)) = retry_result {
@@ -1088,11 +796,7 @@ pub async fn fetch_quota_with_retry(account: &mut Account) -> crate::error::AppR
                 if let Err(AppError::Network(ref e)) = retry_result {
                     if let Some(s) = e.status() {
                         if s == StatusCode::FORBIDDEN {
-<<<<<<< HEAD
                             let mut q = QuotaData::new();
-=======
-                            let mut q = account.quota.clone().unwrap_or_else(QuotaData::new);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             q.is_forbidden = true;
                             return Ok(q);
                         }
@@ -1207,35 +911,3 @@ pub async fn refresh_all_quotas_logic() -> Result<RefreshStats, String> {
         details,
     })
 }
-<<<<<<< HEAD
-=======
-
-/// Statistics for resetting accounts
-#[derive(Debug, Serialize)]
-pub struct ResetStats {
-    pub count: usize,
-}
-
-/// Core logic to reset all forbidden accounts status
-pub fn reset_forbidden_accounts_logic() -> Result<ResetStats, String> {
-    let accounts = list_accounts()?;
-    let mut count = 0;
-    
-    for account in accounts {
-        if let Some(mut quota) = account.quota.clone() {
-            if quota.is_forbidden {
-                quota.is_forbidden = false;
-                // No need to clear models, we just want to re-enable it for fetching
-                if let Err(e) = update_account_quota(&account.id, quota) {
-                    crate::modules::logger::log_warn(&format!("Failed to reset forbidden status for {}: {}", account.email, e));
-                } else {
-                    count += 1;
-                }
-            }
-        }
-    }
-    
-    crate::modules::logger::log_info(&format!("Reset {} forbidden accounts", count));
-    Ok(ResetStats { count })
-}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

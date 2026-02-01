@@ -11,7 +11,6 @@ use tokio::sync::RwLock;
 
 use crate::proxy::{ProxyAuthMode, ProxySecurityConfig};
 
-<<<<<<< HEAD
 /// API Key 认证中间件 (代理接口使用，遵循 auth_mode)
 pub async fn auth_middleware(
     state: State<Arc<RwLock<ProxySecurityConfig>>>,
@@ -36,30 +35,16 @@ async fn auth_middleware_internal(
     request: Request,
     next: Next,
     force_strict: bool,
-=======
-/// API Key 认证中间件
-pub async fn auth_middleware(
-    State(security): State<Arc<RwLock<ProxySecurityConfig>>>,
-    request: Request,
-    next: Next,
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 ) -> Result<Response, StatusCode> {
     let method = request.method().clone();
     let path = request.uri().path().to_string();
 
     // 过滤心跳和健康检查请求,避免日志噪音
-<<<<<<< HEAD
     let is_health_check = path == "/healthz" || path == "/api/health" || path == "/health";
     if !path.contains("event_logging") && !is_health_check {
         tracing::info!("Request: {} {}", method, path);
     } else {
         tracing::trace!("Heartbeat/Health: {} {}", method, path);
-=======
-    if !path.contains("event_logging") && path != "/healthz" {
-        tracing::info!("Request: {} {}", method, path);
-    } else {
-        tracing::trace!("Heartbeat: {} {}", method, path);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     // Allow CORS preflight regardless of auth policy.
@@ -70,7 +55,6 @@ pub async fn auth_middleware(
     let security = security.read().await.clone();
     let effective_mode = security.effective_auth_mode();
 
-<<<<<<< HEAD
     // 权限检查逻辑
     if !force_strict {
         // AI 代理接口 (v1/chat/completions 等)
@@ -92,19 +76,6 @@ pub async fn auth_middleware(
         if is_health_check {
             return Ok(next.run(request).await);
         }
-=======
-    if matches!(effective_mode, ProxyAuthMode::Off) {
-        return Ok(next.run(request).await);
-    }
-
-    if matches!(effective_mode, ProxyAuthMode::AllExceptHealth) && path == "/healthz" {
-        return Ok(next.run(request).await);
-    }
-    
-    // 放行内部预热请求，以便监控中间件捕获流水
-    if path == "/internal/warmup" {
-        return Ok(next.run(request).await);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
     
     // 从 header 中提取 API key
@@ -126,20 +97,15 @@ pub async fn auth_middleware(
                 .and_then(|h| h.to_str().ok())
         });
 
-<<<<<<< HEAD
     if security.api_key.is_empty() && (security.admin_password.is_none() || security.admin_password.as_ref().unwrap().is_empty()) {
         if force_strict {
              tracing::error!("Admin auth is required but both api_key and admin_password are empty; denying request");
              return Err(StatusCode::UNAUTHORIZED);
         }
-=======
-    if security.api_key.is_empty() {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         tracing::error!("Proxy auth is enabled but api_key is empty; denying request");
         return Err(StatusCode::UNAUTHORIZED);
     }
 
-<<<<<<< HEAD
     // 认证逻辑
     let authorized = if force_strict {
         // 管理接口：优先使用独立的 admin_password，如果没有则回退使用 api_key
@@ -156,10 +122,6 @@ pub async fn auth_middleware(
         // AI 代理接口：仅允许使用 api_key
         api_key.map(|k| k == security.api_key).unwrap_or(false)
     };
-=======
-    // Constant-time compare is unnecessary here, but keep strict equality and avoid leaking values.
-    let authorized = api_key.map(|k| k == security.api_key).unwrap_or(false);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     if authorized {
         Ok(next.run(request).await)
@@ -170,7 +132,6 @@ pub async fn auth_middleware(
 
 #[cfg(test)]
 mod tests {
-<<<<<<< HEAD
     use super::*;
     use crate::proxy::ProxyAuthMode;
 
@@ -198,13 +159,6 @@ mod tests {
 
     #[test]
     fn test_auth_placeholder() {
-=======
-    // 移除未使用的 use super::*;
-
-    #[test]
-    fn test_auth_placeholder() {
-        // Placeholder test
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         assert!(true);
     }
 }

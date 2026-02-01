@@ -16,23 +16,11 @@ fn get_current_exe_path() -> Option<std::path::PathBuf> {
 /// Check if Antigravity is running
 pub fn is_antigravity_running() -> bool {
     let mut system = System::new();
-<<<<<<< HEAD
-=======
-    is_antigravity_running_with_sys(&mut system)
-}
-
-/// Optimized version that reuses System object
-pub fn is_antigravity_running_with_sys(system: &mut System) -> bool {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     system.refresh_processes(sysinfo::ProcessesToUpdate::All);
 
     let current_exe = get_current_exe_path();
     let current_pid = std::process::id();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // Recognition ref 1: Load manual config path (moved outside loop for performance)
     let manual_path = crate::modules::config::load_app_config()
         .ok()
@@ -148,35 +136,6 @@ pub fn is_antigravity_running_with_sys(system: &mut System) -> bool {
     false
 }
 
-<<<<<<< HEAD
-=======
-/// Get set of ancestor PIDs for the current process
-fn get_self_ancestors(system: &sysinfo::System) -> std::collections::HashSet<u32> {
-    let current_pid = std::process::id();
-    let mut ancestors = std::collections::HashSet::new();
-    
-    let mut next_pid = current_pid;
-    // Walk up the tree (max depth 20 to be safe)
-    for _ in 0..20 {
-        let pid_val = sysinfo::Pid::from_u32(next_pid);
-        if let Some(process) = system.process(pid_val) {
-            if let Some(parent) = process.parent() {
-                let parent_id = parent.as_u32();
-                if !ancestors.insert(parent_id) {
-                    break; // Cycle detected
-                }
-                next_pid = parent_id;
-            } else {
-                break; // Root reached
-            }
-        } else {
-            break; // Process not found
-        }
-    }
-    ancestors
-}
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 #[cfg(target_os = "linux")]
 /// Get PID set of current process and all direct relatives (ancestors + descendants)
 fn get_self_family_pids(system: &sysinfo::System) -> std::collections::HashSet<u32> {
@@ -184,7 +143,6 @@ fn get_self_family_pids(system: &sysinfo::System) -> std::collections::HashSet<u
     let mut family_pids = std::collections::HashSet::new();
     family_pids.insert(current_pid);
 
-<<<<<<< HEAD
     // 1. Look up all ancestors (Ancestors) - prevent killing the launcher
     let mut next_pid = current_pid;
     // Prevent infinite loop, max depth 10
@@ -205,12 +163,6 @@ fn get_self_family_pids(system: &sysinfo::System) -> std::collections::HashSet<u
             break;
         }
     }
-=======
-    // 1. Ancestors
-    let ancestors = get_self_ancestors(system);
-    family_pids.extend(ancestors);
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
     // 2. Look down all descendants (Descendants)
     // Build parent-child relationship map (Parent -> Children)
@@ -307,15 +259,6 @@ fn get_antigravity_pids() -> Vec<u32> {
                         (m_path_str.find(".app"), p_path_str.find(".app"))
                     {
                         if m_path_str[..m_idx + 4] == p_path_str[..p_idx + 4] {
-<<<<<<< HEAD
-=======
-                            // Check if this is the manager itself (Antigravity Tools)
-                            let is_manager = p_path_str.to_lowercase().contains("antigravity tools.app") || _name.contains("antigravity tools");
-                            if is_manager {
-                                continue;
-                            }
-                            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                             let args = process.cmd();
                             let is_helper_by_args = args
                                 .iter()
@@ -373,21 +316,7 @@ fn get_antigravity_pids() -> Vec<u32> {
         #[cfg(target_os = "macos")]
         {
             // Match processes within Antigravity main app bundle, excluding Helper/Plugin/Renderer etc.
-<<<<<<< HEAD
             if exe_path.contains("antigravity.app") && !is_helper {
-=======
-            // HARDENED: Avoid matching "Antigravity Tools.app" (our own app) or dev binary "antigravity_tools"
-            let is_manager = exe_path.contains("antigravity tools.app") 
-                || _name.contains("antigravity tools")
-                || _name.contains("antigravity_tools"); // Exclude dev binary
-                
-            if exe_path.contains("antigravity.app") && !is_helper && !is_manager {
-                // Triple check just in case
-                if pid_u32 == current_pid {
-                     crate::modules::logger::log_error("SAFETY: Attempted to add SELF to kill list! Skipping.");
-                     continue;
-                }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 pids.push(pid_u32);
             }
         }
@@ -454,23 +383,6 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
 
         let pids = get_antigravity_pids();
         if !pids.is_empty() {
-<<<<<<< HEAD
-=======
-             // SAFETY CHECK: Ensure we are not killing our own parent (e.g. running in VS Code Terminal)
-            let mut system = System::new();
-            system.refresh_processes(sysinfo::ProcessesToUpdate::All);
-            let ancestors = get_self_ancestors(&system);
-            
-            for pid in &pids {
-                if ancestors.contains(pid) {
-                    crate::modules::logger::log_error(&format!(
-                        "SAFETY ABORT: Antigravity (PID {}) is an ancestor of the current process. Cannot restart automatically.", 
-                        pid
-                    ));
-                    return Err("Cannot restart Antigravity because Gateway is running inside it (Terminal). Please restart IDE manually.".to_string());
-                }
-            }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             // 1. Identify main process (PID)
             // Strategy: Principal processes of Electron/Tauri do not have the `--type` parameter, while Helper processes have `--type=renderer/gpu/utility`, etc.
             let mut system = System::new();
@@ -564,7 +476,6 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
             // Phase 1: Graceful exit (SIGTERM)
             if let Some(pid) = main_pid {
                 crate::modules::logger::log_info(&format!(
-<<<<<<< HEAD
                     "Sending SIGTERM to main process PID: {}",
                     pid
                 ));
@@ -581,70 +492,31 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
                         ));
                     }
                 }
-=======
-                    "Action: Sending SIGTERM to main process PID: {}",
-                    pid
-                ));
-                let output = Command::new("kill")
-                   .args(["-15", &pid.to_string()])
-                   .output();
-                crate::modules::logger::log_info("SIGTERM sent, awaiting process exit...");
-                
-                // if let Ok(result) = output {
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             } else {
                 crate::modules::logger::log_warn(
                     "No clear main process identified, attempting SIGTERM for all processes (may cause popups)",
                 );
                 for pid in &pids {
                     let _ = Command::new("kill")
-<<<<<<< HEAD
                         .args(["-15", &pid.to_string()])
                         .output();
-=======
-                       .args(["-15", &pid.to_string()])
-                       .output();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 }
             }
 
             // Wait for graceful exit (max 70% of timeout_secs)
             let graceful_timeout = (timeout_secs * 7) / 10;
-<<<<<<< HEAD
             let start = std::time::Instant::now();
             while start.elapsed() < Duration::from_secs(graceful_timeout) {
                 if !is_antigravity_running() {
                     crate::modules::logger::log_info("All Antigravity processes gracefully closed");
-=======
-            tracing::info!("Waiting for graceful exit (timeout: {}s)...", graceful_timeout);
-            let start = std::time::Instant::now();
-            let mut i = 0;
-            let mut system = System::new(); // Persistent system object for reuse
-            while start.elapsed() < Duration::from_secs(graceful_timeout) {
-                i += 1;
-                if !is_antigravity_running_with_sys(&mut system) {
-                    tracing::info!("All Antigravity processes gracefully closed (checked {} times)", i);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     return Ok(());
                 }
                 thread::sleep(Duration::from_millis(500));
             }
-<<<<<<< HEAD
 
             // Phase 2: Force kill (SIGKILL) - targeting all remaining processes (Helpers)
             if is_antigravity_running() {
                 let remaining_pids = get_antigravity_pids();
-=======
-            tracing::warn!("Graceful exit timeout reached.");
-
-
-            // Phase 2: Force kill (SIGKILL) - targeting all remaining processes (Helpers)
-            crate::modules::logger::log_info("Checking for remaining Antigravity processes for Phase 2 (SIGKILL)...");
-            if is_antigravity_running() {
-                let remaining_pids = get_antigravity_pids();
-                crate::modules::logger::log_info(&format!("Remaining PIDs to kill: {:?}", remaining_pids));
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if !remaining_pids.is_empty() {
                     crate::modules::logger::log_warn(&format!(
                         "Graceful exit timeout, force killing {} remaining processes (SIGKILL)",
@@ -652,7 +524,6 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
                     ));
                     for pid in &remaining_pids {
                         let output = Command::new("kill").args(["-9", &pid.to_string()]).output();
-<<<<<<< HEAD
 
                         if let Ok(result) = output {
                             if !result.status.success() {
@@ -666,8 +537,6 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
                                 }
                             }
                         }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     }
                     thread::sleep(Duration::from_secs(1));
                 }
@@ -822,38 +691,6 @@ pub fn close_antigravity(#[allow(unused_variables)] timeout_secs: u64) -> Result
         }
     }
 
-<<<<<<< HEAD
-=======
-    // Phase 3: Nuclear Option (Fallback for stubborn processes or sysinfo blindness)
-    if is_antigravity_running() {
-        crate::modules::logger::log_warn("Standard close failed, attempting nuclear option (pkill/taskkill)...");
-        
-        #[cfg(target_os = "macos")]
-        {
-            // Match the specific executable path to avoid killing self or unrelated tools
-            let _ = Command::new("pkill")
-                .args(["-9", "-f", "Antigravity.app/Contents/MacOS/Antigravity"])
-                .output();
-        }
-
-        #[cfg(target_os = "windows")]
-        {
-            let _ = Command::new("taskkill")
-                .args(["/F", "/IM", "antigravity.exe"])
-                .output();
-        }
-        
-        #[cfg(target_os = "linux")]
-        {
-             let _ = Command::new("pkill")
-                .args(["-9", "-f", "antigravity"])
-                .output();
-        }
-        
-        thread::sleep(Duration::from_secs(1));
-    }
-
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     // Final check
     if is_antigravity_running() {
         return Err("Unable to close Antigravity process, please close manually and retry".to_string());
@@ -982,7 +819,6 @@ pub fn start_antigravity() -> Result<(), String> {
 
     #[cfg(target_os = "windows")]
     {
-<<<<<<< HEAD
         let has_args = args.as_ref().map_or(false, |a| !a.is_empty());
         
         if has_args {
@@ -1013,24 +849,6 @@ pub fn start_antigravity() -> Result<(), String> {
                 return Err("Startup failed, please open Antigravity manually".to_string());
             }
         }
-=======
-        // Try to start via registry or default path
-        let mut cmd = Command::new("cmd");
-        cmd.args(["/C", "start", "antigravity://"]);
-
-        // Add startup arguments
-        if let Some(ref args) = args {
-            for arg in args {
-                cmd.arg(arg);
-            }
-        }
-
-        let result = cmd.spawn();
-
-        if result.is_err() {
-            return Err("Startup failed, please open Antigravity manually".to_string());
-        }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     #[cfg(target_os = "linux")]
@@ -1318,45 +1136,3 @@ fn check_standard_locations() -> Option<std::path::PathBuf> {
 
     None
 }
-<<<<<<< HEAD
-=======
-
-/// Get the effective shell path based on user configuration or platform defaults
-pub fn get_effective_shell() -> String {
-    // 1. Try to load from manual config
-    if let Ok(config) = crate::modules::config::load_app_config() {
-        if let Some(custom_path) = config.custom_shell_path {
-            if !custom_path.is_empty() {
-                let path = std::path::PathBuf::from(&custom_path);
-                if path.exists() {
-                    return custom_path;
-                }
-                crate::modules::logger::log_warn(&format!(
-                    "Custom shell path does not exist: {}, falling back to default",
-                    custom_path
-                ));
-            }
-        }
-    }
-
-    // 2. Platform defaults
-    if cfg!(target_os = "windows") {
-        "powershell.exe".to_string()
-    } else {
-        // macOS/Linux: Try 'pwsh' (installed PowerShell), then fallback to 'zsh' or 'sh'
-        let which_pwsh = Command::new("which").arg("pwsh").output();
-        if let Ok(out) = which_pwsh {
-            if out.status.success() {
-                return String::from_utf8_lossy(&out.stdout).trim().to_string();
-            }
-        }
-        
-        // Final fallback for macOS/Linux
-        if cfg!(target_os = "macos") {
-            "/bin/zsh".to_string()
-        } else {
-            "/bin/bash".to_string()
-        }
-    }
-}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

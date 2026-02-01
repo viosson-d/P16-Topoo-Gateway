@@ -15,21 +15,13 @@ pub struct ProxyRequestLog {
     pub model: Option<String>,        // 客户端请求的模型名
     pub mapped_model: Option<String>, // 实际路由后使用的模型名
     pub account_email: Option<String>,
-<<<<<<< HEAD
     pub client_ip: Option<String>,    // 客户端 IP 地址
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     pub error: Option<String>,
     pub request_body: Option<String>,
     pub response_body: Option<String>,
     pub input_tokens: Option<u32>,
     pub output_tokens: Option<u32>,
     pub protocol: Option<String>,     // 协议类型: "openai", "anthropic", "gemini"
-<<<<<<< HEAD
-=======
-    pub client: Option<String>,       // 客户端标识: "antigravity", "cursor", "curl" etc.
-    pub account_name: Option<String>, // 账号别名/昵称
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -72,11 +64,7 @@ impl ProxyMonitor {
             logs: RwLock::new(VecDeque::with_capacity(max_logs)),
             stats: RwLock::new(ProxyStats::default()),
             max_logs,
-<<<<<<< HEAD
             enabled: AtomicBool::new(false), // Default to disabled
-=======
-            enabled: AtomicBool::new(true), // Default to enabled
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             app_handle,
         }
     }
@@ -95,21 +83,9 @@ impl ProxyMonitor {
             log.input_tokens,
             log.output_tokens,
         ) {
-<<<<<<< HEAD
             let model = log.model.clone().unwrap_or_else(|| "unknown".to_string());
             let account = account.clone();
             tokio::spawn(async move {
-=======
-            // 优先使用映射后的物理模型名进行 Token 统计，以确保前端能正确按模型厂商(Gemini/Claude)分类
-            let model = log.mapped_model.as_ref()
-                .or(log.model.as_ref())
-                .cloned()
-                .unwrap_or_else(|| "unknown".to_string());
-                
-            let account = account.clone();
-            // Use spawn_blocking for synchronous DB operations to avoid blocking the async executor
-            tokio::task::spawn_blocking(move || {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 if let Err(e) = crate::modules::token_stats::record_usage(&account, &model, input, output) {
                     tracing::debug!("Failed to record token stats: {}", e);
                 }
@@ -117,16 +93,9 @@ impl ProxyMonitor {
         }
 
         if !self.is_enabled() {
-<<<<<<< HEAD
             return;
         }
         tracing::info!("[Monitor] Logging request: {} {}", log.method, log.url);
-=======
-            tracing::debug!("[Monitor] Logging disabled, skipping log for {}", log.url);
-            return;
-        }
-        tracing::info!("[Monitor] Logging request: {} {} (Protocol: {:?})", log.method, log.url, log.protocol);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         // Update stats
         {
             let mut stats = self.stats.write().await;
@@ -148,7 +117,6 @@ impl ProxyMonitor {
         }
 
         // Save to DB
-<<<<<<< HEAD
         let log_to_save = log.clone();
         tokio::spawn(async move {
             if let Err(e) = crate::modules::proxy_db::save_log(&log_to_save) {
@@ -186,32 +154,11 @@ impl ProxyMonitor {
                 if let Err(e) = crate::modules::token_stats::record_usage(account, &model, input, output) {
                     tracing::debug!("Failed to record token stats: {}", e);
                 }
-=======
-        // Save to DB and update stats in a blocking task
-        let log_to_save = log.clone();
-        tokio::task::spawn_blocking(move || {
-            match crate::modules::proxy_db::save_log(&log_to_save) {
-                Ok(_) => tracing::debug!("[Monitor] Request log saved to database"),
-                Err(e) => tracing::error!("Failed to save proxy log to DB: {}", e),
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }
         });
 
         // Emit event (send summary only, without body to reduce memory)
-<<<<<<< HEAD
         if let Some(app) = &self.app_handle {
-=======
-        // Emit event (send summary only, without body to reduce memory)
-        /* [OPTIMIZE] IPC Flooding Prevention
-           We have switched to polling on the frontend (ProxyMonitor.tsx) to avoid UI freezing
-           during high-traffic periods. Therefore, we no longer need to emit events for every request.
-           This saves significant CPU and IPC bandwidth.
-        
-        if let Some(app) = &self.app_handle {
-            // Debug Log: Trace event emission
-            tracing::debug!("[Monitor] Emitting proxy://request event for {}", log.id);
-            
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             let log_summary = ProxyRequestLog {
                 id: log.id.clone(),
                 timestamp: log.timestamp,
@@ -222,51 +169,20 @@ impl ProxyMonitor {
                 model: log.model.clone(),
                 mapped_model: log.mapped_model.clone(),
                 account_email: log.account_email.clone(),
-<<<<<<< HEAD
                 client_ip: log.client_ip.clone(),
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 error: log.error.clone(),
                 request_body: None,  // Don't send body in event
                 response_body: None, // Don't send body in event
                 input_tokens: log.input_tokens,
                 output_tokens: log.output_tokens,
                 protocol: log.protocol.clone(),
-<<<<<<< HEAD
             };
             let _ = app.emit("proxy://request", &log_summary);
         }
-=======
-                client: log.client.clone(),
-                account_name: log.account_name.clone(),
-            };
-            
-            // 1. Original Broadcast
-            if let Err(e) = app.emit("proxy://request", &log_summary) {
-                 tracing::error!("[Monitor] Failed to emit event (broadcast): {}", e);
-            }
-
-            // 2. Simplified Event Name Broadcast (fallback for special char issues)
-            let _ = app.emit("proxy-request", &log_summary);
-
-            // 3. Direct Target to 'main' window (fallback for broadcast issues)
-            // Use tauri::Manager trait to get window
-            use tauri::Manager;
-            if let Some(window) = app.get_webview_window("main") {
-                if let Err(e) = window.emit("proxy://request", &log_summary) {
-                     tracing::warn!("[Monitor] Failed to emit to main window: {}", e);
-                }
-                // Also emit simplified name to main window
-                let _ = window.emit("proxy-request", &log_summary);
-            }
-        }
-        */
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 
     pub async fn get_logs(&self, limit: usize) -> Vec<ProxyRequestLog> {
         // Try to get from DB first for true history
-<<<<<<< HEAD
         let db_result = tokio::task::spawn_blocking(move || {
             crate::modules::proxy_db::get_logs(limit)
         }).await;
@@ -274,29 +190,20 @@ impl ProxyMonitor {
         match db_result {
             Ok(Ok(logs)) => logs,
             Ok(Err(e)) => {
-=======
-        match crate::modules::proxy_db::get_logs(limit) {
-            Ok(logs) => logs,
-            Err(e) => {
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 tracing::error!("Failed to get logs from DB: {}", e);
                 // Fallback to memory
                 let logs = self.logs.read().await;
                 logs.iter().take(limit).cloned().collect()
             }
-<<<<<<< HEAD
             Err(e) => {
                 tracing::error!("Spawn blocking failed for get_logs: {}", e);
                 let logs = self.logs.read().await;
                 logs.iter().take(limit).cloned().collect()
             }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
 
     pub async fn get_stats(&self) -> ProxyStats {
-<<<<<<< HEAD
         let db_result = tokio::task::spawn_blocking(|| {
             crate::modules::proxy_db::get_stats()
         }).await;
@@ -332,14 +239,6 @@ impl ProxyMonitor {
         match res {
             Ok(r) => r,
             Err(e) => Err(format!("Spawn blocking failed: {}", e)),
-=======
-        match crate::modules::proxy_db::get_stats() {
-            Ok(stats) => stats,
-            Err(e) => {
-                tracing::error!("Failed to get stats from DB: {}", e);
-                self.stats.read().await.clone()
-            }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     }
     
@@ -349,16 +248,10 @@ impl ProxyMonitor {
         let mut stats = self.stats.write().await;
         *stats = ProxyStats::default();
 
-<<<<<<< HEAD
         let _ = tokio::task::spawn_blocking(|| {
             if let Err(e) = crate::modules::proxy_db::clear_logs() {
                 tracing::error!("Failed to clear logs in DB: {}", e);
             }
         }).await;
-=======
-        if let Err(e) = crate::modules::proxy_db::clear_logs() {
-            tracing::error!("Failed to clear logs in DB: {}", e);
-        }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }
