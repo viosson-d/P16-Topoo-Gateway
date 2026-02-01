@@ -26,11 +26,6 @@ function BackgroundTaskRunner() {
 
         if (auto_refresh && refresh_interval > 0) {
             console.log(`[BackgroundTask] Starting auto-refresh quota timer: ${refresh_interval} mins`);
-<<<<<<< HEAD
-            intervalId = setInterval(() => {
-                console.log('[BackgroundTask] Auto-refreshing all quotas...');
-                refreshAllQuotas();
-=======
             intervalId = setInterval(async () => {
                 console.log('[BackgroundTask] Auto-refreshing all quotas...');
                 try {
@@ -38,7 +33,6 @@ function BackgroundTaskRunner() {
                 } catch (e) {
                     console.error('[BackgroundTask] Auto-refresh failed:', e);
                 }
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             }, refresh_interval * 60 * 1000);
         }
 
@@ -66,19 +60,11 @@ function BackgroundTaskRunner() {
         prevAutoSyncRef.current = auto_sync;
 
         if (auto_sync && sync_interval > 0) {
-<<<<<<< HEAD
-            console.log(`[BackgroundTask] Starting auto-sync account timer: ${sync_interval} seconds`);
-            intervalId = setInterval(() => {
-                console.log('[BackgroundTask] Auto-syncing current account from DB...');
-                syncAccountFromDb();
-            }, sync_interval * 1000);
-=======
             console.log(`[BackgroundTask] Starting auto-sync account timer: ${sync_interval} minutes`);
             intervalId = setInterval(() => {
                 console.log('[BackgroundTask] Auto-syncing current account from DB...');
                 syncAccountFromDb();
             }, sync_interval * 60 * 1000);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
 
         return () => {

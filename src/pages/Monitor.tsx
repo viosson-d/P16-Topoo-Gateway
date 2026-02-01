@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import { ProxyMonitor } from '../components/proxy/ProxyMonitor';
-
-const Monitor: React.FC = () => {
-    return (
-        <div className="h-full flex flex-col p-5 gap-4 max-w-7xl mx-auto w-full">
-            <ProxyMonitor className="flex-1" />
-        </div>
-=======
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProxyMonitor } from '../components/proxy/ProxyMonitor';
@@ -75,7 +65,6 @@ const Monitor: React.FC = () => {
                 />
             </div>
         </PageContainer>
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     );
 };
 

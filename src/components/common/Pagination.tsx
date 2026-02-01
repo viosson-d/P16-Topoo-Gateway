@@ -1,6 +1,4 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-<<<<<<< HEAD
-=======
 import {
     Select,
     SelectContent,
@@ -8,7 +6,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
@@ -87,17 +84,6 @@ function Pagination({
                     {onPageSizeChange && (
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600 dark:text-gray-400">{t('common.per_page')}</span>
-<<<<<<< HEAD
-                            <select
-                                value={itemsPerPage}
-                                onChange={(e) => onPageSizeChange(parseInt(e.target.value))}
-                                className="px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-base-100 text-gray-900 dark:text-base-content focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {pageSizeOptions.map(size => (
-                                    <option key={size} value={size}>{size} {t('common.items')}</option>
-                                ))}
-                            </select>
-=======
                             <Select
                                 value={String(itemsPerPage)}
                                 onValueChange={(value) => onPageSizeChange(parseInt(value))}
@@ -113,7 +99,6 @@ function Pagination({
                                     ))}
                                 </SelectContent>
                             </Select>
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                         </div>
                     )}
                 </div>

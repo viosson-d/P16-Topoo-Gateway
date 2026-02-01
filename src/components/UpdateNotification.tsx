@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { X, Download, Sparkles, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
-<<<<<<< HEAD
-import { request as invoke } from '../utils/request';
-import { useTranslation } from 'react-i18next';
-import { check as tauriCheck } from '@tauri-apps/plugin-updater';
-import { relaunch as tauriRelaunch } from '@tauri-apps/plugin-process';
-import { isTauri } from '../utils/env';
-import { showToast } from './common/ToastContainer';
-=======
 import { invoke } from '@tauri-apps/api/core';
 import { useTranslation } from 'react-i18next';
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 interface UpdateInfo {
   has_update: boolean;
@@ -56,20 +47,9 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
   };
 
   const handleAutoUpdate = async () => {
-<<<<<<< HEAD
-    if (!isTauri()) {
-      handleManualDownload();
-      return;
-    }
-
-    setUpdateState('downloading');
-    try {
-      const update = await tauriCheck();
-=======
     setUpdateState('downloading');
     try {
       const update = await check();
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
       if (update) {
         let downloaded = 0;
         let contentLength = 0;
@@ -93,28 +73,11 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
 
         setUpdateState('ready');
         setTimeout(async () => {
-<<<<<<< HEAD
-          await tauriRelaunch();
-        }, 1500);
-      } else {
-        // Native updater found no update (e.g. draft release or updater.json not ready)
-        // Fallback to manual download
-        console.warn('Native updater returned null, falling back to manual download');
-        showToast('自动更新包尚未就绪，为您跳转到下载页面...', 'info');
-        setUpdateState('available');
-        handleManualDownload();
-      }
-    } catch (error) {
-      console.error('Auto update failed:', error);
-      showToast('自动更新失败，为您跳转到下载页面...', 'error');
-      setUpdateState('available'); // Revert state so user can try again
-=======
           await relaunch();
         }, 1500);
       }
     } catch (error) {
       console.error('Auto update failed:', error);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
       handleManualDownload();
     }
   };
@@ -168,15 +131,9 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
                 )}
               </div>
               <div>
-<<<<<<< HEAD
-                <h3 className="font-bold text-gray-800 dark:text-white leading-tight">
-                  {updateState === 'ready'
-                    ? t('update_notification.ready', '更新完成')
-=======
                 <h3 className="font-medium text-gray-800 dark:text-white leading-tight">
                   {updateState === 'ready'
                     ? t('update_notification.ready')
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                     : t('update_notification.title')}
                 </h3>
                 {updateInfo && (
@@ -205,13 +162,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
 
           <div className="mb-4">
             <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-<<<<<<< HEAD
-              {updateState === 'downloading' && t('update_notification.downloading', '正在下载更新...')}
-              {updateState === 'ready' && t('update_notification.restarting', '即将重启应用...')}
-=======
               {updateState === 'downloading' && t('update_notification.downloading')}
               {updateState === 'ready' && t('update_notification.restarting')}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
               {updateState === 'available' && updateInfo && t('update_notification.message', { current: updateInfo.current_version })}
             </p>
           </div>
@@ -221,11 +173,7 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-<<<<<<< HEAD
-                  style={{ width: `${downloadProgress}%` }}
-=======
                   style={{ width: `${downloadProgress}%` } as any}
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1 text-center">{downloadProgress}%</p>
@@ -249,11 +197,7 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
                 "
               >
                 <Download className="w-4 h-4" />
-<<<<<<< HEAD
-                <span>{t('update_notification.auto_update', '自动更新')}</span>
-=======
                 <span>{t('update_notification.auto_update')}</span>
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all duration-300" />
                 <div className="absolute inset-0 -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-20 pointer-events-none" />
               </button>

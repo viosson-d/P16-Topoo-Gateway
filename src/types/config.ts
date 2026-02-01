@@ -9,32 +9,18 @@ export interface ProxyConfig {
     auth_mode?: 'off' | 'strict' | 'all_except_health' | 'auto';
     port: number;
     api_key: string;
-<<<<<<< HEAD
-    admin_password?: string;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     auto_start: boolean;
     custom_mapping?: Record<string, string>;
     request_timeout: number;
     enable_logging: boolean;
-<<<<<<< HEAD
-    debug_logging?: DebugLoggingConfig;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     upstream_proxy: UpstreamProxyConfig;
     zai?: ZaiConfig;
     scheduling?: StickySessionConfig;
     experimental?: ExperimentalConfig;
-<<<<<<< HEAD
-    user_agent_override?: string;
-    saved_user_agent?: string;
-}
-
-export interface DebugLoggingConfig {
-    enabled: boolean;
-    output_dir?: string;
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
+    debug_logging?: {
+        enabled: boolean;
+        output_dir?: string;
+    };
 }
 
 export type SchedulingMode = 'CacheFirst' | 'Balance' | 'PerformanceFirst';
@@ -91,14 +77,6 @@ export interface ExperimentalConfig {
     context_compression_threshold_l3?: number;
 }
 
-<<<<<<< HEAD
-export interface CircuitBreakerConfig {
-    enabled: boolean;
-    backoff_steps: number[];
-}
-
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 export interface AppConfig {
     language: string;
     theme: string;
@@ -116,12 +94,9 @@ export interface AppConfig {
     scheduled_warmup: ScheduledWarmupConfig;
     quota_protection: QuotaProtectionConfig; // [NEW] 配额保护配置
     pinned_quota_models: PinnedQuotaModelsConfig; // [NEW] 配额关注列表
-<<<<<<< HEAD
-    circuit_breaker: CircuitBreakerConfig; // [NEW] 熔断器配置
-=======
     custom_shell_path?: string; // [NEW] 手动指定的 shell 路径
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     proxy: ProxyConfig;
+    circuit_breaker?: CircuitBreakerConfig;
 }
 
 // ============================================================================
@@ -138,6 +113,11 @@ export interface CloudflaredConfig {
     use_http2: boolean;
 }
 
+export interface CircuitBreakerConfig {
+    enabled: boolean;
+    backoff_steps: number[];
+}
+
 export interface CloudflaredStatus {
     installed: boolean;
     version?: string;
@@ -145,7 +125,4 @@ export interface CloudflaredStatus {
     url?: string;
     error?: string;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)

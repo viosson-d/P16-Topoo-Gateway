@@ -22,13 +22,7 @@
         "warning": "警告",
         "info": "情報",
         "details": "詳細",
-<<<<<<< HEAD
-        "example": "Example",
         "clear": "クリア",
-        "clearing": "クリア中...",
-=======
-        "clear": "クリア",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "prev_page": "前へ",
         "next_page": "次へ",
         "pagination_info": "{{total}} 件中 {{start}} から {{end}} を表示",
@@ -39,14 +33,7 @@
         "disabled": "無効",
         "tauri_api_not_loaded": "Tauri APIが読み込まれていません。アプリを再起動してください",
         "environment_error": "環境エラー: {{error}}",
-<<<<<<< HEAD
-        "load_more": "もっと読み込む",
-        "submit": "送信",
-        "retry": "再試行",
-        "back": "戻る"
-=======
         "load_more": "もっと読み込む"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "nav": {
         "dashboard": "ダッシュボード",
@@ -54,10 +41,6 @@
         "proxy": "APIプロキシ",
         "token_stats": "統計",
         "call_records": "トラフィックログ",
-<<<<<<< HEAD
-        "security": "IP管理",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "settings": "設定",
         "theme_to_dark": "ダークモードに切り替え",
         "theme_to_light": "ライトモードに切り替え",
@@ -76,17 +59,7 @@
         "switch_to_portuguese": "ポルトガル語に切り替え",
         "switch_to_portuguese_short": "PT",
         "switch_to_traditional_chinese": "繁体字中国語に切り替え",
-<<<<<<< HEAD
-        "switch_to_traditional_chinese_short": "繁中",
-        "switch_to_korean": "韓国語に切り替え",
-        "switch_to_korean_short": "KO",
-        "switch_to_spanish": "スペイン語に切り替え",
-        "switch_to_spanish_short": "ES",
-        "switch_to_malay": "マレー語に切り替え",
-        "switch_to_malay_short": "MY"
-=======
         "switch_to_traditional_chinese_short": "繁中"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "dashboard": {
         "hello": "こんにちは 👋",
@@ -121,11 +94,7 @@
             "export_error": "エクスポートに失敗しました"
         },
         "branding": {
-<<<<<<< HEAD
-            "title": "Topoo Gateway",
-=======
             "title": "Antigravity Tools",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "subtitle": "プロフェッショナルなアカウント管理"
         }
     },
@@ -226,18 +195,7 @@
                 "copy_link": "認証リンクをコピー",
                 "copied": "コピーしました",
                 "link_label": "認証URL",
-<<<<<<< HEAD
-                "link_click_to_copy": "クリックしてコピー",
-                "manual_hint": "ブラウザがリダイレクトされませんでしたか？ここにコールバックURLまたはコードを貼り付けてください：",
-                "manual_placeholder": "コールバックURLまたはコードを貼り付け...",
-                "error_no_flow": "まず「OAuth認証を開始」をクリックしてください",
-                "error_no_url": "OAuth URLを取得できませんでした",
-                "popup_blocked": "ポップアップがブロックされました",
-                "manual_submitting": "認可コードを送信中...",
-                "manual_submitted": "認可コードを送信しました。バックエンドで処理中です..."
-=======
                 "link_click_to_copy": "クリックしてコピー"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "token": {
                 "label": "リフレッシュトークン",
@@ -330,11 +288,7 @@
             "auto_launch": "起動時に実行",
             "auto_launch_enabled": "有効",
             "auto_launch_disabled": "無効",
-<<<<<<< HEAD
-            "auto_launch_desc": "システム起動時にTopoo Gatewayを自動的に起動する",
-=======
             "auto_launch_desc": "システム起動時にAntigravity Toolsを自動的に起動する",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auto_check_update": "更新を自動確認",
             "auto_check_update_desc": "起動時に新しいバージョンを自動的に確認します",
             "auto_check_update_disabled": "自動確認は無効です",
@@ -390,17 +344,6 @@
             "clear_logs_title": "ログクリアの確認",
             "clear_logs_msg": "すべてのログキャッシュファイルをクリアしてもよろしいですか？",
             "logs_cleared": "ログキャッシュをクリアしました",
-<<<<<<< HEAD
-            "antigravity_cache_title": "Antigravityキャッシュクリア",
-            "antigravity_cache_desc": "Antigravityアプリのキャッシュをクリアすると、ログイン失敗、バージョン検証エラー、OAuth認証失敗などの問題を解決できます。",
-            "antigravity_cache_warning": "キャッシュをクリアする前にAntigravityアプリを完全に終了してください。",
-            "clear_antigravity_cache": "Antigravityキャッシュをクリア",
-            "clear_cache_confirm_title": "Antigravityキャッシュのクリアを確認",
-            "clear_cache_confirm_msg": "以下のキャッシュディレクトリがクリアされます：",
-            "cache_cleared_success": "キャッシュをクリアしました。{{size}} MB 解放されました",
-            "cache_not_found": "Antigravityキャッシュディレクトリが見つかりません",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "http_api_desc": "外部プログラム（VS Codeプラグインなど）用のローカルHTTPインターフェースを提供します。",
             "http_api_enabled": "HTTP APIを有効にする",
             "http_api_enabled_desc": "有効にすると、外部プログラムがHTTPインターフェースを介してアカウントを管理できるようになります",
@@ -432,11 +375,7 @@
             "support_desc": "このプロジェクトがお役に立てば、コーヒーを一杯ご馳走してください！皆様のサポートが、プロジェクトを継続する最大の動機です。",
             "support_alipay": "Alipay",
             "support_wechat": "WeChat Pay",
-<<<<<<< HEAD
-            "support_buymeacoffee": "コーヒーを奢る"
-=======
             "support_buymeacoffee": "Buy Me a Coffee"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "quota_protection": {
             "auto_restore_info": "クォータがリセットされると、アカウントは自動的に再度有効になります",
@@ -454,11 +393,7 @@
             "title": "スマートウォームアップ"
         },
         "branding": {
-<<<<<<< HEAD
-            "title": "Topoo Gateway",
-=======
             "title": "Antigravity Tools",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "subtitle": "プロフェッショナルなアカウント管理"
         }
     },
@@ -475,12 +410,6 @@
     },
     "proxy": {
         "title": "APIプロキシサービス",
-<<<<<<< HEAD
-        "error": {
-            "load_failed": "設定の読み込みに失敗しました"
-        },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "status": {
             "running": "サービス稼働中",
             "stopped": "サービス停止中",
@@ -493,15 +422,6 @@
         },
         "config": {
             "title": "サービス構成",
-<<<<<<< HEAD
-            "request": {
-                "user_agent": "User-Agent Override",
-                "user_agent_tooltip": "Override the User-Agent header sent to upstream APIs. Leave empty to use default.",
-                "user_agent_hint": "Current Default: antigravity/<version> <os>/<arch>",
-                "user_agent_placeholder": "Enter custom User-Agent string..."
-            },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "port": "リスニングポート",
             "port_tooltip": "ローカルAPIプロキシがリッスンするTCPポート。変更するにはサービスを停止し、再起動して適用してください。",
             "port_hint": "デフォルト 8045、適用には再起動が必要",
@@ -523,16 +443,6 @@
             "warning_key": "注意: APIキーを安全に保管してください。他人に共有しないでください。",
             "api_key_invalid": "APIキーの形式が無効です。sk- で始まり、10文字以上である必要があります",
             "api_key_updated": "APIキーが更新されました",
-<<<<<<< HEAD
-            "admin_password": "Web UI 管理パスワード",
-            "admin_password_tooltip": "Web管理コンソールにログインするためのパスワード。空の場合、デフォルトでAPIキーが使用されます。",
-            "admin_password_default": "（APIキーと同じ）",
-            "admin_password_placeholder": "新しいパスワードを入力してください。空欄の場合はAPIキーを使用します",
-            "admin_password_hint": "ヒント：Docker/Webデプロイシナリオでは、独立したログインパスワードを設定してAPIキーのセキュリティを向上させることができます。",
-            "admin_password_short": "パスワードが短すぎます（最低4文字）",
-            "admin_password_updated": "Web UI ログインパスワードが更新されました",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auth": {
                 "title": "認証",
                 "title_tooltip": "着信リクエストの認証が必要かどうか、およびどのルートを保護するかを制御します。",
@@ -619,13 +529,7 @@
                 "enable": "アップストリームプロキシを有効化",
                 "url": "プロキシURL",
                 "url_placeholder": "例: http://127.0.0.1:7890 や socks5://127.0.0.1:7890",
-<<<<<<< HEAD
-                "tip": "HTTP, HTTPS, SOCKS5 をサポートしています。",
-                "validation_error": "プロキシを有効にする場合、プロキシURLは必須です",
-                "restart_hint": "プロキシ設定が保存されました。変更を適用するにはアプリを再起動してください。"
-=======
                 "tip": "HTTP, HTTPS, SOCKS5 をサポートしています。"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "scheduling": {
                 "title": "アカウントローテーションとスケジューリング",
@@ -647,29 +551,11 @@
                 "max_wait_tooltip": "「キャッシュ優先」モードでのみ使用: レートリミットのリセット時間がこの値以下の場合、切り替えずに待機します。",
                 "clear_bindings": "セッションバインディングをクリア",
                 "clear_bindings_tooltip": "すべてのセッションとアカウントの紐付けを強制リセットし、次のリクエストでアカウントを再割り当てします。",
-<<<<<<< HEAD
-                "clear_rate_limits": "レート制限の記録をクリア",
-                "clear_rate_limits_tooltip": "すべてのアカウントのローカルレート制限記録を即座にクリアし、次のリクエストで直接アップストリームを試行するように強制します。",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                 "fixed_account": "固定アカウントモード",
                 "fixed_account_tooltip": "有効にすると、すべてのAPIリクエストは、アカウントを切り替える代わりに、選択されたアカウントのみを使用します。",
                 "round_robin_set": "ラウンドロビンモードが有効",
                 "fixed_account_set": "固定アカウントモードが有効",
-<<<<<<< HEAD
-                "account_changed": "アカウントが次へ変更されました：{{email}}",
-                "circuit_breaker": {
-                    "title": "アダプティブサーキットブレーカー",
-                    "tooltip": "クォータを使い果たして繰り返し失敗するアカウントのロックアウト時間を自動的に増やします。これにより、デッドアカウントでのAPI呼び出しの浪費を防ぎ、一時的なエラーから迅速に回復できるようになります。",
-                    "backoff_levels": "バックオフレベル (秒)",
-                    "level": "Lv {{level}}",
-                    "input_placeholder": "60, 300, 1800, 7200",
-                    "invalid_format": "無効な形式。カンマ区切りの数字を使用してください (例: 60, 300)",
-                    "clear_records": "レート制限の記録をすべてクリア"
-                }
-=======
                 "account_changed": "アカウントが次へ変更されました：{{email}}"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "experimental": {
                 "title": "実験設定 (Experimental)",
@@ -749,13 +635,7 @@
             "regenerate_key_title": "APIキーを再生成",
             "regenerate_key_msg": "APIキーを再生成してもよろしいですか？古いキーは即座に無効になります。",
             "clear_bindings_title": "セッションバインディングをクリア",
-<<<<<<< HEAD
-            "clear_bindings_msg": "すべてのセッションとアカウントの紐付けをクリアしてもよろしいですか？",
-            "clear_rate_limits_title": "レート制限の記録をクリア",
-            "clear_rate_limits_confirm": "すべてのローカルレート制限記録をクリアしてもよろしいですか？"
-=======
             "clear_bindings_msg": "すべてのセッションとアカウントの紐付けをクリアしてもよろしいですか？"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "model": {
             "flash": "高速レスポンス",
@@ -800,13 +680,6 @@
             "title": "モデルルーター",
             "subtitle": "シリーズごとにモデルをルーティングするか、カスタムマッピングを追加します。\n注: ネイティブなClaudeパススルーモデル (例: claude-opus-4-5-thinking) はデフォルトでシリーズグループをバイパスします。上書きするには「エキスパートカスタムルーティング」を使用してください。",
             "subtitle_simple": "ワイルドカードまたは完全一致マッピングでモデルルーティングをカスタマイズ",
-<<<<<<< HEAD
-            "background_task_title": "Background Task Model",
-            "background_task_desc": "Model used for Claude CLI background tasks like title generation, summary, etc. (Default: gemini-2.5-flash)",
-            "use_default": "Use System Default",
-            "current_model": "Current Model",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "apply_presets": "プリセットを適用",
             "presets_applied": "プリセットを正常に適用しました",
             "custom_mappings": "カスタムマッピング",
@@ -966,36 +839,7 @@
             "clear_msg": "すべてのプロキシログをクリアしてもよろしいですか？この操作は取り消せません。"
         },
         "network": {
-<<<<<<< HEAD
-            "title": "ネットワークモニター",
-            "open": "ネットワークモニターを開く",
-            "requests_count": "{{count}} 件",
-            "start_recording": "記録を開始",
-            "stop_recording": "記録を停止",
-            "clear_requests": "リクエストをクリア",
-            "empty": "記録されたリクエストはありません",
-            "waiting": "応答待ち...",
-            "badge_error": "エラー",
-            "table": {
-                "status": "状態",
-                "command": "コマンド",
-                "time": "時刻",
-                "duration": "所要時間"
-            },
-            "sections": {
-                "general": "概要",
-                "request_args": "リクエスト引数",
-                "error_details": "エラー詳細",
-                "response": "レスポンス"
-            },
-            "fields": {
-                "status": "状態",
-                "start_time": "開始時刻",
-                "duration": "所要時間"
-            }
-=======
             "title": "ネットワークモニター"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         }
     },
     "update_notification": {
@@ -1003,18 +847,6 @@
         "message": "最適化と改善が含まれた新しいバージョンの準備ができました。現在のバージョン: v{{current}}",
         "action": "今すぐ更新"
     },
-<<<<<<< HEAD
-    "login": {
-        "title": "セキュアアクセス制御",
-        "desc": "現在 Web モードで実行されています。管理パスワードまたは API キーを入力してアクセスしてください。",
-        "placeholder": "管理パスワードまたは API キーを入力してください",
-        "btn_login": "認証してアクセス",
-        "note": "注意：独立した管理パスワードが設定されている場合は管理パスワードを入力してください。そうでない場合は API_KEY を入力してください。",
-        "lookup_hint": "お忘れの場合は、docker logs antigravity-manager を実行して Current API Key または Web UI Password を探してください",
-        "config_hint": "または grep -E '\"api_key\"|\"admin_password\"' ~/.antigravity_tools/gui_config.json を実行して確認してください。"
-    },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     "token_stats": {
         "title": "トークン統計",
         "hourly": "時間単位",
@@ -1041,102 +873,5 @@
         "total": "合計",
         "percentage": "割合",
         "no_data": "データなし"
-<<<<<<< HEAD
-    },
-    "security": {
-        "title": "セキュリティ監視",
-        "refresh_data": "データ更新",
-        "refresh": "更新",
-        "tab_logs": "アクセスログ",
-        "tab_stats": "統計分析",
-        "tab_blacklist": "ブラックリスト",
-        "tab_whitelist": "ホワイトリスト",
-        "tab_config": "セキュリティ設定",
-        "stats": {
-            "total_requests": "総リクエスト数",
-            "total_requests_desc": "記録されたすべてのリクエスト",
-            "unique_ips": "ユニークIP数",
-            "unique_ips_desc": "異なるクライアントIPアドレス",
-            "blocked_requests": "ブロックされたリクエスト",
-            "blocked_requests_desc": "ルールによって拒否されたリクエスト",
-            "ip_activity_token_usage": "IPアクティビティとトークン使用量",
-            "hour": "時",
-            "day": "日",
-            "week": "週",
-            "month": "月",
-            "rank": "ランク",
-            "ip_address": "IPアドレス",
-            "activity_reqs": "アクティビティ (リクエスト)",
-            "total_token": "総トークン",
-            "prompt": "プロンプト",
-            "completion": "完了",
-            "no_data": "データなし"
-        },
-        "logs": {
-            "search_placeholder": "IP、パス、UAで検索...",
-            "show_blocked_only": "ブロックのみ表示",
-            "status": "ステータス",
-            "ip_address": "IPアドレス",
-            "method": "メソッド",
-            "path": "パス",
-            "duration": "所要時間",
-            "time": "時間",
-            "reason": "理由",
-            "blocked": "ブロック",
-            "no_logs": "ログなし",
-            "total_records": "全 {{total}} 件",
-            "prev_page": "前へ",
-            "next_page": "次へ",
-            "page_num": "ページ {{page}}",
-            "per_page_suffix": "/ページ"
-        },
-        "blacklist": {
-            "add_ip": "IPを追加",
-            "search_placeholder": "検索...",
-            "added_at": "追加日時",
-            "expires_at": "有効期限",
-            "no_data": "ブラックリストデータなし",
-            "add_title": "ブラックリストに追加",
-            "ip_cidr_label": "IPアドレスまたはCIDR",
-            "ip_cidr_placeholder": "例: 192.168.1.1 または 10.0.0.0/24",
-            "reason_label": "理由 (任意)",
-            "reason_placeholder": "例: 悪意のあるスキャン",
-            "expires_label": "有効期限 (時間、任意)",
-            "expires_placeholder": "空欄で無期限",
-            "cancel": "キャンセル",
-            "confirm": "追加",
-            "add_btn": "追加"
-        },
-        "whitelist": {
-            "add_ip": "信頼IPを追加",
-            "no_data": "ホワイトリストデータなし",
-            "add_title": "ホワイトリストに追加",
-            "description_label": "説明 (任意)",
-            "description_placeholder": "例: 内部サーバー",
-            "cancel": "キャンセル",
-            "confirm": "追加",
-            "add_btn": "追加"
-        },
-        "config": {
-            "title": "セキュリティ設定",
-            "save": "変更を保存",
-            "saving": "保存中...",
-            "blacklist_title": "IPブラックリスト",
-            "blacklist_desc": "ブロックされたIPアドレスとルールを管理します。",
-            "enable_blacklist": "ブラックリスト保護を有効化",
-            "block_msg_label": "カスタムブロックメッセージ",
-            "block_msg_desc": "ブロックされたクライアントに返されるレスポンス内容。",
-            "whitelist_title": "IPホワイトリスト",
-            "whitelist_desc": "信頼されたIPアドレスを管理します。",
-            "enable_whitelist": "ホワイトリストモードを有効化",
-            "whitelist_warning": "警告: ホワイトリストモードを有効にすると、ホワイトリストにないIPからのすべてのリクエストがブロックされます。プロキシ経由でアクセスしている場合は、自分自身を締め出さないように注意してください。",
-            "whitelist_priority": "ホワイトリスト優先 (ブラックリストを上書き)",
-            "whitelist_priority_desc": "有効にすると、ブラックリストルールに一致してもホワイトリストIPは許可されます。",
-            "load_error": "設定の読み込みに失敗しました",
-            "save_success": "設定を保存しました",
-            "save_error": "設定の保存に失敗しました"
-        }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

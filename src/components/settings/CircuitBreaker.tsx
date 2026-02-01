@@ -34,7 +34,7 @@ export default function CircuitBreaker({
 
     const removeLevel = (index: number) => {
         if (config.backoff_steps.length <= 1) return;
-        const newSteps = config.backoff_steps.filter((_, i) => i !== index);
+        const newSteps = config.backoff_steps.filter((_: number, i: number) => i !== index);
         onChange({ ...config, backoff_steps: newSteps });
     };
 
@@ -79,7 +79,7 @@ export default function CircuitBreaker({
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {config.backoff_steps.map((seconds, idx) => (
+                    {config.backoff_steps.map((seconds: number, idx: number) => (
                         <div
                             key={idx}
                             className={`p-3 rounded-xl border transition-all hover:shadow-sm group relative ${getStepColorCls(idx)}`}

@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,8 +15,6 @@ body {
   border: none;
 }
 
-<<<<<<< HEAD
-=======
 /* 确保输入框和文本域仍然可以被选中和编辑 */
 input,
 textarea,
@@ -28,7 +23,6 @@ textarea,
   user-select: text;
 }
 
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 html {
   background-color: #FAFBFC;
 }
@@ -40,11 +34,7 @@ html.dark {
 /* 全局样式 */
 body {
   margin: 0;
-<<<<<<< HEAD
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-=======
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -61,11 +51,7 @@ body {
 #root {
   width: 100%;
   height: 100%;
-<<<<<<< HEAD
-  overflow-y: auto;
-=======
   overflow: hidden;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
   overscroll-behavior: none;
 }
 
@@ -113,19 +99,11 @@ a {
 }
 
 ::view-transition-new(root) {
-<<<<<<< HEAD
   z-index: 9999;
 }
 
 .dark::view-transition-old(root) {
   z-index: 9999;
-=======
-  z-index: 10;
-}
-
-.dark::view-transition-old(root) {
-  z-index: 10;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 .dark::view-transition-new(root) {
@@ -145,40 +123,44 @@ a {
   color: white;
 }
 
-<<<<<<< HEAD
 /* Arabic Fonts - Effra */
 @font-face {
   font-family: 'Effra';
   src: url('/font/Effra/Effra-Regular.ttf') format('truetype');
-  font-weight: 400; /* Regular */
+  font-weight: 400;
+  /* Regular */
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Effra';
   src: url('/font/Effra/Effra-Medium.ttf') format('truetype');
-  font-weight: 500; /* Medium */
+  font-weight: 500;
+  /* Medium */
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Effra';
   src: url('/font/Effra/Effra-SemiBold.ttf') format('truetype');
-  font-weight: 600; /* SemiBold */
+  font-weight: 600;
+  /* SemiBold */
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Effra';
   src: url('/font/Effra/Effra-Bold.ttf') format('truetype');
-  font-weight: 700; /* Bold */
+  font-weight: 700;
+  /* Bold */
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Effra';
   src: url('/font/Effra/Effra-ExtraBold.ttf') format('truetype');
-  font-weight: 800; /* ExtraBold */
+  font-weight: 800;
+  /* ExtraBold */
   font-style: normal;
 }
 
@@ -187,7 +169,7 @@ a {
   font-family: 'Effra', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-=======
+}
 
 
 @layer base {
@@ -247,8 +229,6 @@ a {
   }
 }
 
-
-
 @layer base {
   body {
     @apply bg-background text-foreground;
@@ -261,5 +241,14 @@ a {
 [style*="textTransform: none"] {
   text-transform: none !important;
   font-variant-caps: normal !important;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
+}
+
+/* Critical CSS moved from index.html (Splash) */
+html {
+  background-color: #1a1f2e !important;
+}
+
+body {
+  margin: 0;
+  background-color: transparent;
 }

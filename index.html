@@ -1,62 +1,8 @@
 <!doctype html>
-<<<<<<< HEAD
 <html lang="en" style="background-color: #1a1f2e;">
 
 <head>
   <meta charset="UTF-8" />
-=======
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <script>
-    // 🛠️ Antigravity Browser Mock Layer
-    // Ensure this runs before ANY module imports to prevent "invoke" errors in standard browsers.
-    (function () {
-      if (typeof window !== 'undefined' && !window.__TAURI_INTERNALS__ && !window.__TAURI__) {
-        console.warn("⚠️ [Mock] Non-Tauri environment detected. Injecting API Polyfills.");
-
-        // Mock Data
-        const MOCK_ACCOUNT = {
-          id: "mock-user-123",
-          name: "Preview User",
-          email: "preview@antigravity.dev",
-          avatar_url: null,
-          quota: {
-            balance: 1000,
-            usage: 50,
-            limit: 2000,
-            reset_time: new Date(Date.now() + 86400000).toISOString(),
-            subscription_tier: "Pro",
-            models: [
-              { name: 'gemini-3-pro-high', percentage: 75, reset_time: new Date(Date.now() + 3600000).toISOString() },
-              { name: 'claude-sonnet-4-5-thinking', percentage: 45, reset_time: new Date(Date.now() + 7200000).toISOString() }
-            ]
-          }
-        };
-
-        // Polyfill Invoke
-        const mockInvoke = async (cmd, args) => {
-          switch (cmd) {
-            case 'show_main_window': return;
-            case 'get_current_account': return MOCK_ACCOUNT;
-            case 'list_accounts': return [MOCK_ACCOUNT];
-            case 'get_token_stats_hourly': return [];
-            case 'get_token_stats_summary': return { total: 1234, today: 56 };
-            case 'check_for_updates': return { active: false };
-            case 'should_check_updates': return false;
-            case 'get_http_api_settings': return { enabled: true, port: 19527 };
-            case 'autostart:is_auto_launch_enabled': return false;
-            default: return null;
-          }
-        };
-
-        window.__TAURI_INTERNALS__ = { invoke: mockInvoke };
-        window.__TAURI__ = { invoke: mockInvoke };
-      }
-    })();
-  </script>
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
   <link rel="icon" type="image/png" href="/icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Antigravity Tools</title>
@@ -65,7 +11,6 @@
       try {
         const savedTheme = localStorage.getItem('app-theme-preference');
         const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-<<<<<<< HEAD
 
         // Determine if should be dark for later use, but ALWAYS start with splash color
         const shouldBeDark = savedTheme === 'dark' || ((!savedTheme || savedTheme === 'system') && systemDark);
@@ -83,56 +28,12 @@
       } catch (e) {
         console.error('Failed to apply theme during boot:', e);
         document.documentElement.style.backgroundColor = '#1a1f2e';
-=======
-        const shouldBeDark = savedTheme === 'dark' || ((!savedTheme || savedTheme === 'system') && systemDark);
-
-        if (shouldBeDark) {
-          document.documentElement.classList.add('dark');
-          document.documentElement.setAttribute('data-theme', 'dark');
-          document.documentElement.style.backgroundColor = '#000000';
-        } else {
-          document.documentElement.classList.remove('dark');
-          document.documentElement.setAttribute('data-theme', 'light');
-          document.documentElement.style.backgroundColor = '#ffffff';
-        }
-      } catch (e) {
-        console.error('Failed to apply theme during boot:', e);
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
       }
     })();
   </script>
-  <style>
-<<<<<<< HEAD
-    /* Critical CSS: Force splash color initially */
-    html {
-      background-color: #1a1f2e !important;
-    }
-
-    /* These specific overrides will apply when React loads and removes the splash screen logic, 
-       but for now we want everything to look like the splash screen */
-
-    body {
-      margin: 0;
-=======
-    html,
-    body {
-      margin: 0;
-      padding: 0;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
-      background-color: transparent;
-    }
-  </style>
 </head>
 
-<<<<<<< HEAD
 <body style="margin: 0; background-color: #1a1f2e;">
-
-
-
-
-=======
-<body>
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

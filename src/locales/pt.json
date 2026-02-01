@@ -22,13 +22,7 @@
         "warning": "Aviso",
         "info": "Informação",
         "details": "Detalhes",
-<<<<<<< HEAD
-        "example": "Example",
         "clear": "Limpar",
-        "clearing": "Limpando...",
-=======
-        "clear": "Limpar",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "prev_page": "Anterior",
         "next_page": "Próxima",
         "pagination_info": "Mostrando {{start}} a {{end}} de {{total}} entradas",
@@ -38,22 +32,13 @@
         "enabled": "Habilitado",
         "disabled": "Desabilitado",
         "tauri_api_not_loaded": "API Tauri não carregada, por favor reinicie o aplicativo",
-<<<<<<< HEAD
-        "environment_error": "Erro de ambiente: {{error}}",
-        "submit": "Enviar"
-=======
         "environment_error": "Erro de ambiente: {{error}}"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "nav": {
         "dashboard": "Painel",
         "accounts": "Contas",
         "proxy": "Proxy da API",
         "call_records": "Registros de Tráfego",
-<<<<<<< HEAD
-        "security": "Gestão de IP",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "settings": "Configurações",
         "theme_to_dark": "Alternar para Modo Escuro",
         "theme_to_light": "Alternar para Modo Claro",
@@ -72,17 +57,7 @@
         "switch_to_portuguese": "Alternar para Português",
         "switch_to_portuguese_short": "PT",
         "switch_to_russian": "Alternar para Russo",
-<<<<<<< HEAD
-        "switch_to_russian_short": "RU",
-        "switch_to_korean": "Alternar para Coreano",
-        "switch_to_korean_short": "KO",
-        "switch_to_spanish": "Alternar para Espanhol",
-        "switch_to_spanish_short": "ES",
-        "switch_to_malay": "Alternar para Malaio",
-        "switch_to_malay_short": "MY"
-=======
         "switch_to_russian_short": "RU"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "dashboard": {
         "hello": "Olá, Usuário 👋",
@@ -218,14 +193,7 @@
                 "copy_link": "Copiar Link de Autenticação",
                 "copied": "Copiado",
                 "link_label": "URL de Autorização",
-<<<<<<< HEAD
-                "link_click_to_copy": "Clique para copiar",
-                "manual_hint": "O navegador não redirecionou automaticamente? Cole o link de retorno ou o Código de Autorização aqui:",
-                "manual_placeholder": "Cole o link ou o código aqui...",
-                "error_no_flow": "Nenhum fluxo de autenticação ativo encontrado. Por favor, reinicie o OAuth."
-=======
                 "link_click_to_copy": "Clique para copiar"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "token": {
                 "label": "Refresh Token",
@@ -308,11 +276,7 @@
             "auto_launch": "Iniciar na Inicialização",
             "auto_launch_enabled": "Habilitado",
             "auto_launch_disabled": "Desabilitado",
-<<<<<<< HEAD
-            "auto_launch_desc": "Iniciar automaticamente o Topoo Gateway quando o sistema iniciar",
-=======
             "auto_launch_desc": "Iniciar automaticamente o Antigravity Tools quando o sistema iniciar",
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auto_check_update": "Verificar Atualizações Automaticamente",
             "auto_check_update_desc": "Verificar automaticamente novas versões na inicialização",
             "auto_check_update_enabled": "Verificação automática habilitada",
@@ -383,17 +347,6 @@
             "clear_logs_title": "Confirmação de Limpeza de Logs",
             "clear_logs_msg": "Tem certeza de que deseja limpar todos os arquivos de cache de log?",
             "logs_cleared": "Cache de logs limpo",
-<<<<<<< HEAD
-            "antigravity_cache_title": "Limpeza de Cache do Antigravity",
-            "antigravity_cache_desc": "Limpar o cache do Antigravity pode resolver falhas de login, erros de validação de versão e falhas de autorização OAuth.",
-            "antigravity_cache_warning": "Certifique-se de que o Antigravity está completamente fechado antes de limpar o cache.",
-            "clear_antigravity_cache": "Limpar Cache do Antigravity",
-            "clear_cache_confirm_title": "Confirmar Limpeza do Cache do Antigravity",
-            "clear_cache_confirm_msg": "Os seguintes diretórios de cache serão limpos:",
-            "cache_cleared_success": "Cache limpo com sucesso, {{size}} MB liberados",
-            "cache_not_found": "Diretórios de cache do Antigravity não encontrados",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "http_api_title": "Serviço HTTP API",
             "http_api_desc": "Fornece interface HTTP local para programas externos (por exemplo, plugins do VS Code).",
             "http_api_enabled": "Habilitar HTTP API",
@@ -453,15 +406,6 @@
         },
         "config": {
             "title": "Configuração do Serviço",
-<<<<<<< HEAD
-            "request": {
-                "user_agent": "User-Agent Override",
-                "user_agent_tooltip": "Override the User-Agent header sent to upstream APIs. Leave empty to use default.",
-                "user_agent_hint": "Current Default: antigravity/<version> <os>/<arch>",
-                "user_agent_placeholder": "Enter custom User-Agent string..."
-            },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "port": "Porta de Escuta",
             "port_tooltip": "Porta TCP que o Proxy da API local escuta. Pare o serviço para alterá-la, depois reinicie para aplicar.",
             "port_hint": "Padrão 8045, reinício necessário para aplicar alterações",
@@ -483,16 +427,6 @@
             "warning_key": "Nota: Mantenha sua chave de API segura. Não a compartilhe.",
             "api_key_invalid": "Formato de chave de API inválido, deve começar com sk- e ter pelo menos 10 caracteres",
             "api_key_updated": "Chave de API atualizada",
-<<<<<<< HEAD
-            "admin_password": "Senha do Administrador Web UI",
-            "admin_password_tooltip": "Senha usada para fazer login no console de gerenciamento Web. Se estiver vazia, a Chave de API será usada por padrão.",
-            "admin_password_default": "(Mesmo que a Chave de API)",
-            "admin_password_placeholder": "Digite a nova senha, deixe em branco para usar a Chave de API",
-            "admin_password_hint": "Dica: Em cenários de implantação Docker/Web, você pode definir uma senha de login separada para melhorar a segurança da sua Chave de API.",
-            "admin_password_short": "Senha muito curta (mínimo de 4 caracteres)",
-            "admin_password_updated": "Senha de login Web UI atualizada",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auth": {
                 "title": "Autorização",
                 "title_tooltip": "Controla se as solicitações recebidas devem ser autenticadas e quais rotas são protegidas.",
@@ -577,13 +511,7 @@
                 "enable": "Habilitar Proxy Upstream",
                 "url": "URL do Proxy",
                 "url_placeholder": "ex: http://127.0.0.1:7890 ou socks5://127.0.0.1:7890",
-<<<<<<< HEAD
-                "tip": "Suporta HTTP, HTTPS e SOCKS5.",
-                "validation_error": "URL do proxy é obrigatório quando o proxy upstream está habilitado",
-                "restart_hint": "Configurações de proxy salvas. Reinicie o aplicativo para aplicar as alterações."
-=======
                 "tip": "Suporta HTTP, HTTPS e SOCKS5."
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "scheduling": {
                 "title": "Rotação de Conta e Agendamento",
@@ -604,20 +532,7 @@
                 "max_wait": "Tempo Máximo de Espera (seg)",
                 "max_wait_tooltip": "Usado apenas no modo 'Cache Primeiro': aguardar em vez de alternar se o tempo de reset do limite de taxa estiver abaixo deste valor.",
                 "clear_bindings": "Limpar Vinculações de Sessão",
-<<<<<<< HEAD
-                "clear_bindings_tooltip": "Redefinir todas as vinculações sessão-conta, forçando contas a serem reatribuídas na próxima solicitação.",
-                "circuit_breaker": {
-                    "title": "Disjuntor Adaptativo",
-                    "tooltip": "Aumenta automaticamente a duração do bloqueio para contas que falham repetidamente com esgotamento de cota. Isso evita o desperdício de chamadas de API em contas mortas, permitindo que erros transitórios se recuperem rapidamente.",
-                    "backoff_levels": "Níveis de Recuo (Segundos)",
-                    "level": "Nível {{level}}",
-                    "input_placeholder": "60, 300, 1800, 7200",
-                    "invalid_format": "Formato inválido. Use números separados por vírgula (ex: 60, 300)",
-                    "clear_records": "Limpar Todos os Registros de Limite de Taxa"
-                }
-=======
                 "clear_bindings_tooltip": "Redefinir todas as vinculações sessão-conta, forçando contas a serem reatribuídas na próxima solicitação."
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "experimental": {
                 "title": "Configurações Experimentais",
@@ -742,13 +657,6 @@
             "title": "Roteador de Modelos",
             "subtitle": "Rotear modelos por série ou adicionar mapeamentos exatos personalizados.\nNota: Modelos de passagem nativa Claude (ex: claude-opus-4-5-thinking) ignoram grupos de série por padrão. Use \"Roteamento Personalizado Especialista\" para substituir.",
             "subtitle_simple": "Personalizar roteamento de modelos com curingas ou mapeamentos exatos",
-<<<<<<< HEAD
-            "background_task_title": "Background Task Model",
-            "background_task_desc": "Model used for Claude CLI background tasks like title generation, summary, etc. (Default: gemini-2.5-flash)",
-            "use_default": "Use System Default",
-            "current_model": "Current Model",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "apply_presets": "Aplicar Predefinições",
             "presets_applied": "Predefinições aplicadas com sucesso",
             "custom_mappings": "Mapeamentos Personalizados",
@@ -914,18 +822,6 @@
         "message": "Uma nova versão está pronta com otimizações e melhorias. Atual: v{{current}}",
         "action": "Atualizar Agora"
     },
-<<<<<<< HEAD
-    "login": {
-        "title": "Controle de Acesso Seguro",
-        "desc": "Executando no modo Web. Por favor, insira a senha de administrador ou a Chave de API para acessar.",
-        "placeholder": "Insira a senha de administrador ou a Chave de API",
-        "btn_login": "Verificar e Entrar",
-        "note": "Nota: Se uma senha de administração separada estiver definida, insira-a; caso contrário, insira a API_KEY.",
-        "lookup_hint": "Se esqueceu, execute docker logs antigravity-manager para encontrar a Chave de API atual ou a senha da Web UI.",
-        "config_hint": "Ou execute grep -E '\"api_key\"|\"admin_password\"' ~/.antigravity_tools/gui_config.json para visualizar."
-    },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     "errors": {
         "stream": {
             "timeout_error": "Tempo limite da solicitação, por favor verifique sua conexão de rede",
@@ -961,102 +857,5 @@
         "total": "Total",
         "percentage": "Porcentagem",
         "no_data": "Sem dados"
-<<<<<<< HEAD
-    },
-    "security": {
-        "title": "Monitor de Segurança",
-        "refresh_data": "Atualizar Dados",
-        "refresh": "Atualizar",
-        "tab_logs": "Logs de Acesso",
-        "tab_stats": "Estatísticas",
-        "tab_blacklist": "Lista Negra",
-        "tab_whitelist": "Lista Branca",
-        "tab_config": "Configurações",
-        "stats": {
-            "total_requests": "Total de Requisições",
-            "total_requests_desc": "Todas as requisições registradas",
-            "unique_ips": "IPs Únicos",
-            "unique_ips_desc": "Endereços IP distintos",
-            "blocked_requests": "Requisições Bloqueadas",
-            "blocked_requests_desc": "Requisições rejeitadas por regras",
-            "ip_activity_token_usage": "Atividade de IP e Uso de Tokens",
-            "hour": "Hr",
-            "day": "Dia",
-            "week": "Sem",
-            "month": "Mês",
-            "rank": "Rank",
-            "ip_address": "Endereço IP",
-            "activity_reqs": "Atividade (Reqs)",
-            "total_token": "Total de Tokens",
-            "prompt": "Prompt",
-            "completion": "Conclusão",
-            "no_data": "Sem dados"
-        },
-        "logs": {
-            "search_placeholder": "Buscar IP, Caminho, User Agent...",
-            "show_blocked_only": "Exibir Apenas Bloqueados",
-            "status": "Status",
-            "ip_address": "Endereço IP",
-            "method": "Método",
-            "path": "Caminho",
-            "duration": "Duração",
-            "time": "Tempo",
-            "reason": "Motivo",
-            "blocked": "Bloqueado",
-            "no_logs": "Sem logs",
-            "total_records": "Total de {{total}} registros",
-            "prev_page": "Anterior",
-            "next_page": "Próximo",
-            "page_num": "Página {{page}}",
-            "per_page_suffix": "/pág"
-        },
-        "blacklist": {
-            "add_ip": "Adicionar IP",
-            "search_placeholder": "Buscar...",
-            "added_at": "Adicionado em",
-            "expires_at": "Expira em",
-            "no_data": "Sem dados na lista negra",
-            "add_title": "Adicionar à Lista Negra",
-            "ip_cidr_label": "Endereço IP ou CIDR",
-            "ip_cidr_placeholder": "ex: 192.168.1.1 ou 10.0.0.0/24",
-            "reason_label": "Motivo (Opcional)",
-            "reason_placeholder": "ex: Varredura maliciosa",
-            "expires_label": "Expira em (Horas, Opcional)",
-            "expires_placeholder": "Deixe vazio para permanente",
-            "cancel": "Cancelar",
-            "confirm": "Adicionar",
-            "add_btn": "Adicionar"
-        },
-        "whitelist": {
-            "add_ip": "Adicionar IP Confiável",
-            "no_data": "Sem dados na lista branca",
-            "add_title": "Adicionar à Lista Branca",
-            "description_label": "Descrição (Opcional)",
-            "description_placeholder": "ex: Servidor Interno",
-            "cancel": "Cancelar",
-            "confirm": "Adicionar",
-            "add_btn": "Adicionar"
-        },
-        "config": {
-            "title": "Configurações de Segurança",
-            "save": "Salvar Alterações",
-            "saving": "Salvando...",
-            "blacklist_title": "Lista Negra de IP",
-            "blacklist_desc": "Gerenciar endereços IP e regras bloqueadas.",
-            "enable_blacklist": "Habilitar Proteção de Lista Negra",
-            "block_msg_label": "Mensagem de Bloqueio Personalizada",
-            "block_msg_desc": "Conteúdo retornado para clientes bloqueados.",
-            "whitelist_title": "Lista Branca de IP",
-            "whitelist_desc": "Gerenciar endereços IP confiáveis.",
-            "enable_whitelist": "Habilitar Modo Lista Branca",
-            "whitelist_warning": "Aviso: Habilitar o modo lista branca bloqueará TODAS as requisições de IPs que não estejam na lista branca. Se estiver acessando via proxy, tenha cuidado para não se bloquear.",
-            "whitelist_priority": "Prioridade da Lista Branca (Substitui Lista Negra)",
-            "whitelist_priority_desc": "Se habilitado, IPs na lista branca serão permitidos mesmo que correspondam a regras da lista negra.",
-            "load_error": "Falha ao carregar configurações",
-            "save_success": "Configuração salva",
-            "save_error": "Falha ao salvar configuração"
-        }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

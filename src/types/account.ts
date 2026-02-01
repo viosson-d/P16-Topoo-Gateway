@@ -31,10 +31,7 @@ export interface QuotaData {
     last_updated: number;
     is_forbidden?: boolean;
     subscription_tier?: string;  // 订阅类型: FREE/PRO/ULTRA
-<<<<<<< HEAD
-=======
     tier_reset_date?: string;
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 }
 
 export interface ModelQuota {

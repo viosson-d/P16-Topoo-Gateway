@@ -22,10 +22,6 @@
         "warning": "Uyarı",
         "info": "Bilgi",
         "details": "Detaylar",
-<<<<<<< HEAD
-        "example": "Example",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "clear": "Temizle",
         "prev_page": "Önceki",
         "next_page": "Sonraki",
@@ -36,12 +32,7 @@
         "enabled": "Etkin",
         "disabled": "Devre Dışı",
         "tauri_api_not_loaded": "Tauri API yüklenemedi, lütfen uygulamayı yeniden başlatın",
-<<<<<<< HEAD
-        "environment_error": "Ortam hatası: {{error}}",
-        "submit": "Gönder"
-=======
         "environment_error": "Ortam hatası: {{error}}"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "nav": {
         "dashboard": "Kontrol Paneli",
@@ -49,10 +40,6 @@
         "proxy": "API Proxy",
         "token_stats": "İstatistikler",
         "call_records": "Trafik Günlükleri",
-<<<<<<< HEAD
-        "security": "IP Yönetimi",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         "settings": "Ayarlar",
         "theme_to_dark": "Karanlık Moda Geç",
         "theme_to_light": "Aydınlık Moda Geç",
@@ -69,19 +56,7 @@
         "switch_to_russian": "Rusça'ya Geç",
         "switch_to_russian_short": "RU",
         "switch_to_portuguese": "Portekizce'ye Geç",
-<<<<<<< HEAD
-        "switch_to_portuguese_short": "PT",
-        "switch_to_traditional_chinese": "Geleneksel Çince'ye Geç",
-        "switch_to_traditional_chinese_short": "TW",
-        "switch_to_korean": "Korece'ye Geç",
-        "switch_to_korean_short": "KO",
-        "switch_to_spanish": "İspanyolca'ya Geç",
-        "switch_to_spanish_short": "ES",
-        "switch_to_malay": "Malayca'ya Geç",
-        "switch_to_malay_short": "MY"
-=======
         "switch_to_portuguese_short": "PT"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     },
     "dashboard": {
         "hello": "Merhaba, Kullanıcı 👋",
@@ -213,14 +188,7 @@
                 "copy_link": "Yetkilendirme Bağlantısını Kopyala",
                 "copied": "Kopyalandı",
                 "link_label": "Yetkilendirme URL'si",
-<<<<<<< HEAD
-                "link_click_to_copy": "Kopyalamak için tıklayın",
-                "manual_hint": "Tarayıcı otomatik olarak yönlendirilmedi mi? Lütfen geri dönüş bağlantısını veya Yetkilendirme Kodunu buraya yapıştırın:",
-                "manual_placeholder": "Bağlantıyı veya kodu buraya yapıştırın...",
-                "error_no_flow": "Aktif kimlik doğrulama akışı bulunamadı. Lütfen OAuth'u yeniden başlatın."
-=======
                 "link_click_to_copy": "Kopyalamak için tıklayın"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "token": {
                 "label": "Refresh Token",
@@ -299,11 +267,7 @@
             "auto_launch": "Başlangıçta Çalıştır",
             "auto_launch_enabled": "Etkin",
             "auto_launch_disabled": "Devre Dışı",
-<<<<<<< HEAD
-            "auto_launch_desc": "Sistem başladığında Topoo Gateway'u otomatik olarak başlat"
-=======
             "auto_launch_desc": "Sistem başladığında Antigravity Tools'u otomatik olarak başlat"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
         },
         "account": {
             "title": "Hesap Ayarları",
@@ -351,17 +315,6 @@
             "clear_logs_title": "Log Temizleme Onayı",
             "clear_logs_msg": "Tüm log önbellek dosyalarını temizlemek istediğinizden emin misiniz?",
             "logs_cleared": "Log önbelleği temizlendi",
-<<<<<<< HEAD
-            "antigravity_cache_title": "Antigravity Önbellek Temizliği",
-            "antigravity_cache_desc": "Antigravity önbelleğini temizlemek giriş hatalarını, sürüm doğrulama hatalarını ve OAuth yetkilendirme hatalarını çözebilir.",
-            "antigravity_cache_warning": "Önbelleği temizlemeden önce Antigravity'nin tamamen kapatıldığından emin olun.",
-            "clear_antigravity_cache": "Antigravity Önbelleğini Temizle",
-            "clear_cache_confirm_title": "Antigravity Önbellek Temizliğini Onayla",
-            "clear_cache_confirm_msg": "Aşağıdaki önbellek dizinleri temizlenecek:",
-            "cache_cleared_success": "Önbellek temizlendi, {{size}} MB boşaltıldı",
-            "cache_not_found": "Antigravity önbellek dizinleri bulunamadı",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "http_api_title": "HTTP API Servisi",
             "http_api_desc": "Harici programlar (örn. VS Code eklentileri) için yerel HTTP arayüzü sağlar.",
             "http_api_enabled": "HTTP API'yi Etkinleştir",
@@ -421,15 +374,6 @@
         },
         "config": {
             "title": "Hizmet Yapılandırması",
-<<<<<<< HEAD
-            "request": {
-                "user_agent": "User-Agent Override",
-                "user_agent_tooltip": "Override the User-Agent header sent to upstream APIs. Leave empty to use default.",
-                "user_agent_hint": "Current Default: antigravity/<version> <os>/<arch>",
-                "user_agent_placeholder": "Enter custom User-Agent string..."
-            },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "port": "Dinleme Portu",
             "port_tooltip": "Yerel API Proxy'nin dinlediği TCP portu. Değiştirmek için hizmeti durdurun, ardından uygulamak için yeniden başlatın.",
             "port_hint": "Varsayılan 8045, değişiklikleri uygulamak için yeniden başlatma gerekir",
@@ -451,16 +395,6 @@
             "warning_key": "Not: API anahtarınızı güvende tutun. Paylaşmayın.",
             "api_key_invalid": "Geçersiz API anahtarı formatı, sk- ile başlamalı ve en az 10 karakter uzunluğunda olmalıdır",
             "api_key_updated": "API anahtarı güncellendi",
-<<<<<<< HEAD
-            "admin_password": "Web UI Yönetici Parolası",
-            "admin_password_tooltip": "Web yönetim konsolunda oturum açmak için kullanılan parola. Boş bırakılırsa varsayılan olarak API Anahtarı kullanılır.",
-            "admin_password_default": "(API Anahtarı ile aynı)",
-            "admin_password_placeholder": "Yeni parolanızı girin, API Anahtarı kullanmak için boş bırakın",
-            "admin_password_hint": "İpucu: Docker/Web dağıtım senaryolarında, API Anahtarınızın güvenliğini artırmak için ayrı bir oturum açma parolası ayarlayabilirsiniz.",
-            "admin_password_short": "Parola çok kısa (en az 4 karakter)",
-            "admin_password_updated": "Web UI oturum açma parolası güncellendi",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "auth": {
                 "title": "Yetkilendirme",
                 "title_tooltip": "Gelen isteklerin kimlik doğrulamasının gerekli olup olmadığını ve hangi rotaların korunduğunu kontrol eder.",
@@ -547,13 +481,7 @@
                 "enable": "Upstream Proxy'yi Etkinleştir",
                 "url": "Proxy URL'si",
                 "url_placeholder": "örn. http://127.0.0.1:7890 veya socks5://127.0.0.1:7890",
-<<<<<<< HEAD
-                "tip": "HTTP, HTTPS ve SOCKS5 destekler.",
-                "validation_error": "Upstream proxy etkinleştirildiğinde proxy URL'si zorunludur",
-                "restart_hint": "Proxy ayarları kaydedildi. Değişiklikleri uygulamak için uygulamayı yeniden başlatın."
-=======
                 "tip": "HTTP, HTTPS ve SOCKS5 destekler."
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "scheduling": {
                 "title": "Hesap Rotasyonu ve Zamanlama",
@@ -579,20 +507,7 @@
                 "fixed_account_tooltip": "Etkinleştirildiğinde, tüm API istekleri hesaplar arasında geçiş yapmak yerine yalnızca seçilen hesabı kullanacaktır.",
                 "round_robin_set": "Round-robin modu etkinleştirildi",
                 "fixed_account_set": "Sabit hesap modu etkinleştirildi",
-<<<<<<< HEAD
-                "account_changed": "Hesap şuna değiştirildi: {{email}}",
-                "circuit_breaker": {
-                    "title": "Uyarlanabilir Devre Kesici",
-                    "tooltip": "Kota tükenmesi nedeniyle art arda başarısız olan hesaplar için kilitleme süresini otomatik olarak artırır. Bu, geçici hataların hızla düzelmesine izin verirken, ölü hesaplarda API çağrılarının boşa harcanmasını önler.",
-                    "backoff_levels": "Geri Çekilme Seviyeleri (Saniye)",
-                    "level": "Seviye {{level}}",
-                    "input_placeholder": "60, 300, 1800, 7200",
-                    "invalid_format": "Geçersiz format. Virgülle ayrılmış sayılar kullanın (örn. 60, 300)",
-                    "clear_records": "Tüm Hız Sınırı Kayıtlarını Temizle"
-                }
-=======
                 "account_changed": "Hesap şuna değiştirildi: {{email}}"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             },
             "experimental": {
                 "title": "Deneysel Ayarlar",
@@ -717,13 +632,6 @@
             "title": "Model Yönlendirici",
             "subtitle": "Modelleri serilere göre yönlendirin veya özel tam eşlemeler ekleyin.\nNot: Yerel Claude geçiş modelleri (örn. claude-opus-4-5-thinking) varsayılan olarak seri gruplarını atlar. Geçersiz kılmak için \"Uzman Özel Yönlendirme\" kullanın.",
             "subtitle_simple": "Joker karakterlerle veya tam eşlemelerle model yönlendirmeyi özelleştirin",
-<<<<<<< HEAD
-            "background_task_title": "Background Task Model",
-            "background_task_desc": "Model used for Claude CLI background tasks like title generation, summary, etc. (Default: gemini-2.5-flash)",
-            "use_default": "Use System Default",
-            "current_model": "Current Model",
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
             "apply_presets": "Ön Ayarları Uygula",
             "presets_applied": "Ön ayarlar başarıyla uygulandı",
             "custom_mappings": "Özel Eşlemeler",
@@ -891,18 +799,6 @@
         "message": "Optimizasyonlar ve iyileştirmeler içeren yeni bir sürüm hazır. Mevcut: v{{current}}",
         "action": "Şimdi Güncelle"
     },
-<<<<<<< HEAD
-    "login": {
-        "title": "Güvenli Erişim Kontrolü",
-        "desc": "Şu anda Web modunda çalışıyor. Erişmek için lütfen yönetici parolasını veya API Anahtarını girin.",
-        "placeholder": "Yönetici parolasını veya API Anahtarını girin",
-        "btn_login": "Doğrula ve Gir",
-        "note": "Not: Ayarlanmış ayrı bir yönetici parolası varsa, lütfen onu girin; aksi takdirde API_KEY girin.",
-        "lookup_hint": "Unuttuysanız, Mevcut API Anahtarını veya Web Kullanıcı Arayüzü Parolasını bulmak için docker logs antigravity-manager komutunu çalıştırın.",
-        "config_hint": "Veya görüntülemek için grep -E '\"api_key\"|\"admin_password\"' ~/.antigravity_tools/gui_config.json komutunu çalıştırın."
-    },
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     "token_stats": {
         "title": "Token İstatistikleri",
         "hourly": "Saatlik",
@@ -929,102 +825,5 @@
         "total": "Toplam",
         "percentage": "Oran",
         "no_data": "Veri yok"
-<<<<<<< HEAD
-    },
-    "security": {
-        "title": "Güvenlik İzleme",
-        "refresh_data": "Verileri Gücelle",
-        "refresh": "Yenile",
-        "tab_logs": "Erişim Günlükleri",
-        "tab_stats": "İstatistik Analizi",
-        "tab_blacklist": "Kara Liste",
-        "tab_whitelist": "Beyaz Liste",
-        "tab_config": "Güvenlik Ayarları",
-        "stats": {
-            "total_requests": "Toplam İstek",
-            "total_requests_desc": "Tüm kayıtlı istekler",
-            "unique_ips": "Benzersiz IP'ler",
-            "unique_ips_desc": "Farklı istemci IP adresleri",
-            "blocked_requests": "Engellenen İstekler",
-            "blocked_requests_desc": "Kurallar tarafından reddedilen istekler",
-            "ip_activity_token_usage": "IP Aktivitesi ve Token Kullanımı",
-            "hour": "S",
-            "day": "G",
-            "week": "H",
-            "month": "A",
-            "rank": "Sıra",
-            "ip_address": "IP Adresi",
-            "activity_reqs": "Aktivite (İstek)",
-            "total_token": "Toplam Token",
-            "prompt": "İstem",
-            "completion": "Tamamlama",
-            "no_data": "Veri Yok"
-        },
-        "logs": {
-            "search_placeholder": "IP, Yol, Kullanıcı Aracısı Ara...",
-            "show_blocked_only": "Sadece Engellenenler",
-            "status": "Durum",
-            "ip_address": "IP Adresi",
-            "method": "Yöntem",
-            "path": "Yol",
-            "duration": "Süre",
-            "time": "Zaman",
-            "reason": "Sebep",
-            "blocked": "Engellendi",
-            "no_logs": "Günlük Yok",
-            "total_records": "Toplam {{total}} kayıt",
-            "prev_page": "Önceki",
-            "next_page": "Sonraki",
-            "page_num": "Sayfa {{page}}",
-            "per_page_suffix": "/sayfa"
-        },
-        "blacklist": {
-            "add_ip": "IP Ekle",
-            "search_placeholder": "Ara...",
-            "added_at": "Eklenme Tarihi",
-            "expires_at": "Bitiş Tarihi",
-            "no_data": "Kara liste verisi yok",
-            "add_title": "Kara Listeye Ekle",
-            "ip_cidr_label": "IP Adresi veya CIDR",
-            "ip_cidr_placeholder": "örn. 192.168.1.1 veya 10.0.0.0/24",
-            "reason_label": "Sebep (İsteğe Bağlı)",
-            "reason_placeholder": "örn. Kötü amaçlı tarama",
-            "expires_label": "Bitiş Süresi (Saat, İsteğe Bağlı)",
-            "expires_placeholder": "Kalıcı olması için boş bırakın",
-            "cancel": "İptal",
-            "confirm": "Ekle",
-            "add_btn": "Ekle"
-        },
-        "whitelist": {
-            "add_ip": "Güvenilir IP Ekle",
-            "no_data": "Beyaz liste verisi yok",
-            "add_title": "Beyaz Listeye Ekle",
-            "description_label": "Açıklama (İsteğe Bağlı)",
-            "description_placeholder": "örn. Dahili Sunucu",
-            "cancel": "İptal",
-            "confirm": "Ekle",
-            "add_btn": "Ekle"
-        },
-        "config": {
-            "title": "Güvenlik Ayarları",
-            "save": "Değişiklikleri Kaydet",
-            "saving": "Kaydediliyor...",
-            "blacklist_title": "IP Kara Listesi",
-            "blacklist_desc": "Engellenen IP adreslerini ve kuralları yönetin.",
-            "enable_blacklist": "Kara Liste Korumasını Etkinleştir",
-            "block_msg_label": "Özel Engelleme Mesajı",
-            "block_msg_desc": "Engellenen istemcilere döndürülen yanıt içeriği.",
-            "whitelist_title": "IP Beyaz Listesi",
-            "whitelist_desc": "Güvenilir IP adreslerini yönetin.",
-            "enable_whitelist": "Beyaz Liste Modunu Etkinleştir",
-            "whitelist_warning": "Uyarı: Beyaz liste modunu etkinleştirmek, beyaz listede olmayan IP'lerden gelen TÜM istekleri engelleyecektir. Proxy üzerinden erişiyorsanız, kendinizi dışarıda bırakmamaya dikkat edin.",
-            "whitelist_priority": "Beyaz Liste Önceliği (Kara Listeyi Geçersiz Kılar)",
-            "whitelist_priority_desc": "Etkinleştirilirse, beyaz listedeki IP'lere kara liste kurallarıyla eşleşseler bile izin verilir.",
-            "load_error": "Yapılandırma yüklenemedi",
-            "save_success": "Yapılandırma kaydedildi",
-            "save_error": "Yapılandırma kaydedilemedi"
-        }
-=======
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     }
 }

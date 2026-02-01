@@ -155,11 +155,7 @@ export default function GroupedSelect({
                     {Object.entries(groupedOptions).map(([group, groupOptions]) => (
                         <div key={group}>
                             {/* 分组标题 */}
-<<<<<<< HEAD
-                            <div className="px-3 py-1.5 text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
-=======
                             <div className="px-3 py-1.5 text-[9px] font-bold text-gray-500 dark:text-gray-400 tracking-wider bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
                                 {group}
                             </div>
 
