@@ -1,10 +1,6 @@
 # Topoo Gateway 🚀
 
-<<<<<<< HEAD
 > 专业的 AI 账号管理与协议反代系统 (v4.0.10)
-=======
-> 专业的 AI 账号管理与协议反代系统 (v3.3.49)
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 <div align="center">
   <img src="public/icon.png" alt="Topoo Gateway Logo" width="120" height="120" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
 
@@ -13,11 +9,7 @@
   
   <p>
     <a href="https://github.com/lbjlaq/Antigravity-Manager">
-<<<<<<< HEAD
       <img src="https://img.shields.io/badge/Version-4.0.10-blue?style=flat-square" alt="Version">
-=======
-      <img src="https://img.shields.io/badge/Version-3.3.49-blue?style=flat-square" alt="Version">
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
     </a>
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Backend-Rust-red?style=flat-square" alt="Rust">
@@ -389,6 +381,7 @@ with open("output.png", "wb") as f:
 ```
 
 **支持的参数**：
+
 * **`size`**: 任意 `WIDTHxHEIGHT` 格式（如 `1280x720`, `1024x1024`, `1920x1080`），自动计算并映射到标准宽高比（21:9, 16:9, 9:16, 4:3, 3:4, 1:1）
 * **`quality`**:
   * `"hd"` → 4K 分辨率（高质量）
@@ -436,6 +429,7 @@ response = client.chat.completions.create(
 ```
 
 **模型后缀说明**：
+
 * **宽高比**: `-16-9`, `-9-16`, `-4-3`, `-3-4`, `-21-9`, `-1-1`
 * **质量**: `-4k` (4K), `-2k` (2K), 不加后缀（标准）
 * **示例**: `gemini-3-pro-image-16-9-4k` → 16:9 比例 + 4K 分辨率
@@ -452,6 +446,7 @@ response = client.chat.completions.create(
 3. **发送请求**：直接在对话框中输入图片描述即可
 
 **参数映射规则**：
+
 * `size: "1920x1080"` → 自动计算为 `16:9` 宽高比
 * `quality: "hd"` → 映射为 `4K` 分辨率
 * `quality: "medium"` → 映射为 `2K` 分辨率
