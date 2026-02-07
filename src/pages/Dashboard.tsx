@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, AlertTriangle } from 'lucide-react';
+import { RefreshCw, AlertTriangle, Download } from 'lucide-react';
 import { useAccountStore } from '../stores/useAccountStore';
 import { showToast } from '../components/common/ToastContainer';
 import { cn } from '../lib/utils';
@@ -13,6 +13,12 @@ import { useActivityStore } from '../stores/useActivityStore';
 
 import { PageHeader } from '../components/layout/PageHeader';
 import { PageContainer } from '../components/layout/PageContainer';
+
+import { save } from '@tauri-apps/plugin-dialog';
+import { exportAccounts } from '../services/accountService';
+import { Account } from '../types/account';
+import { isTauri } from '../utils/env';
+import { request as invoke } from '../utils/request';
 
 function Dashboard() {
     const { t, i18n } = useTranslation();
@@ -96,6 +102,58 @@ function Dashboard() {
         await fetchAccounts();
     };
 
+    const exportAccountsToJson = async (accountsToExport: Account[]) => {
+        try {
+            if (accountsToExport.length === 0) {
+                showToast(t('dashboard.toast.export_no_accounts'), 'warning');
+                return;
+            }
+
+            // Get export data from API (contains refresh_token)
+            const accountIds = accountsToExport.map(acc => acc.id);
+            const response = await exportAccounts(accountIds);
+
+            if (!response.accounts || response.accounts.length === 0) {
+                showToast(t('dashboard.toast.export_no_accounts'), 'warning');
+                return;
+            }
+
+            const exportData = response.accounts;
+            const content = JSON.stringify(exportData, null, 2);
+            const fileName = `antigravity_accounts_${new Date().toISOString().split('T')[0]}.json`;
+
+            if (isTauri()) {
+                const path = await save({
+                    filters: [{
+                        name: 'JSON',
+                        extensions: ['json']
+                    }],
+                    defaultPath: fileName
+                });
+
+                if (!path) return;
+
+                await invoke('save_text_file', { path, content });
+                showToast(t('dashboard.toast.export_success', { path }), 'success');
+            } else {
+                // Web 模式：使用浏览器下载
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast(t('dashboard.toast.export_success', { path: fileName }), 'success');
+            }
+        } catch (error: any) {
+            console.error('Export failed:', error);
+            showToast(`${t('dashboard.toast.export_error')}: ${error.toString()}`, 'error');
+        }
+    };
+
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     return (
@@ -111,13 +169,25 @@ function Dashboard() {
                     })
                 })}
             >
+                <button
+                    onClick={() => exportAccountsToJson(accounts)}
+                    className="h-7 w-7 flex items-center justify-center p-0 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 border border-transparent hover:border-border/40 mr-1"
+                    title={t('dashboard.export_data')}
+                >
+                    <Download className="w-3.5 h-3.5 text-muted-foreground/70" />
+                </button>
                 <AddAccountDialog onAdd={handleAddAccount} />
                 <button
                     onClick={handleRefreshCurrent}
                     disabled={isRefreshing}
-                    className="h-7 w-7 flex items-center justify-center p-0 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg transition-all active:scale-95 border border-transparent hover:border-border/40"
-                >
-                    <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground/35", isRefreshing && "animate-spin")} />
+                    className={cn(
+                        "px-3 py-1 rounded-md border text-xs font-semibold transition-colors flex items-center gap-1.5",
+                        isRefreshing
+                            ? "bg-zinc-100 dark:bg-zinc-800 border-transparent text-muted-foreground cursor-wait"
+                            : "bg-white dark:bg-black/20 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    )}
+                    title={isRefreshing ? t('dashboard.refreshing') : t('dashboard.refresh_quota')}
+                >        <RefreshCw className={cn("w-3.5 h-3.5 text-muted-foreground/35", isRefreshing && "animate-spin")} />
                 </button>
             </PageHeader>
 
@@ -131,7 +201,7 @@ function Dashboard() {
                             <p className="text-xs opacity-80">{error}</p>
                         </div>
                         <button
-                            onClick={() => { fetchAccounts(); fetchCurrentAccount(); }}
+                            onClick={handleRefreshCurrent}
                             className="px-3 py-1 rounded-md bg-white dark:bg-black/20 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-xs font-semibold"
                         >
                             {t('common.retry') || 'Retry'}

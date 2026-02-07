@@ -1,9 +1,13 @@
 cask "antigravity-tools" do
 <<<<<<< HEAD
+<<<<<<< HEAD
   version "4.0.10"
 =======
   version "3.3.49"
 >>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
+=======
+  version "4.1.8"
+>>>>>>> upstream/main
   sha256 :no_check
 
   name "Antigravity Tools"

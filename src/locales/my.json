@@ -34,7 +34,13 @@
         "disabled": "Dinyahaktifkan",
         "tauri_api_not_loaded": "API Tauri tidak dimuatkan, sila mulakan semula aplikasi",
         "environment_error": "Ralat persekitaran: {{error}}",
-        "submit": "Hantar"
+        "submit": "Hantar",
+        "update": "Kemas kini",
+        "load_failed": "Gagal dimuatkan",
+        "create_success": "Berjaya dicipta",
+        "update_success": "Berjaya dikemas kini",
+        "delete_success": "Berjaya dipadam",
+        "copied": "Disalin ke papan klip"
     },
     "nav": {
         "dashboard": "Papan Pemuka",
@@ -109,6 +115,9 @@
         "ultra": "ULTRA",
         "pro": "PRO",
         "free": "PERCUMA",
+        "edit_label": "Sunting Label",
+        "custom_label_placeholder": "Masukkan label tersuai",
+        "label_updated": "Label dikemas kini",
         "add_account": "Tambah Akaun",
         "refresh_all": "Muat Semula Semua",
         "refresh_selected": "Muat Semula ({{count}})",
@@ -141,6 +150,7 @@
         "switch_to": "Tukar ke akaun ini",
         "actions": "Tindakan",
         "device_fingerprint": "Cap Jari Peranti",
+        "show_all_quotas": "Tunjukkan semua kuota",
         "device_fingerprint_dialog": {
             "title": "Cap Jari Peranti",
             "operations": "Operasi Cap Jari Peranti",
@@ -185,7 +195,9 @@
         "warmup_batch_triggered": "Tugas pemanasan dicetuskan untuk {{count}} akaun",
         "quota_protected": "Dilindungi",
         "details": {
-            "title": "Butiran Kuota"
+            "title": "Butiran Kuota",
+            "model_quota": "Kuota Model",
+            "protected_models": "Model Dilindungi"
         },
         "toast": {
             "proxy_enabled": "Proksi diaktifkan untuk {{count}} akaun",
@@ -210,7 +222,12 @@
                 "link_click_to_copy": "Klik untuk salin",
                 "manual_hint": "Pelayar tidak dialihkan? Tampal URL panggil balik penuh atau Kod mentah di sini:",
                 "manual_placeholder": "Tampal URL panggil balik atau kod...",
-                "error_no_flow": "Sila klik 'Mula OAuth' dahulu"
+                "error_no_flow": "Sila klik 'Mula OAuth' dahulu",
+                "web_hint": "Halaman log masuk Google akan dibuka dalam tetingkap baru",
+                "error_no_url": "Gagal mendapatkan URL OAuth",
+                "popup_blocked": "Pop timbul disekat",
+                "manual_submitting": "Menghantar kod pengesahan...",
+                "manual_submitted": "Kod pengesahan dihantar, sedang diproses di latar belakang..."
             },
             "token": {
                 "label": "Token Muat Semula",
@@ -281,7 +298,8 @@
             "account": "Akaun",
             "proxy": "Tetapan Proksi",
             "advanced": "Lanjutan",
-            "about": "Perihal"
+            "about": "Perihal",
+            "debug": "Nyahpepijat"
         },
         "general": {
             "title": "Tetapan Umum",
@@ -333,6 +351,59 @@
         },
         "proxy": {
             "title": "Tetapan Proksi"
+        },
+        "proxy_pool": {
+            "title": "Proxy Pool",
+            "strategy_priority": "Priority",
+            "strategy_round_robin": "Round Robin",
+            "strategy_random": "Random",
+            "strategy_least_connections": "Least Connections",
+            "test_all": "Test All",
+            "batch_import": "Import",
+            "binding_manager": "Bindings",
+            "add_proxy": "Add Proxy",
+            "edit_proxy": "Edit Proxy",
+            "name": "Name",
+            "url": "Proxy URL",
+            "username": "Username",
+            "password": "Password",
+            "max_accounts": "Max Accounts",
+            "max_accounts_hint": "0 = Unlimited",
+            "priority": "Priority",
+            "priority_hint": "Lower is better",
+            "health_check_url": "Health Check URL",
+            "tags": "Tags",
+            "add_tag_placeholder": "Add tag...",
+            "seconds": "Sec",
+            "test_completed": "Health check completed",
+            "test_failed": "Health check failed",
+            "confirm_delete": "Are you sure you want to delete this proxy?",
+            "empty": "No proxies available",
+            "column_priority": "Priority",
+            "column_status": "Status",
+            "column_details": "Proxy Details",
+            "column_bindings": "Bindings",
+            "import_title": "Batch Import Proxies",
+            "import_label": "Paste Proxy List (One per line)",
+            "import_hint": "Supported formats: protocol://user:pass@host:port, host:port:user:pass",
+            "import_preview": "Preview",
+            "import_confirm": "Import {{count}} Proxies",
+            "no_valid_proxies": "No valid proxies found",
+            "binding": {
+                "title": "Account Proxy Bindings",
+                "load_failed": "Failed to load bindings",
+                "unbind_success": "Unbound successfully",
+                "bind_success": "Bound successfully",
+                "update_failed": "Failed to update binding",
+                "assigned_proxy": "Assigned Proxy",
+                "default_strategy": "Default (Follow Strategy)"
+            },
+            "status": {
+                "inactive": "Inactive",
+                "checking": "Checking",
+                "healthy": "Healthy",
+                "timeout": "Timeout"
+            }
         },
         "advanced": {
             "title": "Tetapan Lanjutan",
@@ -404,6 +475,19 @@
             "support_alipay": "Alipay",
             "support_wechat": "WeChat Pay",
             "support_buymeacoffee": "Buy Me a Coffee"
+        },
+        "thinking_budget": {
+            "title": "Bajet Pemikiran (Thinking Budget)",
+            "description": "Mengawal kedalaman penaakulan model AI, mempengaruhi keupayaannya menyelesaikan tugas kompleks",
+            "mode_auto": "Automatik (Disyorkan)",
+            "mode_auto_desc": "Sistem menggunakan had optimum untuk setiap model",
+            "mode_passthrough": "Laluan terus",
+            "mode_passthrough_desc": "Mempercayai nilai pemanggil sepenuhnya (pengurusan risiko tanggungjawab anda)",
+            "mode_custom": "Tersuai",
+            "mode_custom_desc": "Gunakan nilai bajet tersuai tetap",
+            "custom_value_label": "Nilai bajet tersuai",
+            "custom_value_hint": "Julat: 1024 - 65536 token",
+            "warning_passthrough": "⚠️ Mod laluan terus mungkin menghabiskan kuota dengan cepat"
         }
     },
     "tray": {
@@ -869,7 +953,14 @@
     "update_notification": {
         "title": "Versi Baharu Tersedia",
         "message": "Versi baharu sudah sedia dengan pengoptimuman dan penambahbaikan. Semasa: v{{current}}",
-        "action": "Kemas Kini Sekarang"
+        "ready": "Kemas Kini Sedia",
+        "downloading": "Memuat turun kemas kini...",
+        "restarting": "Memulakan semula aplikasi...",
+        "auto_update": "Kemas Kini Automatik",
+        "toast": {
+            "not_ready": "Pakej kemas kini automatik belum sedia, mengarahkan anda ke halaman muat turun...",
+            "failed": "Kemas kini automatik gagal, mengarahkan anda ke halaman muat turun..."
+        }
     },
     "login": {
         "title": "Kawalan Akses Selamat",
@@ -915,5 +1006,39 @@
             "stream_error": "Ralat penghantaran strim, sila cuba semula kemudian",
             "unknown_error": "Ralat tidak diketahui berlaku, sila cuba semula kemudian"
         }
+    },
+    "user_token": {
+        "title": "Pengurusan Token Pengguna",
+        "total_users": "Jumlah Pengguna",
+        "active_tokens": "Token Aktif",
+        "total_created": "Jumlah Dicipta",
+        "create": "Cipta Token",
+        "username": "Nama pengguna",
+        "token": "Token",
+        "expires": "Tamat Tempoh",
+        "usage": "Penggunaan",
+        "ip_limit": "Had IP",
+        "created": "Dicipta pada",
+        "today_requests": "Permintaan Hari Ini",
+        "never": "Selasma",
+        "renew": "Perbaharui",
+        "renew_button": "Perbaharui",
+        "unlimited": "Tanpa had",
+        "create_title": "Cipta Token Baharu",
+        "description": "Penerangan",
+        "curfew": "Waktu perintah berkurung (Perkhidmatan tidak tersedia)",
+        "edit_title": "Sunting Token",
+        "username_required": "Nama pengguna diperlukan",
+        "renew_success": "Berjaya diperbaharui",
+        "expires_day": "1 Hari",
+        "expires_week": "1 Minggu",
+        "expires_month": "1 Bulan",
+        "expires_never": "Selasma",
+        "no_data": "Tiada token ditemui",
+        "placeholder_username": "cth. user1",
+        "placeholder_desc": "Nota pilihan",
+        "placeholder_max_ips": "0 = Tanpa had",
+        "hint_max_ips": "0 bermaksud tanpa had",
+        "hint_curfew": "Biarkan kosong untuk nyahaktifkan. Berdasarkan masa pelayan."
     }
 }

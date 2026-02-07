@@ -32,6 +32,7 @@ interface AccountState {
     warmUpAccounts: () => Promise<string>;
     warmUpAccount: (accountId: string) => Promise<string>;
     resetForbiddenAccounts: () => Promise<accountService.ResetStats>;
+    updateAccountLabel: (accountId: string, label: string) => Promise<void>;
 }
 
 export const useAccountStore = create<AccountState>((set, get) => ({
@@ -361,4 +362,20 @@ export const useAccountStore = create<AccountState>((set, get) => ({
             throw error;
         }
     },
+
+    updateAccountLabel: async (accountId: string, label: string) => {
+        try {
+            await accountService.updateAccountLabel(accountId, label);
+            // 乐观更新本地状态
+            const { accounts } = get();
+            const updatedAccounts = accounts.map(acc =>
+                acc.id === accountId ? { ...acc, custom_label: label || undefined } : acc
+            );
+            set({ accounts: updatedAccounts });
+        } catch (error) {
+            console.error('[AccountStore] Update label failed:', error);
+            throw error;
+        }
+    },
+
 }));
