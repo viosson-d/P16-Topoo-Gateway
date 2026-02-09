@@ -1,6 +1,6 @@
 # Topoo Gateway 🚀
 
-> 专业的 AI 账号管理与协议反代系统 (v0.0.126)
+> 专业的 AI 账号管理与协议反代系统 (v0.0.0.126)
 <div align="center">
   <img src="public/icon.png" alt="Topoo Gateway Logo" width="120" height="120" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
 
@@ -402,12 +402,12 @@ response = client.chat.completions.create(
 
 * **版本演进 (Changelog)**:
 
-  * **v0.0.126 (2026-02-08)**:
+  * **v0.0.0.126 (2026-02-08)**:
     * **[Topoo Gateway] 数据恢复功能 (Data Recovery)**:
       * **统计数据重建**: 后端现在支持从 `proxy_logs` 历史记录中重建缺失的 `token_stats`。
       * **Web UI 集成**: "Token Stats" 页面新增“重建统计数据”按钮，通过进度条实时显示后台处理进度。
     * **[release] 版本发布**:
-      * 发布 `v0.0.126` 正式版。
+      * 发布 `v0.0.0.126` 正式版。
 
   * **v4.0.10 (2026-01-30)**:
     * **[核心修复] 账号状态热重载 (Account Hot-Reload)**:
