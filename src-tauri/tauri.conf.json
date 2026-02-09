@@ -37,13 +37,9 @@
       "icons/icon.ico"
     ],
     "macOS": {
-      "entitlements": "Entitlements.plist",
-      "shortVersion": "0.0.0.126"
+      "entitlements": "Entitlements.plist"
     },
-    "windows": {
-      "productName": "Topoo Gateway",
-      "version": "0.0.0.126"
-    }
+    "windows": {}
   },
   "plugins": {
     "updater": {
