@@ -14,8 +14,11 @@
     "windows": [
       {
         "title": "Topoo Gateway",
-        "width": 1024,
-        "height": 700,
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "transparent": true,
@@ -45,7 +48,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/viosson-d/P16-Topoo-Gateway/releases/latest/download/updater.json"
+        "https://github.com/viosson-d/topoo-gateway/releases/latest/download/updater.json"
       ],
       "dialog": true,
       "pubkey": "RWStbXNRvSmN3g7MtCLp8oNzV0wSr0k6kf2m0gczOFy08Cou3NXo7JEr"
