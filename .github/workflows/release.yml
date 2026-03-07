@@ -74,7 +74,7 @@ jobs:
           # 注意：Tauri Action 可能生成了 updater.json 在某处，或者我们需要自己生成/修改
           # 这里假设项目里原本就有机制生成或者 tauri action 生成了
           # 搜索 updater json
-          UPDATER_JSON=$(find ../../../ -name "latest-mac.json" -o -name "install.json" | head -n 1)
+          UPDATER_JSON=$(find ../../../ \( -name "latest.json" -o -name "latest-mac.json" -o -name "install.json" \) | head -n 1)
           
           if [ -f "$UPDATER_JSON" ]; then
             echo "Updating $UPDATER_JSON to use renamed assets..."
