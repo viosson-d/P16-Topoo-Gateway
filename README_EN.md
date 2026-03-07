@@ -9,7 +9,7 @@
   <p>Multi-Account Management · Protocol Conversion · Smart Routing</p>
   
   <p>
-    <img src="https://img.shields.io/badge/Version-0.0.128-blue?style=flat-square" alt="Version">
+    <img src="https://img.shields.io/badge/Version-0.0.129-blue?style=flat-square" alt="Version">
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Backend-Rust-red?style=flat-square" alt="Rust">
     <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square" alt="React">
@@ -121,6 +121,11 @@ response = client.images.generate(
 ```
 
 ## 📝 Changelog
+
+### v0.0.129 (2026-03-07)
+
+- Updated the Intel macOS GitHub Actions runner label from `macos-13` to `macos-15-intel`
+- Ready for a corrected multi-architecture signed updater/release run via `v0.0.129`
 
 ### v0.0.128 (2026-03-07)
 
