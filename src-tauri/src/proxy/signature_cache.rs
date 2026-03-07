@@ -155,6 +155,10 @@ impl SignatureCache {
     /// * `signature` - The thought signature to store
     /// * `message_count` - The current message count of the conversation (to detect Rewind)
     pub fn cache_session_signature(&self, session_id: &str, signature: String, message_count: usize) {
+        if crate::proxy::config::is_strict_stateless_mode() {
+            return;
+        }
+
         if signature.len() < MIN_SIGNATURE_LENGTH {
             return;
         }
@@ -222,6 +226,10 @@ impl SignatureCache {
     /// Retrieve the latest thinking signature for a session.
     /// Returns None if not found or expired.
     pub fn get_session_signature(&self, session_id: &str) -> Option<String> {
+        if crate::proxy::config::is_strict_stateless_mode() {
+            return None;
+        }
+
         if let Ok(cache) = self.session_signatures.lock() {
             if let Some(entry) = cache.get(session_id) {
                 if !entry.is_expired() {
@@ -241,6 +249,10 @@ impl SignatureCache {
 
     /// 删除指定会话的缓存签名
     pub fn delete_session_signature(&self, session_id: &str) {
+        if crate::proxy::config::is_strict_stateless_mode() {
+            return;
+        }
+
         if let Ok(mut cache) = self.session_signatures.lock() {
             if cache.remove(session_id).is_some() {
                 tracing::debug!("[SignatureCache] Deleted session signature for: {}", session_id);

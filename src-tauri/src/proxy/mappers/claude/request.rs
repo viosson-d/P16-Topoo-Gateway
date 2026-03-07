@@ -622,12 +622,9 @@ pub fn transform_claude_request_in(
         "requestType": config.request_type,
     });
 
-    // 如果提供了 metadata.user_id，则复用为 sessionId
-    if let Some(metadata) = &claude_req.metadata {
-        if let Some(user_id) = &metadata.user_id {
-            body["request"]["sessionId"] = json!(user_id);
-        }
-    }
+    // Stateless upstream mode:
+    // never forward a stable session identifier to Antigravity/Claude upstream.
+    // Context continuity must stay inside the gateway/control plane.
 
     // [FIX #593] 最后一道防线: 递归深度清理所有 cache_control 字段
     // 确保发送给 Antigravity 的请求中不包含任何 cache_control

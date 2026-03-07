@@ -1,18 +1,10 @@
 #!/bin/bash
 
-<<<<<<< HEAD
 # 关闭已集成到 v4.0.3 的 PR 脚本
 # 使用前请确保已安装并登录 GitHub CLI: brew install gh && gh auth login
 
 REPO="lbjlaq/Antigravity-Manager"
 VERSION="v4.0.3"
-=======
-# 关闭已集成到 v3.3.49 的 PR 脚本
-# 使用前请确保已安装并登录 GitHub CLI: brew install gh && gh auth login
-
-REPO="lbjlaq/Antigravity-Manager"
-VERSION="v3.3.49"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
 
 # 感谢消息模板
 THANK_YOU_MESSAGE="感谢您的贡献！🎉
@@ -23,7 +15,7 @@ THANK_YOU_MESSAGE="感谢您的贡献！🎉
 - README.md 的版本更新日志
 - 贡献者列表
 
-再次感谢您对 Antigravity Tools 项目的支持！
+再次感谢您对 Topoo Gateway 项目的支持！
 
 ---
 
@@ -35,7 +27,7 @@ The updates are documented in:
 - README.md changelog
 - Contributors list
 
-Thank you again for your support of the Antigravity Tools project!"
+Thank you again for your support of the Topoo Gateway project!"
 
 echo "================================================"
 echo "关闭已集成到 ${VERSION} 的 PR"
@@ -45,16 +37,12 @@ echo ""
 # PR 列表：格式为 "PR号|作者|标题"
 PRS_LIST=(
     "825|IamAshrafee|[Internationalization] Device Fingerprint Dialog localization"
-    "822|Koshikai|[Japanese] Add missing translations and refine terminology",
-    "798|vietnhatthai|[Translation Fix] Correct spelling error in Vietnamese settings",
-    "846|lengjingxu|[核心功能] 客户端热更新与 Token 统计系统",
-    "949|lbjlaq|Streaming chunks order fix",
-<<<<<<< HEAD
-    "950|lbjlaq|[Fix] Remove redundant code and update README",
-    "973|Mag1cFall|fix: 修复 Windows 平台启动参数不生效的问题"
-=======
+    "822|Koshikai|[Japanese] Add missing translations and refine terminology"
+    "798|vietnhatthai|[Translation Fix] Correct spelling error in Vietnamese settings"
+    "846|lengjingxu|[核心功能] 客户端热更新与 Token 统计系统"
+    "949|lbjlaq|Streaming chunks order fix"
     "950|lbjlaq|[Fix] Remove redundant code and update README"
->>>>>>> c37e387c (Initial commit of Topoo Gateway P16)
+    "973|Mag1cFall|fix: 修复 Windows 平台启动参数不生效的问题"
 )
 
 # 检查 GitHub CLI 是否已安装

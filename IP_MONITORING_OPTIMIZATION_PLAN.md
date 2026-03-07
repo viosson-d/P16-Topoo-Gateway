@@ -1253,5 +1253,5 @@ wrk -t12 -c400 -d30s --latency http://localhost:8045/v1/chat/completions
 
 **文档版本**: v1.0  
 **创建时间**: 2026-01-30  
-**作者**: Antigravity 开发团队  
+**作者**: Topoo Gateway 开发团队  
 **建议**: 优先实施阶段 1（快速见效），再根据实际需求推进阶段 2-3

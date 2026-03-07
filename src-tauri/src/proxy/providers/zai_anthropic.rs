@@ -151,10 +151,11 @@ pub async fn forward_anthropic_json(
         let mapped = map_model_for_zai(model, &zai);
         body["model"] = Value::String(mapped.clone());
 
-        // [FIX] Caching for z.ai (to support thinking-filter)
+        // Keep z.ai signature caching request-scoped to avoid cross-conversation pollution.
         if let Some(sig) = body.get("thinking").and_then(|t| t.get("signature")).and_then(|s| s.as_str()) {
+            let request_scope = format!("zai-{}", uuid::Uuid::new_v4());
             crate::proxy::SignatureCache::global().cache_session_signature(
-                "zai-session", 
+                &request_scope,
                 sig.to_string(), 
                 message_count
             );

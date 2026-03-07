@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Antigravity Tools - Arch Linux Self-Updating Installer
+# Topoo Gateway - Arch Linux Self-Updating Installer
 # This script fetches the latest release from GitHub and installs it using makepkg.
 
 echo "🚀 Fetching latest release information..."

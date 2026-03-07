@@ -8,6 +8,7 @@ use std::sync::{OnceLock, RwLock};
 // 用于在 request transform 函数中访问配置（无需修改函数签名）
 // ============================================================================
 static GLOBAL_THINKING_BUDGET_CONFIG: OnceLock<RwLock<ThinkingBudgetConfig>> = OnceLock::new();
+static GLOBAL_STRICT_STATELESS_MODE: OnceLock<RwLock<bool>> = OnceLock::new();
 
 /// 获取当前 Thinking Budget 配置
 pub fn get_thinking_budget_config() -> ThinkingBudgetConfig {
@@ -38,6 +39,32 @@ pub fn update_thinking_budget_config(config: ThinkingBudgetConfig) {
             config.custom_value
         );
     }
+}
+
+/// Get the runtime strict stateless mode flag.
+/// Defaults to false until the proxy service loads persisted config and initializes it.
+pub fn is_strict_stateless_mode() -> bool {
+    GLOBAL_STRICT_STATELESS_MODE
+        .get()
+        .and_then(|lock| lock.read().ok())
+        .map(|enabled| *enabled)
+        .unwrap_or(false)
+}
+
+/// Update the runtime strict stateless mode flag.
+pub fn update_strict_stateless_mode(enabled: bool) {
+    if let Some(lock) = GLOBAL_STRICT_STATELESS_MODE.get() {
+        if let Ok(mut current) = lock.write() {
+            *current = enabled;
+        }
+    } else {
+        let _ = GLOBAL_STRICT_STATELESS_MODE.set(RwLock::new(enabled));
+    }
+
+    tracing::info!(
+        "[Strict-Stateless] Runtime mode updated: enabled={}",
+        enabled
+    );
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -154,6 +181,29 @@ impl Default for ZaiConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CodexConfig {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default = "default_codex_base_url")]
+    pub base_url: String,
+    #[serde(default)]
+    pub auth_path: Option<String>,
+    #[serde(default)]
+    pub accounts_path: Option<String>,
+}
+
+impl Default for CodexConfig {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            base_url: default_codex_base_url(),
+            auth_path: None,
+            accounts_path: None,
+        }
+    }
+}
+
 /// 实验性功能配置 (Feature Flags)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExperimentalConfig {
@@ -261,6 +311,10 @@ fn default_true() -> bool {
 
 fn default_false() -> bool {
     false
+}
+
+fn default_strict_stateless_mode() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -403,6 +457,10 @@ pub struct ProxyConfig {
     #[serde(default)]
     pub zai: ZaiConfig,
 
+    /// Codex provider configuration (ChatGPT Codex backend).
+    #[serde(default)]
+    pub codex: CodexConfig,
+
     /// 自定义 User-Agent 请求头 (可选覆盖)
     #[serde(default)]
     pub user_agent_override: Option<String>,
@@ -410,6 +468,11 @@ pub struct ProxyConfig {
     /// 账号调度配置 (粘性会话/限流重试)
     #[serde(default)]
     pub scheduling: crate::proxy::sticky_config::StickySessionConfig,
+
+    /// Strict stateless mode:
+    /// disables session-based signature reuse and forces stateless scheduling semantics.
+    #[serde(default = "default_strict_stateless_mode")]
+    pub strict_stateless_mode: bool,
 
     /// 实验性功能配置
     #[serde(default)]
@@ -464,7 +527,9 @@ impl Default for ProxyConfig {
             debug_logging: DebugLoggingConfig::default(),
             upstream_proxy: UpstreamProxyConfig::default(),
             zai: ZaiConfig::default(),
+            codex: CodexConfig::default(),
             scheduling: crate::proxy::sticky_config::StickySessionConfig::default(),
+            strict_stateless_mode: default_strict_stateless_mode(),
             experimental: ExperimentalConfig::default(),
             security_monitor: SecurityMonitorConfig::default(),
             preferred_account_id: None, // 默认使用轮询模式
@@ -482,6 +547,10 @@ fn default_request_timeout() -> u64 {
 
 fn default_zai_base_url() -> String {
     "https://api.z.ai/api/anthropic".to_string()
+}
+
+fn default_codex_base_url() -> String {
+    "https://chatgpt.com/backend-api/codex/responses".to_string()
 }
 
 fn default_zai_opus_model() -> String {

@@ -14,6 +14,7 @@ import { CloudflaredConfigCard } from '../components/proxy/CloudflaredConfig';
 import { GeneralSettings } from '../components/proxy/GeneralSettings';
 import { AdvancedSettings } from '../components/proxy/AdvancedSettings';
 import { ZaiConfigCard } from '../components/proxy/ZaiConfig';
+import { CodexConfigCard } from '../components/proxy/CodexConfig';
 import { SchedulingConfigCard } from '../components/proxy/SchedulingConfig';
 import { CliSyncSection } from '../components/proxy/CliSyncSection';
 import { useAccountStore } from '../stores/useAccountStore';
@@ -44,6 +45,7 @@ const DEFAULT_APP_CONFIG: AppConfig = {
         auto_start: false,
         allow_lan_access: false,
         auth_mode: 'off',
+        strict_stateless_mode: true,
         zai: {
             enabled: false,
             base_url: 'https://api.z.ai/api/anthropic',
@@ -52,7 +54,13 @@ const DEFAULT_APP_CONFIG: AppConfig = {
             models: { opus: '', sonnet: '', haiku: '' },
             mcp: { enabled: false, web_search_enabled: false, web_reader_enabled: false, vision_enabled: false }
         },
-        scheduling: { mode: 'Balance', max_wait_seconds: 5 }
+        codex: {
+            enabled: false,
+            base_url: 'https://chatgpt.com/backend-api/codex/responses',
+            auth_path: '',
+            accounts_path: ''
+        },
+        scheduling: { mode: 'PerformanceFirst', max_wait_seconds: 5 }
     }
 };
 
@@ -272,6 +280,7 @@ export default function ApiProxy() {
                                 {t('proxy.config.zai.external_providers', 'Advanced Features & Providers')}
                             </h3>
                             <div className="grid gap-6">
+                                {proxyConfig.codex && <CodexConfigCard config={proxyConfig.codex} onChange={(newCodex) => handleSave('codex', newCodex)} disabled={false} />}
                                 {proxyConfig.zai && <ZaiConfigCard config={proxyConfig.zai} onChange={(newZai) => handleSave('zai', newZai)} disabled={false} />}
                                 <CloudflaredConfigCard />
                                 <UpstreamProxyConfig

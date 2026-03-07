@@ -28,8 +28,11 @@ pub mod zai_vision_mcp; // Built-in Vision MCP server state
 pub mod zai_vision_tools; // Built-in Vision MCP tools (z.ai vision API) // 调试日志
 
 pub use config::get_thinking_budget_config;
+pub use config::is_strict_stateless_mode;
 pub use config::update_thinking_budget_config;
+pub use config::update_strict_stateless_mode;
 pub use config::ProxyAuthMode;
+pub use config::CodexConfig;
 pub use config::ProxyConfig;
 pub use config::ProxyPoolConfig;
 pub use config::ThinkingBudgetConfig;

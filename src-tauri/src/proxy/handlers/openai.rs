@@ -32,6 +32,11 @@ pub async fn handle_chat_completions(
     // 这确保了即使结构体定义遗漏字段，日志也能完整记录所有参数
     let original_body = body.clone();
 
+    let codex_config = state.codex.read().await.clone();
+    if crate::proxy::providers::codex::should_route_request(&codex_config, &original_body) {
+        return Ok(crate::proxy::providers::codex::forward_chat_completions(&state, original_body).await);
+    }
+
     // [NEW] 自动检测并转换 Responses 格式
     // 如果请求包含 instructions 或 input 但没有 messages，则认为是 Responses 格式
     let is_responses_format = !body.get("messages").is_some()
@@ -1519,10 +1524,32 @@ pub async fn handle_completions(
     }
 }
 
+pub async fn handle_responses(
+    State(state): State<AppState>,
+    Json(body): Json<Value>,
+) -> Response {
+    let codex_config = state.codex.read().await.clone();
+    if crate::proxy::providers::codex::should_route_request(&codex_config, &body) {
+        return crate::proxy::providers::codex::forward_responses(&state, body).await;
+    }
+
+    handle_completions(State(state), Json(body)).await
+}
+
 pub async fn handle_list_models(State(state): State<AppState>) -> impl IntoResponse {
     use crate::proxy::common::model_mapping::get_all_dynamic_models;
+    use std::collections::BTreeSet;
 
-    let model_ids = get_all_dynamic_models(&state.custom_mapping).await;
+    let mut model_ids: BTreeSet<String> = get_all_dynamic_models(&state.custom_mapping)
+        .await
+        .into_iter()
+        .collect();
+
+    if state.codex.read().await.enabled {
+        for model in crate::proxy::providers::codex::advertised_models() {
+            model_ids.insert(model);
+        }
+    }
 
     let data: Vec<_> = model_ids
         .into_iter()

@@ -1,6 +1,6 @@
-# Docker Deployment for Antigravity Manager
+# Docker Deployment for Topoo Gateway
 
-> Run Antigravity Manager in a containerized environment with web-based VNC access
+> Run Topoo Gateway in a containerized environment with web-based VNC access
 
 ## Quick Start
 
@@ -17,7 +17,7 @@ Access the web interface at: **http://localhost:6080/vnc_lite.html**
 ┌─────────────────────────────────────────────────────────┐
 │                    Docker Container                      │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │
-│  │  TigerVNC   │→ │   Openbox   │→ │ Antigravity App │  │
+│  │  TigerVNC   │→ │   Openbox   │→ │ Topoo Gateway App │  │
 │  │  (Display)  │  │    (WM)     │  │  + Firefox ESR  │  │
 │  └─────────────┘  └─────────────┘  └─────────────────┘  │
 │         ↓                                                │

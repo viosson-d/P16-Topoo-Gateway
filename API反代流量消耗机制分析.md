@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-Antigravity Tools 是一个基于 Tauri 的桌面应用,提供 Google AI (Gemini/Claude) 的 API 反向代理服务。该项目通过管理多个 Google 账号,实现智能的流量分配和配额管理。
+Topoo Gateway 是一个基于 Tauri 的桌面应用,提供 Google AI (Gemini/Claude) 的 API 反向代理服务。该项目通过管理多个 Google 账号,实现智能的流量分配和配额管理。
 
 ---
 
@@ -853,4 +853,4 @@ pub async fn refresh_all_quotas_logic() -> Result<String, String> {
 
 **文档版本**: 1.0  
 **最后更新**: 2026-01-30  
-**作者**: Antigravity Analysis
+**作者**: Topoo Gateway Analysis

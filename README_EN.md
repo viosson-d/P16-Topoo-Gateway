@@ -9,7 +9,7 @@
   <p>Multi-Account Management · Protocol Conversion · Smart Routing</p>
   
   <p>
-    <img src="https://img.shields.io/badge/Version-0.0.126-blue?style=flat-square" alt="Version">
+    <img src="https://img.shields.io/badge/Version-0.0.127-blue?style=flat-square" alt="Version">
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Backend-Rust-red?style=flat-square" alt="Rust">
     <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square" alt="React">
@@ -87,7 +87,7 @@ See [Docker Deployment Guide](./docker/README.md) for details.
 ### Claude Code CLI Integration
 
 ```bash
-export ANTHROPIC_API_KEY="sk-antigravity"
+export ANTHROPIC_API_KEY="sk-topoo"
 export ANTHROPIC_BASE_URL="http://127.0.0.1:8045"
 claude
 ```
@@ -98,7 +98,7 @@ claude
 import openai
 
 client = openai.OpenAI(
-    api_key="sk-antigravity",
+    api_key="sk-topoo",
     base_url="http://127.0.0.1:8045/v1"
 )
 
@@ -122,6 +122,12 @@ response = client.images.generate(
 
 ## 📝 Changelog
 
+### v0.0.127 (2026-03-07)
+
+- Added native Codex upstream routing with real ChatGPT Codex credentials and `/v1/responses` compatibility
+- Unified update sources and enabled direct in-app auto-update/install flow
+- Cleaned up product naming so Topoo Gateway is the product and Google Antigravity is only treated as the IDE
+
 ### v0.0.126 (2026-02-09)
 
 - ✨ **Dynamic Version Display**: Version automatically read from package.json
@@ -138,7 +144,7 @@ response = client.images.generate(
 
 ## 📄 License
 
-Based on Antigravity Manager.
+Originally based on Antigravity Manager.
 
 ---
 

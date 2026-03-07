@@ -674,8 +674,13 @@ impl TokenManager {
         );
 
         // 0. 读取当前调度配置
-        let scheduling = self.sticky_config.read().await.clone();
+        let strict_stateless_mode = crate::proxy::config::is_strict_stateless_mode();
+        let mut scheduling = self.sticky_config.read().await.clone();
         use crate::proxy::sticky_config::SchedulingMode;
+        if strict_stateless_mode {
+            scheduling.mode = SchedulingMode::PerformanceFirst;
+        }
+        let session_id = if strict_stateless_mode { None } else { session_id };
 
         // 【新增】检查配额保护是否启用（如果关闭，则忽略 protected_models 检查）
         let quota_protection_enabled = crate::modules::config::load_app_config()

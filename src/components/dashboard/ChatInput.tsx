@@ -37,7 +37,7 @@ export function ChatInput() {
                     // But if we have a current account, we might want to use it? 
                     // Actually, the proxy usually handles auth bypass for localhost or we need an API key.
                     // Let's try without auth first, or use a dummy key if needed.
-                    "Authorization": "Bearer sk-antigravity-local"
+                    "Authorization": "Bearer sk-topoo-local"
                 },
                 body: JSON.stringify({
                     model: "gemini-3-flash", // Default fast model (v3)

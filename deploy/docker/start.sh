@@ -24,7 +24,7 @@ mkdir -p "$HOME/.vnc"
 echo "$VNC_PASSWORD" | vncpasswd -f > "$HOME/.vnc/passwd"
 chmod 600 "$HOME/.vnc/passwd"
 
-echo "Checking for Antigravity Tools..."
+echo "Checking for Topoo Gateway..."
 CURRENT_VERSION=$(dpkg -s antigravity-tools 2>/dev/null | grep "Version:" | awk '{print "v"$2}' || echo "none")
 
 ARCH=$(dpkg --print-architecture)
@@ -72,7 +72,7 @@ echo "Starting noVNC proxy..."
 websockify --web /usr/share/novnc/ --wrap-mode=ignore 6080 localhost:5901 &
 
 echo "Ready: http://localhost:${NOVNC_PORT}/vnc_lite.html"
-echo "Starting Antigravity Tools..."
+echo "Starting Topoo Gateway..."
 
 # Run app with exec (replaces shell process, keeps container alive)
 exec /usr/bin/antigravity_tools

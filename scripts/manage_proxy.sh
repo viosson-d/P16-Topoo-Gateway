@@ -25,7 +25,7 @@ case "$1" in
         echo "正在开启系统代理 ($SERVICE) -> $HOST:$PORT ..."
         networksetup -setwebproxy "$SERVICE" "$HOST" "$PORT"
         networksetup -setsecurewebproxy "$SERVICE" "$HOST" "$PORT"
-        echo "完成。Antigravity 和其他应用现在应该经由 Topoo Gateway 转发。"
+        echo "完成。Google Antigravity IDE 和其他应用现在应该经由 Topoo Gateway 转发。"
         ;;
     off)
         echo "正在关闭系统代理 ($SERVICE) ..."

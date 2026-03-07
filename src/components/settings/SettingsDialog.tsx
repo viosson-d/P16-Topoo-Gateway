@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { request as invoke } from '../../utils/request';
 import { open } from '@tauri-apps/plugin-dialog';
+import { check } from '@tauri-apps/plugin-updater';
+import { relaunch } from '@tauri-apps/plugin-process';
 import { useConfigStore } from '../../stores/useConfigStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { AppConfig } from '../../types/config';
@@ -73,6 +75,7 @@ export function SettingsDialog() {
             auto_start: false,
             request_timeout: 60,
             enable_logging: false,
+            strict_stateless_mode: true,
             upstream_proxy: {
                 enabled: false,
                 url: ''
@@ -376,7 +379,7 @@ export function SettingsDialog() {
                 <div className="px-3 py-2 bg-white dark:bg-muted/5 hover:bg-zinc-50 dark:hover:bg-muted/10 transition-colors space-y-1">
                     <Label className="text-[12px] font-medium text-foreground">{t('settings.advanced.antigravity_path')}</Label>
                     <div className="flex gap-2">
-                        <Input value={formData.antigravity_executable || ''} onChange={(e) => setFormData({ ...formData, antigravity_executable: e.target.value })} className="h-8 text-xs" placeholder="Path to Antigravity executable" />
+                        <Input value={formData.antigravity_executable || ''} onChange={(e) => setFormData({ ...formData, antigravity_executable: e.target.value })} className="h-8 text-xs" placeholder="Path to Google Antigravity IDE executable" />
                         <Button variant="secondary" size="sm" className="h-8 text-xs shrink-0" onClick={async () => {
                             try {
                                 const path = await invoke<string>('get_antigravity_path', { bypassConfig: true });
@@ -434,13 +437,44 @@ export function SettingsDialog() {
     const handleCheckUpdate = async () => {
         setIsCheckingUpdate(true);
         setUpdateInfo(null);
+        let fallbackUrl = '';
+
         try {
             const result = await invoke<{ has_update: boolean; latest_version: string; current_version: string; download_url: string; }>('check_for_updates');
+            fallbackUrl = result.download_url;
             setUpdateInfo({ hasUpdate: result.has_update, latestVersion: result.latest_version, currentVersion: result.current_version, downloadUrl: result.download_url });
-            if (result.has_update) showToast(t('settings.about.new_version_available', { version: result.latest_version }), 'info');
-            else showToast(t('settings.about.latest_version'), 'success');
-        } catch (e) { showToast(String(e), 'error'); }
-        finally { setIsCheckingUpdate(false); }
+
+            if (!result.has_update) {
+                showToast(t('settings.about.latest_version'), 'success');
+                return;
+            }
+
+            showToast(t('settings.about.new_version_available', { version: result.latest_version }), 'info');
+
+            const update = await check();
+            if (!update) {
+                showToast(t('update_notification.toast.not_ready'), 'info');
+                if (fallbackUrl) {
+                    window.open(fallbackUrl, '_blank');
+                }
+                return;
+            }
+
+            await update.downloadAndInstall();
+            showToast(t('update_notification.ready'), 'success');
+            setTimeout(() => {
+                void relaunch();
+            }, 1200);
+        } catch (e) {
+            if (fallbackUrl) {
+                showToast(t('update_notification.toast.failed'), 'error');
+                window.open(fallbackUrl, '_blank');
+            } else {
+                showToast(String(e), 'error');
+            }
+        } finally {
+            setIsCheckingUpdate(false);
+        }
     };
 
     const renderAbout = () => (
@@ -487,7 +521,7 @@ export function SettingsDialog() {
 
             <SettingsCard title="Resources" description="Useful links and credits">
                 <SettingsItem title="Source Code" description="View the project on GitHub">
-                    <a href="https://github.com/lbjlaq/Antigravity-Manager" target="_blank" rel="noopener noreferrer" title="View Source Code on GitHub">
+                    <a href="https://github.com/viosson-d/topoo-gateway" target="_blank" rel="noopener noreferrer" title="View Source Code on GitHub">
                         <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-transparent border-transparent hover:bg-muted/50 hover:border-border transition-all">
                             <Github className="w-4 h-4 text-muted-foreground/80" />
                         </Button>

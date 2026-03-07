@@ -15,7 +15,9 @@ export interface ProxyConfig {
     enable_logging: boolean;
     upstream_proxy: UpstreamProxyConfig;
     zai?: ZaiConfig;
+    codex?: CodexConfig;
     scheduling?: StickySessionConfig;
+    strict_stateless_mode?: boolean;
     experimental?: ExperimentalConfig;
     debug_logging?: DebugLoggingConfig;
     user_agent_override?: string;
@@ -74,6 +76,13 @@ export interface ZaiConfig {
     model_mapping?: Record<string, string>;
     models: ZaiModelDefaults;
     mcp: ZaiMcpConfig;
+}
+
+export interface CodexConfig {
+    enabled: boolean;
+    base_url: string;
+    auth_path?: string;
+    accounts_path?: string;
 }
 
 export interface ScheduledWarmupConfig {

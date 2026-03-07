@@ -40,6 +40,7 @@ function Settings() {
             auto_start: false,
             request_timeout: 120,
             enable_logging: false,
+            strict_stateless_mode: true,
             upstream_proxy: {
                 enabled: false,
                 url: ''
@@ -780,21 +781,21 @@ function Settings() {
                                     </div>
                                 </div>
 
-                                {/* Antigravity 缓存清理 */}
+                                {/* Google Antigravity IDE 缓存清理 */}
                                 <div className="border-t border-gray-200 dark:border-base-200 pt-4">
-                                    <h3 className="font-medium text-gray-900 dark:text-base-content mb-3">{t('settings.advanced.antigravity_cache_title', 'Antigravity 缓存清理')}</h3>
+                                    <h3 className="font-medium text-gray-900 dark:text-base-content mb-3">{t('settings.advanced.antigravity_cache_title', 'Google Antigravity IDE 缓存清理')}</h3>
                                     <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 rounded-lg p-3 mb-3">
-                                        <p className="text-sm text-amber-700 dark:text-amber-400">{t('settings.advanced.antigravity_cache_warning', '请确保 Antigravity 应用已完全退出后再执行清理操作。')}</p>
+                                        <p className="text-sm text-amber-700 dark:text-amber-400">{t('settings.advanced.antigravity_cache_warning', '请确保 Google Antigravity IDE 应用已完全退出后再执行清理操作。')}</p>
                                     </div>
                                     <div className="bg-gray-50 dark:bg-base-200 border border-gray-200 dark:border-base-300 rounded-lg p-3 mb-3">
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('settings.advanced.antigravity_cache_desc', '清理 Antigravity 应用的缓存可以解决登录失败、版本验证错误、OAuth 授权失败等问题。')}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('settings.advanced.antigravity_cache_desc', '清理 Google Antigravity IDE 应用的缓存可以解决登录失败、版本验证错误、OAuth 授权失败等问题。')}</p>
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <button
                                             className="px-4 py-2 border border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-400 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
                                             onClick={handleOpenClearCacheDialog}
                                         >
-                                            {t('settings.advanced.clear_antigravity_cache', '清理 Antigravity 缓存')}
+                                            {t('settings.advanced.clear_antigravity_cache', '清理 Google Antigravity IDE 缓存')}
                                         </button>
                                     </div>
                                 </div>
@@ -958,7 +959,7 @@ function Settings() {
                                         <div className="absolute inset-0 bg-blue-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                                         <img
                                             src="/icon.png"
-                                            alt="Antigravity Logo"
+                                            alt="Topoo Gateway Logo"
                                             className="relative w-24 h-24 rounded-3xl shadow-2xl transform group-hover:scale-105 transition-all duration-500 rotate-3 group-hover:rotate-6 object-cover bg-white dark:bg-black"
                                         />
                                     </div>
@@ -1068,10 +1069,10 @@ function Settings() {
                     onCancel={() => setIsClearLogsOpen(false)}
                 />
 
-                {/* Antigravity Cache Clear Modal */}
+                {/* Google Antigravity IDE Cache Clear Modal */}
                 <ModalDialog
                     isOpen={isClearCacheOpen}
-                    title={t('settings.advanced.clear_cache_confirm_title', '确认清理 Antigravity 缓存')}
+                    title={t('settings.advanced.clear_cache_confirm_title', '确认清理 Google Antigravity IDE 缓存')}
                     type="confirm"
                     confirmText={isClearingCache ? t('common.clearing', '清理中...') : t('common.clear')}
                     cancelText={t('common.cancel')}
@@ -1094,13 +1095,13 @@ function Settings() {
                         ) : (
                             <div className="bg-gray-50 dark:bg-base-200 rounded-lg p-3">
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {t('settings.advanced.cache_not_found', '未找到 Antigravity 缓存目录')}
+                                    {t('settings.advanced.cache_not_found', '未找到 Google Antigravity IDE 缓存目录')}
                                 </p>
                             </div>
                         )}
                         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/30 rounded-lg p-2">
                             <p className="text-xs text-amber-700 dark:text-amber-400">
-                                {t('settings.advanced.antigravity_cache_warning', '请确保 Antigravity 应用已完全退出后再执行清理操作。')}
+                                {t('settings.advanced.antigravity_cache_warning', '请确保 Google Antigravity IDE 应用已完全退出后再执行清理操作。')}
                             </p>
                         </div>
                     </div>

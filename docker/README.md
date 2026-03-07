@@ -1,6 +1,6 @@
-# 🐋 Antigravity Manager 原生 Docker 部署手冊
+# 🐋 Topoo Gateway 原生 Docker 部署手冊
 
-本目錄包含 Antigravity Manager 的原生 Headless Docker 部署方案。該方案支持完整的 Web 管理界面、API 反代以及數據持久化，無需複雜的 VNC 或桌面環境。
+本目錄包含 Topoo Gateway 的原生 Headless Docker 部署方案。該方案支持完整的 Web 管理界面、API 反代以及數據持久化，無需複雜的 VNC 或桌面環境。
 
 ## 🚀 快速開始
 

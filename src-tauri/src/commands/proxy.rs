@@ -120,6 +120,8 @@ pub async fn internal_start_proxy_service(
 
     let _monitor = state.monitor.read().await.as_ref().unwrap().clone();
 
+    crate::proxy::update_strict_stateless_mode(config.strict_stateless_mode);
+
     // 檢查並啟動管理服務器（如果尚未運行）
     ensure_admin_server(
         config.clone(),
@@ -171,7 +173,9 @@ pub async fn internal_start_proxy_service(
     if active_accounts == 0 {
         let zai_enabled = config.zai.enabled
             && !matches!(config.zai.dispatch_mode, crate::proxy::ZaiDispatchMode::Off);
-        if !zai_enabled {
+        let codex_status = crate::proxy::providers::codex::inspect_provider(&config.codex);
+        let codex_enabled = config.codex.enabled && codex_status.detected_accounts > 0;
+        if !zai_enabled && !codex_enabled {
             tracing::warn!("沒有可用賬號，反代邏輯將暫停，請通過管理界面添加。");
             return Ok(ProxyStatus {
                 running: false,
@@ -268,6 +272,7 @@ pub async fn ensure_admin_server(
         config.user_agent_override.clone(),
         crate::proxy::ProxySecurityConfig::from_proxy_config(&config),
         config.zai.clone(),
+        config.codex.clone(),
         monitor,
         config.experimental.clone(),
         config.debug_logging.clone(),
@@ -669,6 +674,13 @@ pub async fn fetch_zai_models(
     models.sort();
     models.dedup();
     Ok(models)
+}
+
+#[tauri::command]
+pub async fn get_codex_provider_status(
+    codex: crate::proxy::CodexConfig,
+) -> Result<crate::proxy::providers::codex::CodexProviderStatus, String> {
+    Ok(crate::proxy::providers::codex::inspect_provider(&codex))
 }
 
 /// 获取当前调度配置

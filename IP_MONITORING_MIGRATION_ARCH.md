@@ -2,8 +2,8 @@
 
 ## 项目概述
 
-**源项目**: Antigravity-Manager (antigraviryManager)  
-**目标项目**: Antigravity-Tools (antigracitytools)  
+**源项目**: Antigravity-Manager (legacy)  
+**目标项目**: Topoo Gateway  
 **移植功能**: IP 访问监控、黑白名单管理、流量统计  
 **创建时间**: 2026-01-30
 
@@ -13,7 +13,7 @@
 
 ### 1.1 核心功能
 
-IP 监控系统是 Antigravity-Manager 中的安全监控模块，提供以下核心能力：
+IP 监控系统最初源于 Antigravity-Manager 中的安全监控模块，现用于 Topoo Gateway，提供以下核心能力：
 
 1. **IP 访问日志记录**
    - 记录所有客户端 IP 访问信息
@@ -805,7 +805,7 @@ mod tests {
 
 ## 6. 前端集成 (可选)
 
-如果需要前端界面展示，可以参考 Antigravity-Manager 的实现：
+如果需要前端界面展示，可以参考 Antigravity-Manager 的历史实现：
 
 ### 6.1 页面结构
 
@@ -1030,4 +1030,4 @@ IP 监控功能是一个完整的安全监控子系统，包含：
 
 **文档版本**: v1.0  
 **最后更新**: 2026-01-30  
-**作者**: Antigravity 开发团队
+**作者**: Topoo Gateway 开发团队
