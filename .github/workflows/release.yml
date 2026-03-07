@@ -64,7 +64,9 @@ jobs:
           # 重命名 .app.tar.gz 和 .sig
           if [ -f "Topoo Gateway.app.tar.gz" ]; then
             mv "Topoo Gateway.app.tar.gz" "Topoo Gateway_${ARCH}.app.tar.gz"
-            mv "Topoo Gateway.app.tar.gz.sig" "Topoo Gateway_${ARCH}.app.tar.gz.sig"
+            if [ -f "Topoo Gateway.app.tar.gz.sig" ]; then
+              mv "Topoo Gateway.app.tar.gz.sig" "Topoo Gateway_${ARCH}.app.tar.gz.sig"
+            fi
             echo "Renamed assets to append Arch: $ARCH"
           fi
           

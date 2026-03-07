@@ -11,7 +11,7 @@ export const APP_VERSION_DISPLAY = `v${APP_VERSION}`;
 
 /**
  * Get the current application version
- * @returns Version string (e.g., "0.0.130")
+ * @returns Version string (e.g., "0.0.131")
  */
 export function getAppVersion(): string {
     return APP_VERSION;
@@ -19,7 +19,7 @@ export function getAppVersion(): string {
 
 /**
  * Get the current application version with 'v' prefix
- * @returns Formatted version string (e.g., "v0.0.130")
+ * @returns Formatted version string (e.g., "v0.0.131")
  */
 export function getAppVersionDisplay(): string {
     return APP_VERSION_DISPLAY;
