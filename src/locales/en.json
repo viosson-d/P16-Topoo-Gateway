@@ -524,7 +524,7 @@
             "checking_update": "Checking...",
             "latest_version": "You're up to date",
             "new_version_available": "New version {{version}} available",
-            "download_update": "Download",
+            "download_update": "Manual Download",
             "update_check_failed": "Update check failed",
             "support_btn": "Support Author",
             "support_title": "Donation & Support",
@@ -1075,10 +1075,10 @@
         "ready": "Update Ready",
         "downloading": "Downloading update...",
         "restarting": "Restarting application...",
-        "auto_update": "Auto Update",
+        "auto_update": "Update Now",
         "toast": {
-            "not_ready": "Auto-update package is not ready, redirecting to download page...",
-            "failed": "Auto-update failed, redirecting to download page..."
+            "not_ready": "Auto-update package is not ready yet. You can retry or use manual download.",
+            "failed": "Auto-update failed. You can retry or use manual download."
         }
     },
     "login": {

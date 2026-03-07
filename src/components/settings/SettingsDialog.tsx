@@ -117,6 +117,8 @@ export function SettingsDialog() {
         currentVersion: string;
         downloadUrl: string;
     } | null>(null);
+    const [showManualDownload, setShowManualDownload] = useState(false);
+    const [manualDownloadReason, setManualDownloadReason] = useState<'not_ready' | 'failed' | null>(null);
 
     useEffect(() => {
         if (isSettingsOpen) {
@@ -436,7 +438,8 @@ export function SettingsDialog() {
     // -- ABOUT TAB --
     const handleCheckUpdate = async () => {
         setIsCheckingUpdate(true);
-        setUpdateInfo(null);
+        setShowManualDownload(false);
+        setManualDownloadReason(null);
         let fallbackUrl = '';
 
         try {
@@ -454,9 +457,8 @@ export function SettingsDialog() {
             const update = await check();
             if (!update) {
                 showToast(t('update_notification.toast.not_ready'), 'info');
-                if (fallbackUrl) {
-                    window.open(fallbackUrl, '_blank');
-                }
+                setShowManualDownload(Boolean(fallbackUrl));
+                setManualDownloadReason('not_ready');
                 return;
             }
 
@@ -468,7 +470,8 @@ export function SettingsDialog() {
         } catch (e) {
             if (fallbackUrl) {
                 showToast(t('update_notification.toast.failed'), 'error');
-                window.open(fallbackUrl, '_blank');
+                setShowManualDownload(true);
+                setManualDownloadReason('failed');
             } else {
                 showToast(String(e), 'error');
             }
@@ -492,16 +495,25 @@ export function SettingsDialog() {
                     </div>
                 </div>
 
-                <SettingsItem title="Software Update" description={updateInfo?.hasUpdate ? "New version available" : "Check for the latest version"}>
-                    <div className="flex items-center gap-3">
-                        {updateInfo?.hasUpdate && (
+                <SettingsItem
+                    title="Software Update"
+                    description={
+                        showManualDownload && updateInfo?.hasUpdate && manualDownloadReason
+                            ? t(`update_notification.toast.${manualDownloadReason}`)
+                            : updateInfo?.hasUpdate
+                                ? t('settings.about.new_version_available', { version: updateInfo.latestVersion })
+                                : "Check for the latest version"
+                    }
+                >
+                    <div className="flex items-center gap-3 flex-wrap">
+                        {showManualDownload && updateInfo?.hasUpdate && (
                             <a
                                 href={updateInfo.downloadUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-[11px] font-medium text-blue-500 hover:text-blue-600 transition-colors flex items-center gap-1"
                             >
-                                Download {updateInfo.latestVersion}
+                                {t('settings.about.download_update')} {updateInfo.latestVersion}
                                 <ExternalLink className="w-3 h-3" />
                             </a>
                         )}
@@ -513,7 +525,11 @@ export function SettingsDialog() {
                             className="h-7 text-[11px] font-medium px-3 gap-1.5"
                         >
                             <RefreshCw className={cn("w-3.5 h-3.5", isCheckingUpdate ? "animate-spin" : "")} />
-                            {isCheckingUpdate ? "Checking..." : (updateInfo ? "Check Again" : "Check for Updates")}
+                            {isCheckingUpdate
+                                ? t('settings.about.checking_update')
+                                : updateInfo?.hasUpdate
+                                    ? t('update_notification.auto_update')
+                                    : t('settings.about.check_update')}
                         </Button>
                     </div>
                 </SettingsItem>

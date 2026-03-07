@@ -25,6 +25,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
   const [isClosing, setIsClosing] = useState(false);
   const [updateState, setUpdateState] = useState<UpdateState>('checking');
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [showManualDownload, setShowManualDownload] = useState(false);
+  const [manualDownloadReason, setManualDownloadReason] = useState<'not_ready' | 'failed' | null>(null);
 
   useEffect(() => {
     checkForUpdates();
@@ -36,6 +38,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
       if (info.has_update) {
         setUpdateInfo(info);
         setUpdateState('available');
+        setShowManualDownload(false);
+        setManualDownloadReason(null);
         setTimeout(() => setIsVisible(true), 100);
       } else {
         onClose();
@@ -48,6 +52,8 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
 
   const handleAutoUpdate = async () => {
     setUpdateState('downloading');
+    setShowManualDownload(false);
+    setManualDownloadReason(null);
     try {
       const update = await check();
       if (update) {
@@ -75,10 +81,16 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
         setTimeout(async () => {
           await relaunch();
         }, 1500);
+      } else {
+        setUpdateState('available');
+        setShowManualDownload(true);
+        setManualDownloadReason('not_ready');
       }
     } catch (error) {
       console.error('Auto update failed:', error);
-      handleManualDownload();
+      setUpdateState('available');
+      setShowManualDownload(true);
+      setManualDownloadReason('failed');
     }
   };
 
@@ -181,26 +193,50 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ onClose 
           )}
 
           {updateState === 'available' && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleAutoUpdate}
-                className="
-                  flex-1 group/btn
-                  relative overflow-hidden
-                  bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500
-                  text-white font-medium
-                  py-2.5 px-4 rounded-xl
-                  shadow-lg shadow-blue-500/25
-                  transition-all duration-300
-                  flex items-center justify-center gap-2
-                  active:scale-[0.98]
-                "
-              >
-                <Download className="w-4 h-4" />
-                <span>{t('update_notification.auto_update')}</span>
-                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all duration-300" />
-                <div className="absolute inset-0 -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-20 pointer-events-none" />
-              </button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <button
+                  onClick={handleAutoUpdate}
+                  className="
+                    flex-1 group/btn
+                    relative overflow-hidden
+                    bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500
+                    text-white font-medium
+                    py-2.5 px-4 rounded-xl
+                    shadow-lg shadow-blue-500/25
+                    transition-all duration-300
+                    flex items-center justify-center gap-2
+                    active:scale-[0.98]
+                  "
+                >
+                  <Download className="w-4 h-4" />
+                  <span>{t('update_notification.auto_update')}</span>
+                  <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all duration-300" />
+                  <div className="absolute inset-0 -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-20 pointer-events-none" />
+                </button>
+              </div>
+
+              {showManualDownload && (
+                <div className="space-y-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {manualDownloadReason ? t(`update_notification.toast.${manualDownloadReason}`) : ''}
+                  </p>
+                  <button
+                    onClick={handleManualDownload}
+                    className="
+                      w-full
+                      py-2 px-3 rounded-xl
+                      border border-gray-200 dark:border-white/10
+                      bg-white/60 dark:bg-slate-800/50
+                      text-sm font-medium text-gray-700 dark:text-gray-200
+                      hover:bg-white/80 dark:hover:bg-slate-800/80
+                      transition-all duration-200
+                    "
+                  >
+                    {t('settings.about.download_update')}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
