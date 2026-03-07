@@ -11,7 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest]
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            arch: aarch64
+          - platform: macos-13
+            target: x86_64-apple-darwin
+            arch: x86_64
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
@@ -25,7 +31,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin, x86_64-apple-darwin, universal-apple-darwin
+          targets: ${{ matrix.target }}
 
       - name: Install dependencies (Frontend)
         run: npm install
@@ -42,19 +48,18 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: false
           prerelease: false
-          args: --target universal-apple-darwin
+          args: --target ${{ matrix.target }}
 
       # 3. 处理 macOS 架构重命名冲突 (解决 422 Already Exists)
       - name: Rename macOS assets for architecture
-        if: matrix.platform == 'macos-latest'
         run: |
-          # 默认都当作 universal 处理，因为我们在 args 里指定了 universal-apple-darwin
-          ARCH="universal"
+          ARCH="${{ matrix.arch }}"
+          TARGET="${{ matrix.target }}"
           
           echo "Detected architecture: $ARCH"
           
-          # 进入产物目录 (Tauri v1 路径)
-          cd src-tauri/target/universal-apple-darwin/release/bundle/macos/ || cd src-tauri/target/release/bundle/macos/
+          # 进入产物目录
+          cd "src-tauri/target/${TARGET}/release/bundle/macos/" || cd src-tauri/target/release/bundle/macos/
           
           # 重命名 .app.tar.gz 和 .sig
           if [ -f "Topoo Gateway.app.tar.gz" ]; then
@@ -136,4 +141,3 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           files: updater.json
-

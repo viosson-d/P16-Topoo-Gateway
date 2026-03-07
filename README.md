@@ -9,7 +9,7 @@
   <p>多账号管理 · 协议转换 · 智能调度</p>
   
   <p>
-    <img src="https://img.shields.io/badge/Version-0.0.127-blue?style=flat-square" alt="Version">
+    <img src="https://img.shields.io/badge/Version-0.0.128-blue?style=flat-square" alt="Version">
     <img src="https://img.shields.io/badge/Tauri-v2-orange?style=flat-square" alt="Tauri">
     <img src="https://img.shields.io/badge/Backend-Rust-red?style=flat-square" alt="Rust">
     <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=flat-square" alt="React">
@@ -121,6 +121,11 @@ response = client.images.generate(
 ```
 
 ## 📝 更新日志
+
+### v0.0.128 (2026-03-07)
+
+- Fixed the GitHub Release workflow to build separate macOS architecture targets instead of the invalid universal Rust target
+- Ready for a new signed updater/release run via `v0.0.128`
 
 ### v0.0.127 (2026-03-07)
 
